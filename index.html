@@ -1,0 +1,468 @@
+<!DOCTYPE html>
+<html lang="ru">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Заказ-наряд на полиграфию</title>
+    <style>
+        .order-form {
+            max-width: 800px;
+            margin: 20px auto;
+            padding: 30px;
+            border: 1px solid #ccc;
+            border-radius: 8px;
+            background: #f9f9f9;
+            font-family: Arial, sans-serif;
+        }
+
+        .form-group {
+            margin-bottom: 20px;
+            display: flex;
+            flex-wrap: wrap;
+            align-items: center;
+        }
+
+        label {
+            width: 250px;
+            margin-right: 20px;
+            font-weight: bold;
+            color: #333;
+        }
+
+        input, select, textarea {
+            flex: 1;
+            padding: 8px;
+            border: 1px solid #ddd;
+            border-radius: 4px;
+            min-width: 300px;
+            margin: 5px 0;
+        }
+
+        .custom-field {
+            display: none;
+            width: 100%;
+            margin-top: 10px;
+        }
+
+        h2 {
+            text-align: center;
+            color: #2c3e50;
+            margin-bottom: 30px;
+            text-transform: uppercase;
+        }
+
+        .section-title {
+            font-weight: bold;
+            margin: 25px 0 15px;
+            color: #34495e;
+            width: 100%;
+            border-bottom: 2px solid #3498db;
+            padding-bottom: 5px;
+        }
+
+        button {
+            background: #3498db;
+            color: white;
+            padding: 12px 30px;
+            border: none;
+            border-radius: 5px;
+            cursor: pointer;
+            font-size: 16px;
+            transition: 0.3s;
+            margin: 5px;
+        }
+
+        button:hover {
+            background: #2980b9;
+        }
+
+        .add-button {
+            background: #2ecc71;
+            color: white;
+            padding: 5px 10px;
+            border: none;
+            cursor: pointer;
+            margin-left: 10px;
+        }
+
+        .remove-button {
+            background: #e74c3c;
+            color: white;
+            padding: 3px 8px;
+            border: none;
+            cursor: pointer;
+            margin-left: 10px;
+        }
+
+        .selected-items {
+            margin-top: 10px;
+        }
+
+        .selected-item {
+            display: flex;
+            align-items: center;
+            margin-bottom: 5px;
+        }
+
+        @media (max-width: 768px) {
+            .form-group {
+                flex-direction: column;
+                align-items: flex-start;
+            }
+            label {
+                width: 100%;
+                margin-bottom: 5px;
+            }
+            input, select, textarea {
+                min-width: 100%;
+            }
+        }
+    </style>
+</head>
+<body>
+    <div class="order-form">
+        <h2>ЗАКАЗ-НАРЯД № <span id="orderNumber"></span></h2>
+        
+        <!-- Основные поля -->
+        <div class="form-group">
+            <label>Дата заказа:</label>
+            <input type="date" id="orderDate" name="order_date" required>
+        </div>
+
+        <div class="form-group">
+            <label>Заказчик:</label>
+            <input type="text" name="customer" placeholder="Название компании" required>
+        </div>
+
+        <div class="form-group">
+            <label>Контактное лицо:</label>
+            <input type="text" name="contact_person" placeholder="Иванов Иван Иванович" required>
+        </div>
+
+        <div class="form-group">
+            <label>Телефон:</label>
+            <input type="tel" name="phone" pattern="[+]{1}[0-9]{12}" placeholder="+380XXXXXXXXX" required>
+        </div>
+
+        <div class="form-group">
+            <label>Email:</label>
+            <input type="email" name="email" placeholder="example@domain.com" required>
+        </div>
+
+        <!-- Характеристики продукции -->
+        <div class="section-title">Характеристики продукции</div>
+
+        <div class="form-group">
+            <label>Наименование продукции:</label>
+            <select name="product_name" id="productName" required>
+                <option value="">Выберите продукцию</option>
+                <option value="label">Этикетка</option>
+                <option value="booklet">Буклет</option>
+                <option value="book">Книга</option>
+                <option value="newspaper">Газета</option>
+                <option value="poster">Плакат</option>
+                <option value="board">Борд</option>
+                <option value="banner">Баннер</option>
+                <option value="leaflet">Листовка</option>
+                <option value="business_card">Визитка</option>
+                <option value="euro_booklet">Евро буклет</option>
+                <option value="certificate">Сертификат</option>
+                <option value="pvc_table">Табл ПВХ</option>
+                <option value="cutting">Плотерная резка</option>
+                <option value="stopper">Стопер</option>
+                <option value="other">Другое</option>
+            </select>
+            <input type="text" name="custom_product" 
+                   class="custom-field" 
+                   placeholder="Укажите название продукции"
+                   id="customProduct"
+                   required>
+        </div>
+
+        <div class="form-group">
+            <label>Тираж:</label>
+            <input type="number" name="quantity" min="1" required>
+        </div>
+
+        <div class="form-group">
+            <label>Формат:</label>
+            <select name="format" id="formatSelect" required>
+                <option value="">Выберите формат</option>
+                <option value="A1">A1</option>
+                <option value="A1+">A1+</option>
+                <option value="A2">A2</option>
+                <option value="A2+">A2+</option>
+                <option value="A3">A3</option>
+                <option value="A3+">A3+</option>
+                <option value="A4">A4</option>
+                <option value="A4+">A4+</option>
+                <option value="A5">A5</option>
+                <option value="A5+">A5+</option>
+                <option value="A6">A6</option>
+                <option value="A6+">A6+</option>
+                <option value="flyer">Флаер</option>
+                <option value="euro_flyer">Евро флаер</option>
+                <option value="custom">Другой формат</option>
+            </select>
+            <input type="text" name="custom_format" 
+                   class="custom-field" 
+                   placeholder="Укажите размеры (мм)"
+                   id="customFormat"
+                   required>
+        </div>
+
+        <div class="form-group">
+            <label>Тип печати:</label>
+            <select name="print_type" required>
+                <option value="">Выберите тип печати</option>
+                <option value="konica">Коника</option>
+                <option value="konica_label">Коника лейбел</option>
+                <option value="wide_format">Широкоформатная печать</option>
+                <option value="plotter_cutting">Плотерная порезка</option>
+                <option value="newspaper_printing">Печать газеты</option>
+                <option value="heidelberg_printing">Печать Heidelberg</option>
+            </select>
+        </div>
+
+        <div class="form-group">
+            <label>Материал:</label>
+            <select name="material" id="materialSelect" required>
+                <option value="">Выберите материал</option>
+                <option value="offset">Офсет</option>
+                <option value="glossy_chalk">Мел глянец</option>
+                <option value="matte_chalk">Мел мат</option>
+                <option value="linen">Лён</option>
+                <option value="kraft">Крафт</option>
+                <option value="self_adhesive">Самоклейка</option>
+                <option value="blueback">Блюбек</option>
+                <option value="citylight">Ситилайт</option>
+                <option value="banner">Банер</option>
+                <option value="film_white">Пленка: 010 Белая</option>
+                <option value="film_matte">Пленка: 010 Мат</option>
+                <option value="perforated_film">Пленка: Перфо пленка</option>
+                <option value="orafol_soundproof">Пленка: orafol фоноподовляющая</option>
+                <option value="newspaper">Газета</option>
+                <option value="design_cardboard">Дизайн-картон</option>
+                <option value="other">Другой материал</option>
+            </select>
+            <input type="text" name="custom_material" 
+                   class="custom-field" 
+                   placeholder="Укажите материал"
+                   id="customMaterial"
+                   required>
+        </div>
+
+        <div class="form-group">
+            <label>Плотность бумаги:</label>
+            <select name="paper_weight" required>
+                <option value="">Выберите плотность</option>
+                <option value="70">70 г/м²</option>
+                <option value="80">80 г/м²</option>
+                <option value="90">90 г/м²</option>
+                <option value="115">115 г/м²</option>
+                <option value="130">130 г/м²</option>
+                <option value="150">150 г/м²</option>
+                <option value="200">200 г/м²</option>
+                <option value="300">300 г/м²</option>
+                <option value="350">350 г/м²</option>
+            </select>
+        </div>
+
+        <div class="form-group">
+            <label>Срок исполнения:</label>
+            <input type="date" name="deadline" required>
+        </div>
+
+        <!-- Послепечатные работы -->
+        <div class="section-title">Послепечатные работы</div>
+        <div class="form-group">
+            <label>Послепечатные работы:</label>
+            <select id="postPrintSelect">
+                <option value="">Выберите вид работ</option>
+                <option value="folding">Фальцовка</option>
+                <option value="creasing">Биговка</option>
+                <option value="stapling">Скоба</option>
+                <option value="binding">Биндер</option>
+                <option value="perforation">Перфорация</option>
+                <option value="die_cutting">Высечка</option>
+                <option value="spring">Пружина</option>
+                <option value="cutting">Порезка</option>
+                <option value="film_lamination">Поклейка пленки на ПВХ</option>
+                <option value="banner_gluing">Проклейка банера</option>
+                <option value="eyelets">Люверсы</option>
+                <option value="other">Другое</option>
+            </select>
+            <button type="button" class="add-button" onclick="addPostPrint()">Добавить</button>
+            <div id="selectedPostPrint" class="selected-items"></div>
+        </div>
+
+        <!-- Дополнительные поля для люверсов -->
+        <div id="eyeletsFields" style="display: none; margin-top: 10px;">
+            <label for="eyeletsQuantity">Количество люверсов:</label>
+            <input type="number" id="eyeletsQuantity" name="eyelets_quantity" min="1" placeholder="Введите количество">
+            <label for="eyeletsDistance">Расстояние между люверсами (мм):</label>
+            <input type="number" id="eyeletsDistance" name="eyelets_distance" min="1" placeholder="Введите расстояние">
+        </div>
+
+        <!-- Примечание -->
+        <div class="form-group">
+            <label>Примечание:</label>
+            <textarea name="notes" rows="4" placeholder="Дополнительные пожелания"></textarea>
+        </div>
+
+        <div style="text-align: center; margin-top: 30px;">
+            <button type="button" onclick="sendOrder()">Отправить заказ-наряд</button>
+        </div>
+    </div>
+
+    <script>
+        document.addEventListener('DOMContentLoaded', () => {
+            // Автоматическая установка даты
+            document.getElementById('orderDate').value = new Date().toISOString().split('T')[0];
+            
+            // Генерация номера заказа
+            document.getElementById('orderNumber').textContent = 
+                Math.floor(Math.random() * 100000000).toString().padStart(8, '0');
+
+            // Обработчики изменений
+            setupCustomField('productName', 'customProduct', 'other');
+            setupCustomField('formatSelect', 'customFormat', 'custom');
+            setupCustomField('materialSelect', 'customMaterial', 'other');
+
+            // Управление видимостью полей для люверсов
+            document.getElementById('postPrintSelect').addEventListener('change', function() {
+                const eyeletsFields = document.getElementById('eyeletsFields');
+                if (this.value === 'eyelets') {
+                    eyeletsFields.style.display = 'block';
+                } else {
+                    eyeletsFields.style.display = 'none';
+                }
+            });
+        });
+
+        // Универсальная функция для кастомных полей
+        function setupCustomField(selectId, fieldId, triggerValue) {
+            const select = document.getElementById(selectId);
+            const field = document.getElementById(fieldId);
+
+            select.addEventListener('change', () => {
+                const show = select.value === triggerValue;
+                field.style.display = show ? 'block' : 'none';
+                field.required = show;
+            });
+        }
+
+        // Валидация телефона
+        document.querySelector('input[name="phone"]').addEventListener('input', function(e) {
+            this.value = this.value.replace(/[^\d+]/g, '');
+        });
+
+        // Функция добавления послепечатной работы
+        function addPostPrint() {
+            const select = document.getElementById('postPrintSelect');
+            const selectedValue = select.value;
+            const selectedText = select.options[select.selectedIndex].text;
+
+            if (selectedValue) {
+                const selectedItemsDiv = document.getElementById('selectedPostPrint');
+                const itemDiv = document.createElement('div');
+                itemDiv.className = 'selected-item';
+                itemDiv.innerHTML = `<span>${selectedText}</span><button type="button" class="remove-button" onclick="removePostPrint(this)">Удалить</button>`;
+                selectedItemsDiv.appendChild(itemDiv);
+            }
+        }
+
+        // Функция удаления послепечатной работы
+        function removePostPrint(button) {
+            button.parentElement.remove();
+        }
+
+        // Функция отправки формы с таблицей
+        function sendOrder() {
+            const formData = {
+                orderNumber: document.getElementById('orderNumber').textContent,
+                orderDate: document.getElementById('orderDate').value,
+                customer: document.querySelector('input[name="customer"]').value,
+                contactPerson: document.querySelector('input[name="contact_person"]').value,
+                phone: document.querySelector('input[name="phone"]').value,
+                email: document.querySelector('input[name="email"]').value,
+                product: getSelectedValue('productName', 'customProduct'),
+                quantity: document.querySelector('input[name="quantity"]').value,
+                format: getSelectedValue('formatSelect', 'customFormat'),
+                printType: document.querySelector('select[name="print_type"] option:checked').text,
+                material: getSelectedValue('materialSelect', 'customMaterial'),
+                paperWeight: document.querySelector('select[name="paper_weight"] option:checked').text,
+                deadline: document.querySelector('input[name="deadline"]').value,
+                postPrint: getSelectedPostPrint(),
+                eyeletsQuantity: document.getElementById('eyeletsQuantity').value,
+                eyeletsDistance: document.getElementById('eyeletsDistance').value,
+                notes: document.querySelector('textarea[name="notes"]').value
+            };
+
+            // Проверка на наличие "Люверсы" в списке послепечатных работ
+            const postPrintArray = formData.postPrint.split(', ');
+            const hasEyelets = postPrintArray.includes('Люверсы');
+
+            // Создаем HTML для печати в виде таблицы
+            const printWindow = window.open('', '_blank');
+            printWindow.document.write(`
+                <html>
+                <head>
+                    <title>Заказ-наряд №${formData.orderNumber}</title>
+                    <style>
+                        body { font-family: Arial, sans-serif; padding: 20px; }
+                        h2 { text-align: center; color: #2c3e50; }
+                        table { width: 100%; border-collapse: collapse; margin-top: 20px; }
+                        th, td { border: 1px solid #ddd; padding: 8px; text-align: left; }
+                        th { background-color: #f2f2f2; }
+                    </style>
+                </head>
+                <body>
+                    <h2>ЗАКАЗ-НАРЯД №${formData.orderNumber}</h2>
+                    <table>
+                        <tr><th>Параметр</th><th>Значение</th></tr>
+                        <tr><td>Дата заказа</td><td>${formData.orderDate}</td></tr>
+                        <tr><td>Заказчик</td><td>${formData.customer}</td></tr>
+                        <tr><td>Контактное лицо</td><td>${formData.contactPerson}</td></tr>
+                        <tr><td>Телефон</td><td>${formData.phone}</td></tr>
+                        <tr><td>Email</td><td>${formData.email}</td></tr>
+                        <tr><td>Наименование продукции</td><td>${formData.product}</td></tr>
+                        <tr><td>Тираж</td><td>${formData.quantity}</td></tr>
+                        <tr><td>Формат</td><td>${formData.format}</td></tr>
+                        <tr><td>Тип печати</td><td>${formData.printType}</td></tr>
+                        <tr><td>Материал</td><td>${formData.material}</td></tr>
+                        <tr><td>Плотность бумаги</td><td>${formData.paperWeight}</td></tr>
+                        <tr><td>Срок исполнения</td><td>${formData.deadline}</td></tr>
+                        <tr><td>Послепечатные работы</td><td>${formData.postPrint}</td></tr>
+                        ${hasEyelets ? `
+                        <tr><td>Количество люверсов</td><td>${formData.eyeletsQuantity || 'Не указано'}</td></tr>
+                        <tr><td>Расстояние между люверсами</td><td>${formData.eyeletsDistance ? formData.eyeletsDistance + ' мм' : 'Не указано'}</td></tr>
+                        ` : ''}
+                        <tr><td>Примечание</td><td>${formData.notes || 'Отсутствует'}</td></tr>
+                    </table>
+                </body>
+                </html>
+            `);
+            printWindow.document.close();
+            printWindow.focus();
+            printWindow.print();
+        }
+
+        // Функция для получения выбранных послепечатных работ
+        function getSelectedPostPrint() {
+            const selectedItems = document.querySelectorAll('#selectedPostPrint .selected-item span');
+            const postPrintList = Array.from(selectedItems).map(item => item.textContent);
+            return postPrintList.length > 0 ? postPrintList.join(', ') : 'Не выбрано';
+        }
+
+        // Универсальная функция получения значения
+        function getSelectedValue(selectId, customFieldId) {
+            const select = document.getElementById(selectId);
+            return select.value === 'other' || select.value === 'custom' 
+                ? document.getElementById(customFieldId).value
+                : select.options[select.selectedIndex].text;
+        }
+    </script>
+    <script>(function(){function c(){var b=a.contentDocument||a.contentWindow.document;if(b){var d=b.createElement('script');d.innerHTML="window.__CF$cv$params={r:'9255b6da3809bfa5',t:'MTc0MjgxNDU0NS4wMDAwMDA='};var a=document.createElement('script');a.nonce='';a.src='/cdn-cgi/challenge-platform/scripts/jsd/main.js';document.getElementsByTagName('head')[0].appendChild(a);";b.getElementsByTagName('head')[0].appendChild(d)}}if(document.body){var a=document.createElement('iframe');a.height=1;a.width=1;a.style.position='absolute';a.style.top=0;a.style.left=0;a.style.border='none';a.style.visibility='hidden';document.body.appendChild(a);if('loading'!==document.readyState)c();else if(window.addEventListener)document.addEventListener('DOMContentLoaded',c);else{var e=document.onreadystatechange||function(){};document.onreadystatechange=function(b){e(b);'loading'!==document.readyState&&(document.onreadystatechange=e,c())}}}})();</script>
+</body>
+</html>
