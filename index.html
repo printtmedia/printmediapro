@@ -38,7 +38,7 @@
             margin: 5px 0;
         }
 
-        .custom-field {
+        .custom-field, .binding-options {
             display: none;
             width: 100%;
             margin-top: 10px;
@@ -158,25 +158,49 @@
                 <option value="">Выберите продукцию</option>
                 <option value="label">Этикетка</option>
                 <option value="booklet">Буклет</option>
+                <option value="brochure">Брошура</option>
+                <option value="flyer">Флаер</option>
+                <option value="euro_flyer">Евро флаер</option>
+                <option value="catalog">Каталог</option>
+                <option value="magazine">Журнал</option>
                 <option value="book">Книга</option>
+                <option value="calendar">Календарь</option>
                 <option value="newspaper">Газета</option>
                 <option value="poster">Плакат</option>
                 <option value="board">Борд</option>
                 <option value="banner">Баннер</option>
                 <option value="leaflet">Листовка</option>
                 <option value="business_card">Визитка</option>
-                <option value="euro_booklet">Евро буклет</option>
                 <option value="certificate">Сертификат</option>
                 <option value="pvc_table">Табл ПВХ</option>
                 <option value="cutting">Плотерная резка</option>
                 <option value="stopper">Стопер</option>
                 <option value="other">Другое</option>
             </select>
+            <div id="bindingOptions" class="binding-options">
+                <label>Тип:</label>
+                <select id="bindingType">
+                    <option value="soft">Мягкий переплет</option>
+                    <option value="hard">Твердый переплет</option>
+                </select>
+                <button type="button" class="add-button" onclick="addProductWithBinding()">Добавить</button>
+            </div>
+            <div id="calendarOptions" class="binding-options">
+                <label>Тип календаря:</label>
+                <select id="calendarType">
+                    <option value="cover">Обложка</option>
+                    <option value="inner">Внутренний блок</option>
+                </select>
+                <label>Количество страниц:</label>
+                <input type="number" id="pageCount" min="1" placeholder="Введите количество страниц">
+                <button type="button" class="add-button" onclick="addCalendarProduct()">Добавить</button>
+            </div>
             <input type="text" name="custom_product" 
                    class="custom-field" 
                    placeholder="Укажите название продукции"
                    id="customProduct"
                    required>
+            <div id="selectedProducts" class="selected-items"></div>
         </div>
 
         <div class="form-group">
@@ -186,29 +210,22 @@
 
         <div class="form-group">
             <label>Формат:</label>
-            <select name="format" id="formatSelect" required>
+            <select name="format" id="formatSelect">
                 <option value="">Выберите формат</option>
                 <option value="A1">A1</option>
-                <option value="A1+">A1+</option>
                 <option value="A2">A2</option>
-                <option value="A2+">A2+</option>
                 <option value="A3">A3</option>
-                <option value="A3+">A3+</option>
                 <option value="A4">A4</option>
-                <option value="A4+">A4+</option>
                 <option value="A5">A5</option>
-                <option value="A5+">A5+</option>
                 <option value="A6">A6</option>
-                <option value="A6+">A6+</option>
-                <option value="flyer">Флаер</option>
-                <option value="euro_flyer">Евро флаер</option>
                 <option value="custom">Другой формат</option>
             </select>
+            <button type="button" class="add-button" onclick="addFormat()">Добавить</button>
             <input type="text" name="custom_format" 
                    class="custom-field" 
                    placeholder="Укажите размеры (мм)"
-                   id="customFormat"
-                   required>
+                   id="customFormat">
+            <div id="selectedFormats" class="selected-items"></div>
         </div>
 
         <div class="form-group">
@@ -257,7 +274,7 @@
 
         <div class="form-group">
             <label>Плотность бумаги:</label>
-            <select name="paper_weight" required>
+            <select id="paperWeightSelect" name="paper_weight">
                 <option value="">Выберите плотность</option>
                 <option value="70">70 г/м²</option>
                 <option value="80">80 г/м²</option>
@@ -269,6 +286,8 @@
                 <option value="300">300 г/м²</option>
                 <option value="350">350 г/м²</option>
             </select>
+            <button type="button" class="add-button" onclick="addPaperWeight()">Добавить</button>
+            <div id="selectedPaperWeights" class="selected-items"></div>
         </div>
 
         <div class="form-group">
@@ -329,8 +348,27 @@
                 Math.floor(Math.random() * 100000000).toString().padStart(8, '0');
 
             // Обработчики изменений
-            setupCustomField('productName', 'customProduct', 'other');
-            setupCustomField('formatSelect', 'customFormat', 'custom');
+            const productSelect = document.getElementById('productName');
+            const bindingOptions = document.getElementById('bindingOptions');
+            const calendarOptions = document.getElementById('calendarOptions');
+            const customProduct = document.getElementById('customProduct');
+            const formatSelect = document.getElementById('formatSelect');
+            const customFormat = document.getElementById('customFormat');
+
+            productSelect.addEventListener('change', () => {
+                const value = productSelect.value;
+                bindingOptions.style.display = (value === 'magazine' || value === 'book') ? 'block' : 'none';
+                calendarOptions.style.display = value === 'calendar' ? 'block' : 'none';
+                customProduct.style.display = value === 'other' ? 'block' : 'none';
+                customProduct.required = value === 'other';
+            });
+
+            formatSelect.addEventListener('change', () => {
+                const value = formatSelect.value;
+                customFormat.style.display = value === 'custom' ? 'block' : 'none';
+                customFormat.required = value === 'custom';
+            });
+
             setupCustomField('materialSelect', 'customMaterial', 'other');
 
             // Управление видимостью полей для люверсов
@@ -361,6 +399,81 @@
             this.value = this.value.replace(/[^\d+]/g, '');
         });
 
+        // Функция добавления продукции с переплетом (для Журнала и Книги)
+        function addProductWithBinding() {
+            const productSelect = document.getElementById('productName');
+            const bindingSelect = document.getElementById('bindingType');
+            const customProduct = document.getElementById('customProduct');
+            const selectedValue = productSelect.value;
+            let productText = productSelect.options[productSelect.selectedIndex].text;
+
+            if (selectedValue === 'magazine' || selectedValue === 'book') {
+                const bindingText = bindingSelect.options[bindingSelect.selectedIndex].text;
+                productText += ` (${bindingText})`;
+            } else if (selectedValue === 'other' && customProduct.value) {
+                productText = customProduct.value;
+            } else if (selectedValue !== 'calendar') {
+                productText = productSelect.options[productSelect.selectedIndex].text;
+            }
+
+            if (selectedValue && selectedValue !== 'calendar') {
+                const selectedItemsDiv = document.getElementById('selectedProducts');
+                const itemDiv = document.createElement('div');
+                itemDiv.className = 'selected-item';
+                itemDiv.innerHTML = `<span>${productText}</span><button type="button" class="remove-button" onclick="removeProduct(this)">Удалить</button>`;
+                selectedItemsDiv.appendChild(itemDiv);
+            }
+        }
+
+        // Функция добавления календаря с количеством страниц
+        function addCalendarProduct() {
+            const productSelect = document.getElementById('productName');
+            const calendarSelect = document.getElementById('calendarType');
+            const pageCount = document.getElementById('pageCount').value;
+            const selectedValue = productSelect.value;
+
+            if (selectedValue === 'calendar') {
+                const calendarText = calendarSelect.options[calendarSelect.selectedIndex].text;
+                let productText = `Календарь (${calendarText}${pageCount ? `, ${pageCount} стр.` : ''})`;
+                
+                const selectedItemsDiv = document.getElementById('selectedProducts');
+                const itemDiv = document.createElement('div');
+                itemDiv.className = 'selected-item';
+                itemDiv.innerHTML = `<span>${productText}</span><button type="button" class="remove-button" onclick="removeProduct(this)">Удалить</button>`;
+                selectedItemsDiv.appendChild(itemDiv);
+            }
+        }
+
+        // Функция удаления продукции
+        function removeProduct(button) {
+            button.parentElement.remove();
+        }
+
+        // Функция добавления формата
+        function addFormat() {
+            const formatSelect = document.getElementById('formatSelect');
+            const customFormat = document.getElementById('customFormat');
+            const selectedValue = formatSelect.value;
+            let formatText = formatSelect.options[formatSelect.selectedIndex].text;
+
+            if (selectedValue === 'custom' && customFormat.value) {
+                formatText = customFormat.value;
+            }
+
+            if (selectedValue) {
+                const selectedItemsDiv = document.getElementById('selectedFormats');
+                const itemDiv = document.createElement('div');
+                itemDiv.className = 'selected-item';
+                itemDiv.innerHTML = `<span>${formatText}</span><button type="button" class="remove-button" onclick="removeFormat(this)">Удалить</button>`;
+                selectedItemsDiv.appendChild(itemDiv);
+            }
+        }
+
+        // Функция удаления формата
+        function removeFormat(button) {
+            button.parentElement.remove();
+        }
+
         // Функция добавления послепечатной работы
         function addPostPrint() {
             const select = document.getElementById('postPrintSelect');
@@ -381,6 +494,26 @@
             button.parentElement.remove();
         }
 
+        // Функция добавления плотности бумаги
+        function addPaperWeight() {
+            const select = document.getElementById('paperWeightSelect');
+            const selectedValue = select.value;
+            const selectedText = select.options[select.selectedIndex].text;
+
+            if (selectedValue) {
+                const selectedItemsDiv = document.getElementById('selectedPaperWeights');
+                const itemDiv = document.createElement('div');
+                itemDiv.className = 'selected-item';
+                itemDiv.innerHTML = `<span>${selectedText}</span><button type="button" class="remove-button" onclick="removePaperWeight(this)">Удалить</button>`;
+                selectedItemsDiv.appendChild(itemDiv);
+            }
+        }
+
+        // Функция удаления плотности бумаги
+        function removePaperWeight(button) {
+            button.parentElement.remove();
+        }
+
         // Функция отправки формы с таблицей
         function sendOrder() {
             const formData = {
@@ -390,12 +523,12 @@
                 contactPerson: document.querySelector('input[name="contact_person"]').value,
                 phone: document.querySelector('input[name="phone"]').value,
                 email: document.querySelector('input[name="email"]').value,
-                product: getSelectedValue('productName', 'customProduct'),
+                product: getSelectedProducts(),
                 quantity: document.querySelector('input[name="quantity"]').value,
-                format: getSelectedValue('formatSelect', 'customFormat'),
+                format: getSelectedFormats(),
                 printType: document.querySelector('select[name="print_type"] option:checked').text,
                 material: getSelectedValue('materialSelect', 'customMaterial'),
-                paperWeight: document.querySelector('select[name="paper_weight"] option:checked').text,
+                paperWeight: getSelectedPaperWeights(),
                 deadline: document.querySelector('input[name="deadline"]').value,
                 postPrint: getSelectedPostPrint(),
                 eyeletsQuantity: document.getElementById('eyeletsQuantity').value,
@@ -452,11 +585,32 @@
             printWindow.print();
         }
 
+        // Функция для получения выбранной продукции
+        function getSelectedProducts() {
+            const selectedItems = document.querySelectorAll('#selectedProducts .selected-item span');
+            const productList = Array.from(selectedItems).map(item => item.textContent);
+            return productList.length > 0 ? productList.join(', ') : 'Не выбрано';
+        }
+
+        // Функция для получения выбранных форматов
+        function getSelectedFormats() {
+            const selectedItems = document.querySelectorAll('#selectedFormats .selected-item span');
+            const formatList = Array.from(selectedItems).map(item => item.textContent);
+            return formatList.length > 0 ? formatList.join(', ') : 'Не выбрано';
+        }
+
         // Функция для получения выбранных послепечатных работ
         function getSelectedPostPrint() {
             const selectedItems = document.querySelectorAll('#selectedPostPrint .selected-item span');
             const postPrintList = Array.from(selectedItems).map(item => item.textContent);
             return postPrintList.length > 0 ? postPrintList.join(', ') : 'Не выбрано';
+        }
+
+        // Функция для получения выбранных плотностей бумаги
+        function getSelectedPaperWeights() {
+            const selectedItems = document.querySelectorAll('#selectedPaperWeights .selected-item span');
+            const paperWeightList = Array.from(selectedItems).map(item => item.textContent);
+            return paperWeightList.length > 0 ? paperWeightList.join(', ') : 'Не выбрано';
         }
 
         // Универсальная функция получения значения
@@ -467,7 +621,5 @@
                 : select.options[select.selectedIndex].text;
         }
     </script>
-    <script>(function(){function c(){var b=a.contentDocument||a.contentWindow.document;if(b){var d=b.createElement('script');d.innerHTML="window.__CF$cv$params={r:'9255b6da3809bfa5',t:'MTc0MjgxNDU0NS4wMDAwMDA='};var a=document.createElement('script');a.nonce='';a.src='/cdn-cgi/challenge-platform/scripts/jsd/main.js';document.getElementsByTagName('head')[0].appendChild(a);";b.getElementsByTagName('head')[0].appendChild(d)}}if(document.body){var a=document.createElement('iframe');a.height=1;a.width=1;a.style.position='absolute';a.style.top=0;a.style.left=0;a.style.border='none';a.style.visibility='hidden';document.body.appendChild(a);if('loading'!==document.readyState)c();else if(window.addEventListener)document.addEventListener('DOMContentLoaded',c);else{var e=document.onreadystatechange||function(){};document.onreadystatechange=function(b){e(b);'loading'!==document.readyState&&(document.onreadystatechange=e,c())}}}})();</script>
-    <script>(function(){function c(){var b=a.contentDocument||a.contentWindow.document;if(b){var d=b.createElement('script');d.innerHTML="window.__CF$cv$params={r:'925c81316ed71d76',t:'MTc0Mjg4NTc0Ny4wMDAwMDA='};var a=document.createElement('script');a.nonce='';a.src='/cdn-cgi/challenge-platform/scripts/jsd/main.js';document.getElementsByTagName('head')[0].appendChild(a);";b.getElementsByTagName('head')[0].appendChild(d)}}if(document.body){var a=document.createElement('iframe');a.height=1;a.width=1;a.style.position='absolute';a.style.top=0;a.style.left=0;a.style.border='none';a.style.visibility='hidden';document.body.appendChild(a);if('loading'!==document.readyState)c();else if(window.addEventListener)document.addEventListener('DOMContentLoaded',c);else{var e=document.onreadystatechange||function(){};document.onreadystatechange=function(b){e(b);'loading'!==document.readyState&&(document.onreadystatechange=e,c())}}}})();</script>
 </body>
 </html>
