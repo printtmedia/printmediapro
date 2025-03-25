@@ -201,6 +201,7 @@
                    id="customProduct"
                    required>
             <div id="selectedProducts" class="selected-items"></div>
+            <button type="button" class="add-button" onclick="addSimpleProduct()" style="margin-top: 10px;">Добавить продукт</button>
         </div>
 
         <div class="form-group">
@@ -403,20 +404,35 @@
         function addProductWithBinding() {
             const productSelect = document.getElementById('productName');
             const bindingSelect = document.getElementById('bindingType');
-            const customProduct = document.getElementById('customProduct');
             const selectedValue = productSelect.value;
             let productText = productSelect.options[productSelect.selectedIndex].text;
 
             if (selectedValue === 'magazine' || selectedValue === 'book') {
                 const bindingText = bindingSelect.options[bindingSelect.selectedIndex].text;
                 productText += ` (${bindingText})`;
-            } else if (selectedValue === 'other' && customProduct.value) {
-                productText = customProduct.value;
-            } else if (selectedValue !== 'calendar') {
-                productText = productSelect.options[productSelect.selectedIndex].text;
             }
 
-            if (selectedValue && selectedValue !== 'calendar') {
+            if (selectedValue === 'magazine' || selectedValue === 'book') {
+                const selectedItemsDiv = document.getElementById('selectedProducts');
+                const itemDiv = document.createElement('div');
+                itemDiv.className = 'selected-item';
+                itemDiv.innerHTML = `<span>${productText}</span><button type="button" class="remove-button" onclick="removeProduct(this)">Удалить</button>`;
+                selectedItemsDiv.appendChild(itemDiv);
+            }
+        }
+
+        // Функция добавления простых продуктов (без переплета)
+        function addSimpleProduct() {
+            const productSelect = document.getElementById('productName');
+            const customProduct = document.getElementById('customProduct');
+            const selectedValue = productSelect.value;
+            let productText = productSelect.options[productSelect.selectedIndex].text;
+
+            if (selectedValue === 'other' && customProduct.value) {
+                productText = customProduct.value;
+            }
+
+            if (selectedValue && selectedValue !== 'calendar' && selectedValue !== 'magazine' && selectedValue !== 'book') {
                 const selectedItemsDiv = document.getElementById('selectedProducts');
                 const itemDiv = document.createElement('div');
                 itemDiv.className = 'selected-item';
