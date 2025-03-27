@@ -681,10 +681,19 @@
                 // Удаляем временный элемент
                 document.body.removeChild(tempDiv);
 
-                // Открываем Gmail без текста в теле письма
+                // Проверяем, мобильное ли устройство
+                const isMobile = /iPhone|iPad|iPod|Android/i.test(navigator.userAgent);
                 const subject = `Заказ-наряд №${formData.orderNumber}`;
-                const gmailUrl = `https://mail.google.com/mail/?view=cm&fs=1&to=printmediapro@gmail.com&su=${encodeURIComponent(subject)}`;
-                window.open(gmailUrl, '_blank');
+
+                if (isMobile) {
+                    // Для телефона: используем mailto
+                    const mailtoUrl = `mailto:printmediapro@gmail.com?subject=${encodeURIComponent(subject)}`;
+                    window.location.href = mailtoUrl;
+                } else {
+                    // Для компьютера: открываем Gmail в браузере
+                    const gmailUrl = `https://mail.google.com/mail/?view=cm&fs=1&to=printmediapro@gmail.com&su=${encodeURIComponent(subject)}`;
+                    window.open(gmailUrl, '_blank');
+                }
             });
         }
 
