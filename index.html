@@ -4,6 +4,7 @@
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Заказ-наряд на полиграфию</title>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/html2canvas/1.4.1/html2canvas.min.js"></script>
     <style>
         :root {
             --primary: #4F46E5;
@@ -97,6 +98,7 @@
             font-weight: 500;
             cursor: pointer;
             transition: all 0.2s ease;
+            margin: 0 10px;
         }
 
         button:hover {
@@ -129,6 +131,12 @@
             border: 1px solid var(--border);
         }
 
+        .file-group {
+            display: flex;
+            align-items: center;
+            gap: 1rem;
+        }
+
         @media (max-width: 768px) {
             .form-group {
                 grid-template-columns: 1fr;
@@ -137,6 +145,11 @@
             
             .order-form {
                 padding: 1rem;
+            }
+
+            .file-group {
+                flex-direction: column;
+                align-items: flex-start;
             }
         }
     </style>
@@ -172,7 +185,10 @@
 
         <div class="form-group">
             <label>Название файла:</label>
-            <input type="text" name="filename" placeholder="Название макета">
+            <div class="file-group">
+                <input type="text" name="filename" id="filename" placeholder="Название макета">
+                <input type="file" id="fileUpload" accept=".pdf,.jpg,.png,.docx">
+            </div>
         </div>
 
         <div class="section-title">Характеристики продукции</div>
@@ -226,7 +242,6 @@
             <div id="selectedProducts" class="selected-items"></div>
         </div>
 
-        <!-- Новое поле для типа печати -->
         <div class="form-group">
             <label>Тип печати (стороны):</label>
             <select name="print_sides" id="printSides" required>
@@ -366,7 +381,8 @@
         </div>
 
         <div style="text-align: center; margin-top: 30px;">
-            <button type="button" onclick="sendOrder()">Отправить заказ-наряд</button>
+            <button type="button" onclick="sendOrder()">Напечатать заказ-наряд</button>
+            <button type="button" onclick="sendToGmail()">Отправить на Gmail</button>
         </div>
     </div>
 
@@ -451,6 +467,14 @@
             });
 
             setupCustomField('materialSelect', 'customMaterial', 'other');
+
+            document.getElementById('fileUpload').addEventListener('change', function() {
+                const fileInput = this;
+                const filenameField = document.getElementById('filename');
+                if (fileInput.files.length > 0) {
+                    filenameField.value = fileInput.files[0].name;
+                }
+            });
         });
 
         function setupCustomField(selectId, fieldId, triggerValue) {
@@ -576,7 +600,7 @@
             button.parentElement.remove();
         }
 
-        function sendOrder() {
+        function generateOrderTable() {
             const formData = {
                 orderNumber: document.getElementById('orderNumber').textContent,
                 orderDate: document.getElementById('orderDate').value,
@@ -584,7 +608,7 @@
                 contactPerson: document.querySelector('input[name="contact_person"]').value,
                 phone: document.querySelector('input[name="phone"]').value,
                 email: document.querySelector('input[name="email"]').value,
-                filename: document.querySelector('input[name="filename"]').value,
+                filename: document.getElementById('filename').value,
                 product: getSelectedProducts(),
                 printSides: document.getElementById('printSides').options[document.getElementById('printSides').selectedIndex].text,
                 quantity: document.querySelector('input[name="quantity"]').value,
@@ -599,53 +623,69 @@
                 notes: document.querySelector('textarea[name="notes"]').value
             };
 
-            const postPrintArray = formData.postPrint.split(', ');
-            const hasEyelets = postPrintArray.includes('Люверсы');
-
-            const printWindow = window.open('', '_blank');
-            printWindow.document.write(`
-                <html>
-                <head>
-                    <title>Заказ-наряд №${formData.orderNumber}</title>
-                    <style>
-                        body { font-family: Arial, sans-serif; padding: 20px; }
-                        h2 { text-align: center; color: #4F46E5; }
-                        table { width: 100%; border-collapse: collapse; margin-top: 20px; }
-                        th, td { border: 1px solid #E5E7EB; padding: 8px; text-align: left; }
-                        th { background-color: #F9FAFB; }
-                    </style>
-                </head>
-                <body>
-                    <h2>ЗАКАЗ-НАРЯД №${formData.orderNumber}</h2>
-                    <table>
-                        <tr><th>Параметр</th><th>Значение</th></tr>
-                        <tr><td>Дата заказа</td><td>${formData.orderDate}</td></tr>
-                        <tr><td>Заказчик</td><td>${formData.customer}</td></tr>
-                        <tr><td>Контактное лицо</td><td>${formData.contactPerson}</td></tr>
-                        <tr><td>Телефон</td><td>${formData.phone}</td></tr>
-                        <tr><td>Email</td><td>${formData.email}</td></tr>
-                        <tr><td>Название файла</td><td>${formData.filename || 'Не указано'}</td></tr>
-                        <tr><td>Наименование продукции</td><td>${formData.product}</td></tr>
-                        <tr><td>Тип печати (стороны)</td><td>${formData.printSides}</td></tr>
-                        <tr><td>Тираж</td><td>${formData.quantity}</td></tr>
-                        <tr><td>Формат</td><td>${formData.format}</td></tr>
-                        <tr><td>Тип печати</td><td>${formData.printType}</td></tr>
-                        <tr><td>Материал</td><td>${formData.material}</td></tr>
-                        <tr><td>Плотность бумаги</td><td>${formData.paperWeight}</td></tr>
-                        <tr><td>Срок исполнения</td><td>${formData.deadline}</td></tr>
-                        <tr><td>Послепечатные работы</td><td>${formData.postPrint}</td></tr>
-                        ${hasEyelets ? `
-                        <tr><td>Количество люверсов</td><td>${formData.eyeletsQuantity || 'Не указано'}</td></tr>
-                        <tr><td>Расстояние между люверсами</td><td>${formData.eyeletsDistance ? formData.eyeletsDistance + ' мм' : 'Не указано'}</td></tr>
-                        ` : ''}
-                        <tr><td>Примечание</td><td>${formData.notes || 'Отсутствует'}</td></tr>
+            return `
+                <div id="orderTable" style="font-family: Arial, sans-serif; padding: 20px; background: white; width: 800px;">
+                    <h2 style="text-align: center; color: #4F46E5;">ЗАКАЗ-НАРЯД №${formData.orderNumber}</h2>
+                    <table style="width: 100%; border-collapse: collapse; margin-top: 20px;">
+                        <tr><th style="border: 1px solid #E5E7EB; padding: 8px; background-color: #F9FAFB;">Параметр</th><th style="border: 1px solid #E5E7EB; padding: 8px; background-color: #F9FAFB;">Значение</th></tr>
+                        <tr><td style="border: 1px solid #E5E7EB; padding: 8px;">Дата заказа</td><td style="border: 1px solid #E5E7EB; padding: 8px;">${formData.orderDate}</td></tr>
+                        <tr><td style="border: 1px solid #E5E7EB; padding: 8px;">Заказчик</td><td style="border: 1px solid #E5E7EB; padding: 8px;">${formData.customer}</td></tr>
+                        <tr><td style="border: 1px solid #E5E7EB; padding: 8px;">Контактное лицо</td><td style="border: 1px solid #E5E7EB; padding: 8px;">${formData.contactPerson}</td></tr>
+                        <tr><td style="border: 1px solid #E5E7EB; padding: 8px;">Телефон</td><td style="border: 1px solid #E5E7EB; padding: 8px;">${formData.phone}</td></tr>
+                        <tr><td style="border: 1px solid #E5E7EB; padding: 8px;">Email</td><td style="border: 1px solid #E5E7EB; padding: 8px;">${formData.email}</td></tr>
+                        <tr><td style="border: 1px solid #E5E7EB; padding: 8px;">Название файла</td><td style="border: 1px solid #E5E7EB; padding: 8px;">${formData.filename || 'Не указано'}</td></tr>
+                        <tr><td style="border: 1px solid #E5E7EB; padding: 8px;">Наименование продукции</td><td style="border: 1px solid #E5E7EB; padding: 8px;">${formData.product}</td></tr>
+                        <tr><td style="border: 1px solid #E5E7EB; padding: 8px;">Тип печати (стороны)</td><td style="border: 1px solid #E5E7EB; padding: 8px;">${formData.printSides}</td></tr>
+                        <tr><td style="border: 1px solid #E5E7EB; padding: 8px;">Тираж</td><td style="border: 1px solid #E5E7EB; padding: 8px;">${formData.quantity}</td></tr>
+                        <tr><td style="border: 1px solid #E5E7EB; padding: 8px;">Формат</td><td style="border: 1px solid #E5E7EB; padding: 8px;">${formData.format}</td></tr>
+                        <tr><td style="border: 1px solid #E5E7EB; padding: 8px;">Тип печати</td><td style="border: 1px solid #E5E7EB; padding: 8px;">${formData.printType}</td></tr>
+                        <tr><td style="border: 1px solid #E5E7EB; padding: 8px;">Материал</td><td style="border: 1px solid #E5E7EB; padding: 8px;">${formData.material}</td></tr>
+                        <tr><td style="border: 1px solid #E5E7EB; padding: 8px;">Плотность бумаги</td><td style="border: 1px solid #E5E7EB; padding: 8px;">${formData.paperWeight}</td></tr>
+                        <tr><td style="border: 1px solid #E5E7EB; padding: 8px;">Срок исполнения</td><td style="border: 1px solid #E5E7EB; padding: 8px;">${formData.deadline}</td></tr>
+                        <tr><td style="border: 1px solid #E5E7EB; padding: 8px;">Послепечатные работы</td><td style="border: 1px solid #E5E7EB; padding: 8px;">${formData.postPrint}</td></tr>
+                        ${formData.eyeletsQuantity ? `<tr><td style="border: 1px solid #E5E7EB; padding: 8px;">Количество люверсов</td><td style="border: 1px solid #E5E7EB; padding: 8px;">${formData.eyeletsQuantity}</td></tr>` : ''}
+                        ${formData.eyeletsDistance ? `<tr><td style="border: 1px solid #E5E7EB; padding: 8px;">Расстояние между люверсами</td><td style="border: 1px solid #E5E7EB; padding: 8px;">${formData.eyeletsDistance} мм</td></tr>` : ''}
+                        <tr><td style="border: 1px solid #E5E7EB; padding: 8px;">Примечание</td><td style="border: 1px solid #E5E7EB; padding: 8px;">${formData.notes || 'Отсутствует'}</td></tr>
                     </table>
-                </body>
-                </html>
-            `);
+                </div>
+            `;
+        }
+
+        function sendOrder() {
+            const orderTable = generateOrderTable();
+            const printWindow = window.open('', '_blank');
+            printWindow.document.write(orderTable);
             printWindow.document.close();
             printWindow.focus();
             printWindow.print();
+        }
+
+        function sendToGmail() {
+            const formData = {
+                orderNumber: document.getElementById('orderNumber').textContent
+            };
+
+            // Создаем временный контейнер для таблицы
+            const tempDiv = document.createElement('div');
+            tempDiv.innerHTML = generateOrderTable();
+            document.body.appendChild(tempDiv);
+
+            // Используем html2canvas для создания изображения
+            html2canvas(tempDiv.querySelector('#orderTable')).then(canvas => {
+                const imgData = canvas.toDataURL('image/png');
+                const link = document.createElement('a');
+                link.href = imgData;
+                link.download = `order_${formData.orderNumber}.png`;
+                link.click();
+
+                // Удаляем временный элемент
+                document.body.removeChild(tempDiv);
+
+                // Открываем Gmail без текста в теле письма
+                const subject = `Заказ-наряд №${formData.orderNumber}`;
+                const gmailUrl = `https://mail.google.com/mail/?view=cm&fs=1&to=printmediapro@gmail.com&su=${encodeURIComponent(subject)}`;
+                window.open(gmailUrl, '_blank');
+            });
         }
 
         function getSelectedProducts() {
