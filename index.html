@@ -330,9 +330,15 @@
                 <option value="130">130 г/м²</option>
                 <option value="150">150 г/м²</option>
                 <option value="200">200 г/м²</option>
+                <option value="250">250 г/м²</option>
                 <option value="300">300 г/м²</option>
                 <option value="350">350 г/м²</option>
+                <option value="other">Другое</option>
             </select>
+            <input type="text" name="custom_paper_weight" 
+                   class="custom-field" 
+                   placeholder="Укажите плотность (г/м²)"
+                   id="customPaperWeight">
             <div id="selectedPaperWeights" class="selected-items"></div>
         </div>
 
@@ -454,8 +460,16 @@
             });
 
             paperWeightSelect.addEventListener('change', () => {
-                if (paperWeightSelect.value) {
+                if (paperWeightSelect.value && paperWeightSelect.value !== 'other') {
                     addPaperWeight();
+                } else if (paperWeightSelect.value === 'other') {
+                    document.getElementById('customPaperWeight').style.display = 'block';
+                }
+            });
+
+            document.getElementById('customPaperWeight').addEventListener('blur', () => {
+                if (paperWeightSelect.value === 'other' && document.getElementById('customPaperWeight').value) {
+                    addCustomPaperWeight();
                 }
             });
 
@@ -468,6 +482,7 @@
             });
 
             setupCustomField('materialSelect', 'customMaterial', 'other');
+            setupCustomField('paperWeightSelect', 'customPaperWeight', 'other');
 
             document.getElementById('fileUpload').addEventListener('change', function() {
                 const fileInput = this;
@@ -597,6 +612,19 @@
             }
         }
 
+        function addCustomPaperWeight() {
+            const customPaperWeight = document.getElementById('customPaperWeight');
+            const paperWeightText = customPaperWeight.value + ' г/м²';
+
+            if (paperWeightText) {
+                const selectedItemsDiv = document.getElementById('selectedPaperWeights');
+                const itemDiv = document.createElement('div');
+                itemDiv.className = 'selected-item';
+                itemDiv.innerHTML = `<span>${paperWeightText}</span><button type="button" class="remove-button" onclick="removePaperWeight(this)">Удалить</button>`;
+                selectedItemsDiv.appendChild(itemDiv);
+            }
+        }
+
         function removePaperWeight(button) {
             button.parentElement.remove();
         }
@@ -674,7 +702,7 @@
                 const imgData = canvas.toDataURL('image/png');
                 const link = document.createElement('a');
                 link.href = imgData;
-                link.download = `order_${formData.orderNumber}.png`;
+                link.download = `Заказ-наряд №${formData.orderNumber}.png`;
                 link.click();
 
                 document.body.removeChild(tempDiv);
