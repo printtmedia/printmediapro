@@ -431,6 +431,7 @@
                     addCalendarProduct();
                 }
             });
+
             document.getElementById('pageCount').addEventListener('blur', () => {
                 if (productSelect.value === 'calendar') {
                     addCalendarProduct();
@@ -653,7 +654,7 @@
             };
 
             return `
-                <div id="orderTable" style="font-family: Arial, sans-serif; padding: 20px; background: white; width: 800px;">
+                <div class="order-table" style="font-family: Arial, sans-serif; padding: 20px; background: white; width: 800px;">
                     <h2 style="text-align: center; color: #4F46E5;">ЗАКАЗ-НАРЯД №${formData.orderNumber}</h2>
                     <table style="width: 100%; border-collapse: collapse; margin-top: 20px;">
                         <tr><th style="border: 1px solid #E5E7EB; padding: 8px; background-color: #F9FAFB;">Параметр</th><th style="border: 1px solid #E5E7EB; padding: 8px; background-color: #F9FAFB;">Значение</th></tr>
@@ -683,7 +684,7 @@
         function sendOrder() {
             const orderTable = generateOrderTable();
             const printWindow = window.open('', '_blank');
-            printWindow.document.write(orderTable);
+            printWindow.document.write('<!DOCTYPE html><html><head><title>Печать заказа</title></head><body>' + orderTable + '</body></html>');
             printWindow.document.close();
             printWindow.focus();
             printWindow.print();
@@ -698,26 +699,60 @@
             tempDiv.innerHTML = generateOrderTable();
             document.body.appendChild(tempDiv);
 
-            html2canvas(tempDiv.querySelector('#orderTable')).then(canvas => {
+            html2canvas(tempDiv.querySelector('.order-table')).then(canvas => {
                 const imgData = canvas.toDataURL('image/png');
-                const link = document.createElement('a');
-                link.href = imgData;
-                link.download = `Заказ-наряд №${formData.orderNumber}.png`;
-                link.click();
+                const folderName = `Заказ-наряд №${formData.orderNumber}`;
+                const fileName = `${folderName}.png`;
+
+                if (window.showDirectoryPicker) {
+                    saveWithFolder(imgData, folderName, fileName)
+                        .then(() => proceedWithEmail(folderName))
+                        .catch(error => {
+                            console.log('Ошибка File System API:', error);
+                            fallbackDownload(imgData, folderName, fileName);
+                        });
+                } else {
+                    fallbackDownload(imgData, folderName, fileName);
+                }
 
                 document.body.removeChild(tempDiv);
-
-                const isMobile = /iPhone|iPad|iPod|Android/i.test(navigator.userAgent);
-                const subject = `Заказ-наряд №${formData.orderNumber}`;
-
-                if (isMobile) {
-                    const mailtoUrl = `mailto:printmediapro@gmail.com?subject=${encodeURIComponent(subject)}`;
-                    window.location.href = mailtoUrl;
-                } else {
-                    const gmailUrl = `https://mail.google.com/mail/?view=cm&fs=1&to=printmediapro@gmail.com&su=${encodeURIComponent(subject)}`;
-                    window.open(gmailUrl, '_blank');
-                }
+            }).catch(error => {
+                console.error('Ошибка html2canvas:', error);
             });
+        }
+
+        async function saveWithFolder(imgData, folderName, fileName) {
+            const dirHandle = await window.showDirectoryPicker({ mode: 'readwrite' });
+            const subDirHandle = await dirHandle.getDirectoryHandle(folderName, { create: true });
+            const fileHandle = await subDirHandle.getFileHandle(fileName, { create: true });
+            const writable = await fileHandle.createWritable();
+            const response = await fetch(imgData);
+            const blob = await response.blob();
+            await writable.write(blob);
+            await writable.close();
+        }
+
+        function fallbackDownload(imgData, folderName, fileName) {
+            const link = document.createElement('a');
+            link.href = imgData;
+            link.download = `${folderName}/${fileName}`;
+            document.body.appendChild(link);
+            link.click();
+            document.body.removeChild(link);
+            proceedWithEmail(folderName);
+        }
+
+        function proceedWithEmail(folderName) {
+            const isMobile = /iPhone|iPad|iPod|Android/i.test(navigator.userAgent);
+            const subject = `Заказ-наряд №${folderName.split('№')[1]}`;
+
+            if (isMobile) {
+                const mailtoUrl = `mailto:printmediapro@gmail.com?subject=${encodeURIComponent(subject)}`;
+                window.location.href = mailtoUrl;
+            } else {
+                const gmailUrl = `https://mail.google.com/mail/?view=cm&fs=1&to=printmediapro@gmail.com&su=${encodeURIComponent(subject)}`;
+                window.open(gmailUrl, '_blank');
+            }
         }
 
         function showInstructions() {
@@ -825,28 +860,29 @@
                             <li><b>Отправить на Gmail</b>:
                                 <ul>
                                     <li>Нажмите эту кнопку, если хотите отправить заказ по почте.</li>
-                                    <li>Сначала на ваш компьютер или телефон скачается файл с картинкой заказа (например, "order_01234567.png"). Это изображение всей таблицы с вашими данными.</li>
+                                    <li>Сначала на ваш компьютер или телефон скачается файл с картинкой заказа в папке "Заказ-наряд №XXXXXX" (например, "Заказ-наряд №01234567/Заказ-наряд №01234567.png").</li>
+                                    <li>Если ваш браузер поддерживает File System Access API (например, Chrome), вам предложат выбрать папку, и файл сохранится в автоматически созданной подпапке.</li>
+                                    <li>Если браузер не поддерживает API (например, Firefox), файл скачается с указанием пути — создайте папку вручную при сохранении.</li>
                                     <li>Потом:
                                         <ul>
-                                            <li><b>На компьютере</b>: Откроется новая вкладка в браузере с Gmail. Тема письма уже будет "Заказ-наряд №01234567". Вручную прикрепите скачанный файл (нажмите на значок скрепки, найдите "order_01234567.png" на компьютере) и нажмите "Отправить".</li>
-                                            <li><b>На телефоне</b>: Откроется ваше почтовое приложение (например, Gmail или другое). Тема письма будет "Заказ-наряд №01234567". Нажмите на значок скрепки, выберите скачанный файл из галереи или файлов (обычно он в папке "Загрузки"), и отправьте письмо.</li>
+                                            <li><b>На компьютере</b>: Откроется Gmail с темой "Заказ-наряд №01234567". Прикрепите файл вручную.</li>
+                                            <li><b>На телефоне</b>: Откроется почтовое приложение с темой. Прикрепите файл из папки "Загрузки".</li>
                                         </ul>
                                     </li>
-                                    <li>Письмо уйдет на адрес <code>printmediapro@gmail.com</code>.</li>
+                                    <li>Письмо уйдет на <code>printmediapro@gmail.com</code>.</li>
                                 </ul>
                             </li>
-                            <li><b>Инструкция</b>: Вы только что нажали эту кнопку, и вот эта инструкция открылась! Читайте ее, чтобы понять, как все работает.</li>
+                            <li><b>Инструкция</b>: Эта кнопка открывает данное руководство.</li>
                         </ul>
 
                         <h2>Советы</h2>
                         <ul>
-                            <li>Проверяйте все поля перед отправкой, чтобы не было ошибок.</li>
-                            <li>Если что-то не заполнили, форма может не сработать — заполните все обязательные поля (они отмечены звездочкой в браузере).</li>
-                            <li>На телефоне поля "Название файла" и кнопка "Выбрать файл" будут друг под другом, а не в строке, это нормально.</li>
-                            <li>Если что-то не работает (например, не открывается почта), попробуйте еще раз или обратитесь за помощью.</li>
+                            <li>Проверяйте все поля перед отправкой.</li>
+                            <li>Заполните все обязательные поля.</li>
+                            <li>На телефоне некоторые элементы могут располагаться друг под другом.</li>
                         </ul>
 
-                        <p>Теперь вы знаете, как пользоваться формой! Заполняйте, печатайте или отправляйте заказ, и все получится.</p>
+                        <p>Теперь вы знаете, как пользоваться формой!</p>
                     </div>
                 </body>
                 </html>
@@ -859,26 +895,22 @@
 
         function getSelectedProducts() {
             const selectedItems = document.querySelectorAll('#selectedProducts .selected-item span');
-            const productList = Array.from(selectedItems).map(item => item.textContent);
-            return productList.length > 0 ? productList.join(', ') : 'Не выбрано';
+            return Array.from(selectedItems).map(item => item.textContent).join(', ') || 'Не выбрано';
         }
 
         function getSelectedFormats() {
             const selectedItems = document.querySelectorAll('#selectedFormats .selected-item span');
-            const formatList = Array.from(selectedItems).map(item => item.textContent);
-            return formatList.length > 0 ? formatList.join(', ') : 'Не выбрано';
+            return Array.from(selectedItems).map(item => item.textContent).join(', ') || 'Не выбрано';
         }
 
         function getSelectedPostPrint() {
             const selectedItems = document.querySelectorAll('#selectedPostPrint .selected-item span');
-            const postPrintList = Array.from(selectedItems).map(item => item.textContent);
-            return postPrintList.length > 0 ? postPrintList.join(', ') : 'Не выбрано';
+            return Array.from(selectedItems).map(item => item.textContent).join(', ') || 'Не выбрано';
         }
 
         function getSelectedPaperWeights() {
             const selectedItems = document.querySelectorAll('#selectedPaperWeights .selected-item span');
-            const paperWeightList = Array.from(selectedItems).map(item => item.textContent);
-            return paperWeightList.length > 0 ? paperWeightList.join(', ') : 'Не выбрано';
+            return Array.from(selectedItems).map(item => item.textContent).join(', ') || 'Не выбрано';
         }
 
         function getSelectedValue(selectId, customFieldId) {
