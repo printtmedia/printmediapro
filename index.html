@@ -20,19 +20,25 @@
 
         body {
             font-family: 'Inter', -apple-system, sans-serif;
-            background: var(--background);
+            background-image: url('5073412.png'); /* Указываем имя вашего изображения */
+            background-size: cover; /* Растягиваем изображение на весь экран */
+            background-position: center; /* Центрируем изображение */
+            background-repeat: no-repeat; /* Отключаем повторение фона */
+            background-attachment: fixed; /* Фиксируем фон при прокрутке */
             margin: 0;
             padding: 20px;
             color: var(--text);
+            min-height: 100vh; /* Устанавливаем минимальную высоту для всей страницы */
         }
 
         .order-form {
             max-width: 900px;
             margin: 0 auto;
             padding: 2rem;
-            background: var(--card-bg);
+            background: var(--card-bg); /* Оставляем цвет карточки без изменений */
             border-radius: 12px;
             box-shadow: 0 4px 6px rgba(0, 0, 0, 0.1);
+            opacity: 1; /* Делаем карточку полностью непрозрачной */
         }
 
         h2 {
@@ -574,7 +580,7 @@
                 const selectedItemsDiv = document.getElementById('selectedFormats');
                 const itemDiv = document.createElement('div');
                 itemDiv.className = 'selected-item';
-                itemDiv.innerHTML = `<span>${formatText}</span><button type="button" class="remove-button" onclick="removeFormat(this)">Удалить</button>`;
+                itemDiv.innerHTML = `<span>${productText}</span><button type="button" class="remove-button" onclick="removeFormat(this)">Удалить</button>`;
                 selectedItemsDiv.appendChild(itemDiv);
             }
         }
