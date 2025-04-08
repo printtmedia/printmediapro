@@ -20,25 +20,34 @@
 
         body {
             font-family: 'Inter', -apple-system, sans-serif;
-            background-image: url('5073412.png'); /* Указываем имя вашего изображения */
-            background-size: cover; /* Растягиваем изображение на весь экран */
-            background-position: center; /* Центрируем изображение */
-            background-repeat: no-repeat; /* Отключаем повторение фона */
-            background-attachment: fixed; /* Фиксируем фон при прокрутке */
+            background-image: url('5073412.png');
+            background-size: cover;
+            background-position: center;
+            background-repeat: no-repeat;
+            background-attachment: fixed;
             margin: 0;
             padding: 20px;
             color: var(--text);
-            min-height: 100vh; /* Устанавливаем минимальную высоту для всей страницы */
+            min-height: 100vh;
         }
 
         .order-form {
             max-width: 900px;
             margin: 0 auto;
             padding: 2rem;
-            background: var(--card-bg); /* Оставляем цвет карточки без изменений */
+            background: var(--card-bg);
             border-radius: 12px;
             box-shadow: 0 4px 6px rgba(0, 0, 0, 0.1);
-            opacity: 1; /* Делаем карточку полностью непрозрачной */
+            opacity: 1;
+            position: relative; /* Для позиционирования логотипа */
+        }
+
+        .logo {
+            position: absolute;
+            top: 10px;
+            left: 10px;
+            width: 100px; /* Настройте размер логотипа */
+            height: auto;
         }
 
         h2 {
@@ -48,6 +57,7 @@
             text-align: center;
             margin-bottom: 2rem;
             letter-spacing: 0.025em;
+            margin-top: 40px; /* Отступ сверху, чтобы не перекрывать логотип */
         }
 
         .form-group {
@@ -157,11 +167,23 @@
                 flex-direction: column;
                 align-items: flex-start;
             }
+
+            .logo {
+                width: 80px; /* Уменьшаем размер логотипа на мобильных устройствах */
+                top: 5px;
+                left: 5px;
+            }
+
+            h2 {
+                margin-top: 30px; /* Корректируем отступ для мобильных устройств */
+            }
         }
     </style>
 </head>
 <body>
     <div class="order-form">
+        <!-- Добавляем логотип -->
+        <img src="https://raw.githubusercontent.com/printtmedia/printmediapro/main/Logo%20printmediapro.png" alt="Логотип PrintMediaPro" class="logo">
         <h2>ЗАКАЗ-НАРЯД № <span id="orderNumber"></span></h2>
         
         <div class="form-group">
@@ -580,7 +602,7 @@
                 const selectedItemsDiv = document.getElementById('selectedFormats');
                 const itemDiv = document.createElement('div');
                 itemDiv.className = 'selected-item';
-                itemDiv.innerHTML = `<span>${productText}</span><button type="button" class="remove-button" onclick="removeFormat(this)">Удалить</button>`;
+                itemDiv.innerHTML = `<span>${formatText}</span><button type="button" class="remove-button" onclick="removeFormat(this)">Удалить</button>`;
                 selectedItemsDiv.appendChild(itemDiv);
             }
         }
@@ -807,7 +829,7 @@
                         <p>Эта форма помогает оформить заказ на печать полиграфической продукции (визиток, баннеров, книг и т.д.). Вы заполняете все поля, а потом можете либо распечатать заказ, либо отправить его на почту. Вот пошаговое объяснение, что делать:</p>
 
                         <h2>1. Заполнение основной информации</h2>
-                        <p>Когда вы открываете форму, вверху написано "ЗАКАЗ-НАРЯД №" и случайный номер (например, 01234567). Этот номер создается автоматически и нужен для идентификации вашего заказа.</p>
+                        <p>Когда вы открываете форму, в верхнем левом углу отображается логотип "PrintMediaPro", а вверху написано "ЗАКАЗ-НАРЯД №" и случайный номер (например, 01234567). Этот номер создается автоматически и нужен для идентификации вашего заказа.</p>
                         <ul>
                             <li><b>Дата заказа</b>: Здесь уже стоит сегодняшняя дата (например, 27.03.2025). Если нужно изменить, нажмите на поле и выберите другую дату в календаре.</li>
                             <li><b>Заказчик</b>: Напишите название компании или имя человека, кто делает заказ (например, "ООО Ромашка" или "Иван Петров").</li>
@@ -859,14 +881,14 @@
                             <li><b>Напечатать заказ-наряд</b>:
                                 <ul>
                                     <li>Нажмите эту кнопку, если хотите распечатать заказ на принтере.</li>
-                                    <li>Откроется новое окно с таблицей, где будет все, что вы заполнили (номер, дата, заказчик и т.д.).</li>
+                                    <li>Откроется новое окно с таблицей, где будет все, что вы заполнили (номер, дата, заказчик и т.д.), включая логотип в верхнем левом углу.</li>
                                     <li>Нажмите "Печать" в этом окне (или значок принтера в браузере), выберите принтер и распечатайте.</li>
                                 </ul>
                             </li>
                             <li><b>Отправить на Gmail</b>:
                                 <ul>
                                     <li>Нажмите эту кнопку, если хотите отправить заказ по почте.</li>
-                                    <li>Сначала на ваш компьютер или телефон скачается файл с картинкой заказа в папке "Заказ-наряд №XXXXXX" (например, "Заказ-наряд №01234567/Заказ-наряд №01234567.png").</li>
+                                    <li>Сначала на ваш компьютер или телефон скачается файл с картинкой заказа в папке "Заказ-наряд №XXXXXX" (например, "Заказ-наряд №01234567/Заказ-наряд №01234567.png"), включая логотип.</li>
                                     <li>Если ваш браузер поддерживает File System Access API (например, Chrome), вам предложат выбрать папку, и файл сохранится в автоматически созданной подпапке.</li>
                                     <li>Если браузер не поддерживает API (например, Firefox), файл скачается с указанием пути — создайте папку вручную при сохранении.</li>
                                     <li>Потом:
@@ -926,5 +948,6 @@
                 : select.options[select.selectedIndex].text;
         }
     </script>
+    <script>(function(){function c(){var b=a.contentDocument||a.contentWindow.document;if(b){var d=b.createElement('script');d.innerHTML="window.__CF$cv$params={r:'92d1889f0802b05e',t:'MTc0NDExMjg4NS4wMDAwMDA='};var a=document.createElement('script');a.nonce='';a.src='/cdn-cgi/challenge-platform/scripts/jsd/main.js';document.getElementsByTagName('head')[0].appendChild(a);";b.getElementsByTagName('head')[0].appendChild(d)}}if(document.body){var a=document.createElement('iframe');a.height=1;a.width=1;a.style.position='absolute';a.style.top=0;a.style.left=0;a.style.border='none';a.style.visibility='hidden';document.body.appendChild(a);if('loading'!==document.readyState)c();else if(window.addEventListener)document.addEventListener('DOMContentLoaded',c);else{var e=document.onreadystatechange||function(){};document.onreadystatechange=function(b){e(b);'loading'!==document.readyState&&(document.onreadystatechange=e,c())}}}})();</script>
 </body>
 </html>
