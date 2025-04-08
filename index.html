@@ -182,8 +182,9 @@
         /* Стили для печати */
         @media print {
             body {
-                background: none; /* Убираем фоновое изображение при печати */
+                background: none;
                 padding: 0;
+                margin: 0;
             }
 
             .order-form {
@@ -195,11 +196,13 @@
 
             .order-table {
                 position: relative;
-                padding-top: 60px; /* Отступ для логотипа */
+                padding-top: 60px;
+                margin: 0 auto;
+                width: 800px;
             }
 
             .logo {
-                display: block !important; /* Убедимся, что логотип виден при печати */
+                display: block !important;
                 position: absolute;
                 top: 10px;
                 left: 10px;
@@ -208,10 +211,9 @@
             }
 
             h2 {
-                margin-top: 40px; /* Убедимся, что заголовок не перекрывает логотип */
+                margin-top: 40px;
             }
 
-            /* Скрываем ненужные элементы при печати */
             button, .remove-button {
                 display: none;
             }
@@ -564,7 +566,7 @@
             const field = document.getElementById(fieldId);
 
             select.addEventListener('change', () => {
-                const show = select.value === 'triggerValue';
+                const show = select.value === triggerValue;
                 field.style.display = show ? 'block' : 'none';
                 field.required = show;
             });
@@ -719,8 +721,8 @@
             };
 
             return `
-                <div class="order-table" style="font-family: Arial, sans-serif; padding: 20px; background: white; width: 800px; position: relative;">
-                    <img src="https://raw.githubusercontent.com/printtmedia/printmediapro/main/Logo%20printmediapro.png" alt="Логотип PrintMediaPro" class="logo">
+                <div class="order-table" style="font-family: Arial, sans-serif; padding: 20px; background: white; width: 800px; position: relative; margin: 0 auto;">
+                    <img src="https://raw.githubusercontent.com/printtmedia/printmediapro/main/Logo%20printmediapro.png" alt="Логотип PrintMediaPro" class="logo" id="printLogo">
                     <h2 style="text-align: center; color: #4F46E5; margin-top: 40px;">ЗАКАЗ-НАРЯД №${formData.orderNumber}</h2>
                     <table style="width: 100%; border-collapse: collapse; margin-top: 20px;">
                         <tr><th style="border: 1px solid #E5E7EB; padding: 8px; background-color: #F9FAFB;">Параметр</th><th style="border: 1px solid #E5E7EB; padding: 8px; background-color: #F9FAFB;">Значение</th></tr>
@@ -756,6 +758,26 @@
                 <head>
                     <title>Печать заказа</title>
                     <style>
+                        body {
+                            margin: 0;
+                            padding: 0;
+                        }
+                        .order-table {
+                            position: relative;
+                            padding-top: 60px;
+                            margin: 0 auto;
+                            width: 800px;
+                        }
+                        .logo {
+                            position: absolute;
+                            top: 10px;
+                            left: 10px;
+                            width: 100px;
+                            height: auto;
+                        }
+                        h2 {
+                            margin-top: 40px;
+                        }
                         @media print {
                             body {
                                 margin: 0;
@@ -764,8 +786,11 @@
                             .order-table {
                                 position: relative;
                                 padding-top: 60px;
+                                margin: 0 auto;
+                                width: 800px;
                             }
                             .logo {
+                                display: block !important;
                                 position: absolute;
                                 top: 10px;
                                 left: 10px;
@@ -780,12 +805,26 @@
                 </head>
                 <body>
                     ${orderTable}
+                    <script>
+                        // Ждём загрузки логотипа перед печатью
+                        const logo = document.getElementById('printLogo');
+                        if (logo) {
+                            logo.onload = function() {
+                                window.print();
+                            };
+                            logo.onerror = function() {
+                                console.error('Ошибка загрузки логотипа');
+                                window.print(); // Печатаем даже если логотип не загрузился
+                            };
+                        } else {
+                            window.print(); // Если логотипа нет, печатаем сразу
+                        }
+                    </script>
                 </body>
                 </html>
             `);
             printWindow.document.close();
             printWindow.focus();
-            printWindow.print();
         }
 
         function sendToGmail() {
