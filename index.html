@@ -20,15 +20,11 @@
 
         body {
             font-family: 'Inter', -apple-system, sans-serif;
-            background-image: url('5073412.png');
-            background-size: cover;
-            background-position: center;
-            background-repeat: no-repeat;
-            background-attachment: fixed;
+            background: var(--background) url('https://printtmedia.github.io/printmediapro/5073412.png') repeat;
+            background-size: 300px;
             margin: 0;
             padding: 20px;
             color: var(--text);
-            min-height: 100vh;
         }
 
         .order-form {
@@ -38,15 +34,14 @@
             background: var(--card-bg);
             border-radius: 12px;
             box-shadow: 0 4px 6px rgba(0, 0, 0, 0.1);
-            opacity: 1;
             position: relative;
         }
 
         .logo {
             position: absolute;
-            top: 10px;
-            left: 10px;
-            width: 100px;
+            top: 20px;
+            left: 20px;
+            width: 150px;
             height: auto;
         }
 
@@ -56,8 +51,8 @@
             color: var(--primary);
             text-align: center;
             margin-bottom: 2rem;
+            margin-top: 80px; /* Added margin to avoid overlap with logo */
             letter-spacing: 0.025em;
-            margin-top: 40px;
         }
 
         .form-group {
@@ -169,60 +164,34 @@
             }
 
             .logo {
-                width: 80px;
-                top: 5px;
-                left: 5px;
+                width: 120px;
+                top: 10px;
+                left: 10px;
             }
 
             h2 {
-                margin-top: 30px;
+                margin-top: 60px;
             }
         }
 
-        /* Стили для печати */
         @media print {
             body {
-                background: none;
-                padding: 0;
-                margin: 0;
+                background: none !important; /* Remove background for printing */
             }
-
             .order-form {
-                box-shadow: none;
-                border: none;
-                padding: 0;
-                background: none;
+                background: var(--card-bg) !important;
             }
-
-            .order-table {
-                position: relative;
-                padding-top: 60px;
-                margin: 0 auto;
-                width: 800px;
-            }
-
             .logo {
                 display: block !important;
-                position: absolute;
-                top: 10px;
-                left: 10px;
-                width: 100px;
-                height: auto;
-            }
-
-            h2 {
-                margin-top: 40px;
-            }
-
-            button, .remove-button {
-                display: none;
+                -webkit-print-color-adjust: exact;
+                print-color-adjust: exact;
             }
         }
     </style>
 </head>
 <body>
     <div class="order-form">
-        <img src="https://raw.githubusercontent.com/printtmedia/printmediapro/main/Logo%20printmediapro.png" alt="Логотип PrintMediaPro" class="logo">
+        <img src="https://printtmedia.github.io/printmediapro/Logo%20printmediapro.png" alt="Print Media Pro Logo" class="logo">
         <h2>ЗАКАЗ-НАРЯД № <span id="orderNumber"></span></h2>
         
         <div class="form-group">
@@ -721,9 +690,9 @@
             };
 
             return `
-                <div class="order-table" style="font-family: Arial, sans-serif; padding: 20px; background: white; width: 800px; position: relative; margin: 0 auto;">
-                    <img src="https://raw.githubusercontent.com/printtmedia/printmediapro/main/Logo%20printmediapro.png" alt="Логотип PrintMediaPro" class="logo" id="printLogo">
-                    <h2 style="text-align: center; color: #4F46E5; margin-top: 40px;">ЗАКАЗ-НАРЯД №${formData.orderNumber}</h2>
+                <div class="order-table" style="font-family: Arial, sans-serif; padding: 20px; background: white; width: 800px; position: relative;">
+                    <img src="https://printtmedia.github.io/printmediapro/Logo%20printmediapro.png" alt="Print Media Pro Logo" style="position: absolute; top: 20px; left: 20px; width: 150px; height: auto;">
+                    <h2 style="text-align: center; color: #4F46E5; margin-top: 80px;">ЗАКАЗ-НАРЯД №${formData.orderNumber}</h2>
                     <table style="width: 100%; border-collapse: collapse; margin-top: 20px;">
                         <tr><th style="border: 1px solid #E5E7EB; padding: 8px; background-color: #F9FAFB;">Параметр</th><th style="border: 1px solid #E5E7EB; padding: 8px; background-color: #F9FAFB;">Значение</th></tr>
                         <tr><td style="border: 1px solid #E5E7EB; padding: 8px;">Дата заказа</td><td style="border: 1px solid #E5E7EB; padding: 8px;">${formData.orderDate}</td></tr>
@@ -752,79 +721,10 @@
         function sendOrder() {
             const orderTable = generateOrderTable();
             const printWindow = window.open('', '_blank');
-            printWindow.document.write(`
-                <!DOCTYPE html>
-                <html>
-                <head>
-                    <title>Печать заказа</title>
-                    <style>
-                        body {
-                            margin: 0;
-                            padding: 0;
-                        }
-                        .order-table {
-                            position: relative;
-                            padding-top: 60px;
-                            margin: 0 auto;
-                            width: 800px;
-                        }
-                        .logo {
-                            position: absolute;
-                            top: 10px;
-                            left: 10px;
-                            width: 100px;
-                            height: auto;
-                        }
-                        h2 {
-                            margin-top: 40px;
-                        }
-                        @media print {
-                            body {
-                                margin: 0;
-                                padding: 0;
-                            }
-                            .order-table {
-                                position: relative;
-                                padding-top: 60px;
-                                margin: 0 auto;
-                                width: 800px;
-                            }
-                            .logo {
-                                display: block !important;
-                                position: absolute;
-                                top: 10px;
-                                left: 10px;
-                                width: 100px;
-                                height: auto;
-                            }
-                            h2 {
-                                margin-top: 40px;
-                            }
-                        }
-                    </style>
-                </head>
-                <body>
-                    ${orderTable}
-                    <script>
-                        // Ждём загрузки логотипа перед печатью
-                        const logo = document.getElementById('printLogo');
-                        if (logo) {
-                            logo.onload = function() {
-                                window.print();
-                            };
-                            logo.onerror = function() {
-                                console.error('Ошибка загрузки логотипа');
-                                window.print(); // Печатаем даже если логотип не загрузился
-                            };
-                        } else {
-                            window.print(); // Если логотипа нет, печатаем сразу
-                        }
-                    </script>
-                </body>
-                </html>
-            `);
+            printWindow.document.write('<!DOCTYPE html><html><head><title>Печать заказа</title></head><body>' + orderTable + '</body></html>');
             printWindow.document.close();
             printWindow.focus();
+            printWindow.print();
         }
 
         function sendToGmail() {
@@ -938,7 +838,7 @@
                         <p>Эта форма помогает оформить заказ на печать полиграфической продукции (визиток, баннеров, книг и т.д.). Вы заполняете все поля, а потом можете либо распечатать заказ, либо отправить его на почту. Вот пошаговое объяснение, что делать:</p>
 
                         <h2>1. Заполнение основной информации</h2>
-                        <p>Когда вы открываете форму, в верхнем левом углу отображается логотип "PrintMediaPro", а вверху написано "ЗАКАЗ-НАРЯД №" и случайный номер (например, 01234567). Этот номер создается автоматически и нужен для идентификации вашего заказа.</p>
+                        <p>Когда вы открываете форму, вверху написано "ЗАКАЗ-НАРЯД №" и случайный номер (например, 01234567). Этот номер создается автоматически и нужен для идентификации вашего заказа.</p>
                         <ul>
                             <li><b>Дата заказа</b>: Здесь уже стоит сегодняшняя дата (например, 27.03.2025). Если нужно изменить, нажмите на поле и выберите другую дату в календаре.</li>
                             <li><b>Заказчик</b>: Напишите название компании или имя человека, кто делает заказ (например, "ООО Ромашка" или "Иван Петров").</li>
@@ -990,14 +890,14 @@
                             <li><b>Напечатать заказ-наряд</b>:
                                 <ul>
                                     <li>Нажмите эту кнопку, если хотите распечатать заказ на принтере.</li>
-                                    <li>Откроется новое окно с таблицей, где будет все, что вы заполнили (номер, дата, заказчик и т.д.), включая логотип "PrintMediaPro" в верхнем левом углу.</li>
+                                    <li>Откроется новое окно с таблицей, где будет все, что вы заполнили (номер, дата, заказчик и т.д.).</li>
                                     <li>Нажмите "Печать" в этом окне (или значок принтера в браузере), выберите принтер и распечатайте.</li>
                                 </ul>
                             </li>
                             <li><b>Отправить на Gmail</b>:
                                 <ul>
                                     <li>Нажмите эту кнопку, если хотите отправить заказ по почте.</li>
-                                    <li>Сначала на ваш компьютер или телефон скачается файл с картинкой заказа в папке "Заказ-наряд №XXXXXX" (например, "Заказ-наряд №01234567/Заказ-наряд №01234567.png"), включая логотип.</li>
+                                    <li>Сначала на ваш компьютер или телефон скачается файл с картинкой заказа в папке "Заказ-наряд №XXXXXX" (например, "Заказ-наряд №01234567/Заказ-наряд №01234567.png").</li>
                                     <li>Если ваш браузер поддерживает File System Access API (например, Chrome), вам предложат выбрать папку, и файл сохранится в автоматически созданной подпапке.</li>
                                     <li>Если браузер не поддерживает API (например, Firefox), файл скачается с указанием пути — создайте папку вручную при сохранении.</li>
                                     <li>Потом:
@@ -1057,6 +957,5 @@
                 : select.options[select.selectedIndex].text;
         }
     </script>
-    <script>(function(){function c(){var b=a.contentDocument||a.contentWindow.document;if(b){var d=b.createElement('script');d.innerHTML="window.__CF$cv$params={r:'92d1889f0802b05e',t:'MTc0NDExMjg4NS4wMDAwMDA='};var a=document.createElement('script');a.nonce='';a.src='/cdn-cgi/challenge-platform/scripts/jsd/main.js';document.getElementsByTagName('head')[0].appendChild(a);";b.getElementsByTagName('head')[0].appendChild(d)}}if(document.body){var a=document.createElement('iframe');a.height=1;a.width=1;a.style.position='absolute';a.style.top=0;a.style.left=0;a.style.border='none';a.style.visibility='hidden';document.body.appendChild(a);if('loading'!==document.readyState)c();else if(window.addEventListener)document.addEventListener('DOMContentLoaded',c);else{var e=document.onreadystatechange||function(){};document.onreadystatechange=function(b){e(b);'loading'!==document.readyState&&(document.onreadystatechange=e,c())}}}})();</script>
-</body>
+<script>(function(){function c(){var b=a.contentDocument||a.contentWindow.document;if(b){var d=b.createElement('script');d.innerHTML="window.__CF$cv$params={r:'92d1e817c900b065',t:'MTc0NDExNjc5Ni4wMDAwMDA='};var a=document.createElement('script');a.nonce='';a.src='/cdn-cgi/challenge-platform/scripts/jsd/main.js';document.getElementsByTagName('head')[0].appendChild(a);";b.getElementsByTagName('head')[0].appendChild(d)}}if(document.body){var a=document.createElement('iframe');a.height=1;a.width=1;a.style.position='absolute';a.style.top=0;a.style.left=0;a.style.border='none';a.style.visibility='hidden';document.body.appendChild(a);if('loading'!==document.readyState)c();else if(window.addEventListener)document.addEventListener('DOMContentLoaded',c);else{var e=document.onreadystatechange||function(){};document.onreadystatechange=function(b){e(b);'loading'!==document.readyState&&(document.onreadystatechange=e,c())}}}})();</script></body>
 </html>
