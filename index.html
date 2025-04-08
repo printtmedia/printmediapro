@@ -20,11 +20,12 @@
 
         body {
             font-family: 'Inter', -apple-system, sans-serif;
-            background: var(--background) url('https://printtmedia.github.io/printmediapro/5073412.png') repeat;
-            background-size: 300px;
+            background: var(--background) url('https://printtmedia.github.io/printmediapro/5073412.png') no-repeat center center fixed;
+            background-size: cover;
             margin: 0;
             padding: 20px;
             color: var(--text);
+            min-height: 100vh; /* Ensure the body takes up the full viewport height */
         }
 
         .order-form {
