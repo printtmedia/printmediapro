@@ -39,14 +39,14 @@
             border-radius: 12px;
             box-shadow: 0 4px 6px rgba(0, 0, 0, 0.1);
             opacity: 1;
-            position: relative; /* Для позиционирования логотипа */
+            position: relative;
         }
 
         .logo {
             position: absolute;
             top: 10px;
             left: 10px;
-            width: 100px; /* Настройте размер логотипа */
+            width: 100px;
             height: auto;
         }
 
@@ -57,7 +57,7 @@
             text-align: center;
             margin-bottom: 2rem;
             letter-spacing: 0.025em;
-            margin-top: 40px; /* Отступ сверху, чтобы не перекрывать логотип */
+            margin-top: 40px;
         }
 
         .form-group {
@@ -169,20 +169,57 @@
             }
 
             .logo {
-                width: 80px; /* Уменьшаем размер логотипа на мобильных устройствах */
+                width: 80px;
                 top: 5px;
                 left: 5px;
             }
 
             h2 {
-                margin-top: 30px; /* Корректируем отступ для мобильных устройств */
+                margin-top: 30px;
+            }
+        }
+
+        /* Стили для печати */
+        @media print {
+            body {
+                background: none; /* Убираем фоновое изображение при печати */
+                padding: 0;
+            }
+
+            .order-form {
+                box-shadow: none;
+                border: none;
+                padding: 0;
+                background: none;
+            }
+
+            .order-table {
+                position: relative;
+                padding-top: 60px; /* Отступ для логотипа */
+            }
+
+            .logo {
+                display: block !important; /* Убедимся, что логотип виден при печати */
+                position: absolute;
+                top: 10px;
+                left: 10px;
+                width: 100px;
+                height: auto;
+            }
+
+            h2 {
+                margin-top: 40px; /* Убедимся, что заголовок не перекрывает логотип */
+            }
+
+            /* Скрываем ненужные элементы при печати */
+            button, .remove-button {
+                display: none;
             }
         }
     </style>
 </head>
 <body>
     <div class="order-form">
-        <!-- Добавляем логотип -->
         <img src="https://raw.githubusercontent.com/printtmedia/printmediapro/main/Logo%20printmediapro.png" alt="Логотип PrintMediaPro" class="logo">
         <h2>ЗАКАЗ-НАРЯД № <span id="orderNumber"></span></h2>
         
@@ -527,7 +564,7 @@
             const field = document.getElementById(fieldId);
 
             select.addEventListener('change', () => {
-                const show = select.value === triggerValue;
+                const show = select.value === 'triggerValue';
                 field.style.display = show ? 'block' : 'none';
                 field.required = show;
             });
@@ -682,8 +719,9 @@
             };
 
             return `
-                <div class="order-table" style="font-family: Arial, sans-serif; padding: 20px; background: white; width: 800px;">
-                    <h2 style="text-align: center; color: #4F46E5;">ЗАКАЗ-НАРЯД №${formData.orderNumber}</h2>
+                <div class="order-table" style="font-family: Arial, sans-serif; padding: 20px; background: white; width: 800px; position: relative;">
+                    <img src="https://raw.githubusercontent.com/printtmedia/printmediapro/main/Logo%20printmediapro.png" alt="Логотип PrintMediaPro" class="logo">
+                    <h2 style="text-align: center; color: #4F46E5; margin-top: 40px;">ЗАКАЗ-НАРЯД №${formData.orderNumber}</h2>
                     <table style="width: 100%; border-collapse: collapse; margin-top: 20px;">
                         <tr><th style="border: 1px solid #E5E7EB; padding: 8px; background-color: #F9FAFB;">Параметр</th><th style="border: 1px solid #E5E7EB; padding: 8px; background-color: #F9FAFB;">Значение</th></tr>
                         <tr><td style="border: 1px solid #E5E7EB; padding: 8px;">Дата заказа</td><td style="border: 1px solid #E5E7EB; padding: 8px;">${formData.orderDate}</td></tr>
@@ -712,7 +750,39 @@
         function sendOrder() {
             const orderTable = generateOrderTable();
             const printWindow = window.open('', '_blank');
-            printWindow.document.write('<!DOCTYPE html><html><head><title>Печать заказа</title></head><body>' + orderTable + '</body></html>');
+            printWindow.document.write(`
+                <!DOCTYPE html>
+                <html>
+                <head>
+                    <title>Печать заказа</title>
+                    <style>
+                        @media print {
+                            body {
+                                margin: 0;
+                                padding: 0;
+                            }
+                            .order-table {
+                                position: relative;
+                                padding-top: 60px;
+                            }
+                            .logo {
+                                position: absolute;
+                                top: 10px;
+                                left: 10px;
+                                width: 100px;
+                                height: auto;
+                            }
+                            h2 {
+                                margin-top: 40px;
+                            }
+                        }
+                    </style>
+                </head>
+                <body>
+                    ${orderTable}
+                </body>
+                </html>
+            `);
             printWindow.document.close();
             printWindow.focus();
             printWindow.print();
@@ -881,7 +951,7 @@
                             <li><b>Напечатать заказ-наряд</b>:
                                 <ul>
                                     <li>Нажмите эту кнопку, если хотите распечатать заказ на принтере.</li>
-                                    <li>Откроется новое окно с таблицей, где будет все, что вы заполнили (номер, дата, заказчик и т.д.), включая логотип в верхнем левом углу.</li>
+                                    <li>Откроется новое окно с таблицей, где будет все, что вы заполнили (номер, дата, заказчик и т.д.), включая логотип "PrintMediaPro" в верхнем левом углу.</li>
                                     <li>Нажмите "Печать" в этом окне (или значок принтера в браузере), выберите принтер и распечатайте.</li>
                                 </ul>
                             </li>
