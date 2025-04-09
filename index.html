@@ -25,7 +25,7 @@
             margin: 0;
             padding: 20px;
             color: var(--text);
-            min-height: 100vh; /* Ensure the body takes up the full viewport height */
+            min-height: 100vh;
         }
 
         .order-form {
@@ -52,7 +52,7 @@
             color: var(--primary);
             text-align: center;
             margin-bottom: 2rem;
-            margin-top: 80px; /* Added margin to avoid overlap with logo */
+            margin-top: 80px;
             letter-spacing: 0.025em;
         }
 
@@ -177,7 +177,7 @@
 
         @media print {
             body {
-                background: none !important; /* Remove background for printing */
+                background: none !important;
             }
             .order-form {
                 background: var(--card-bg) !important;
@@ -186,6 +186,14 @@
                 display: block !important;
                 -webkit-print-color-adjust: exact;
                 print-color-adjust: exact;
+            }
+            .order-table {
+                font-size: 12pt !important;
+                width: 100% !important;
+            }
+            table, th, td {
+                border: 1px solid black !important;
+                font-weight: 600 !important;
             }
         }
     </style>
@@ -223,9 +231,9 @@
         <div class="form-group">
             <label>Название файла:</label>
             <div class="file-group">
-                <input type="text" name="filename" id="filename" placeholder="Название макета">
-                <input type="file" id="fileUpload" accept=".pdf,.jpg,.png,.docx">
+                <input type="file" id="fileUpload" accept=".pdf,.jpg,.png,.docx" multiple>
             </div>
+            <div id="fileList" class="selected-items"></div>
         </div>
 
         <div class="section-title">Характеристики продукции</div>
@@ -406,6 +414,7 @@
                 <option value="matte_lamination">Ламинация матовая</option>
                 <option value="velvet_lamination">Ламинация бархат</option>
                 <option value="double_sided_lamination">Ламинация 2 стороны</option>
+                <option value="pockets">Карманы</option>
                 <option value="other">Другое</option>
             </select>
             <div id="selectedPostPrint" class="selected-items"></div>
@@ -416,6 +425,24 @@
             <input type="number" id="eyeletsQuantity" name="eyelets_quantity" min="1" placeholder="Введите количество">
             <label for="eyeletsDistance">Расстояние между люверсами (мм):</label>
             <input type="number" id="eyeletsDistance" name="eyelets_distance" min="1" placeholder="Введите расстояние">
+        </div>
+
+        <div id="pocketsFields" style="display: none; margin-top: 10px;">
+            <label for="pocketSize">Размер кармана (мм):</label>
+            <input type="text" id="pocketSize" name="pocket_size" placeholder="Например, 100x50">
+            <label for="noodleColor">Цвет лапши для кармана:</label>
+            <select id="noodleColor" name="noodle_color">
+                <option value="">Выберите цвет</option>
+                <option value="white">Белый</option>
+                <option value="black">Черный</option>
+                <option value="red">Красный</option>
+                <option value="blue">Синий</option>
+                <option value="green">Зеленый</option>
+                <option value="yellow">Желтый</option>
+                <option value="custom">Другой</option>
+            </select>
+            <input type="text" id="customNoodleColor" name="custom_noodle_color" 
+                   class="custom-field" placeholder="Укажите цвет" style="display: none;">
         </div>
 
         <div class="form-group">
@@ -431,10 +458,42 @@
     </div>
 
     <script>
+        // Глобальная переменная для хранения выбранных файлов
+        let selectedFiles = [];
+
         document.addEventListener('DOMContentLoaded', () => {
             document.getElementById('orderDate').value = new Date().toISOString().split('T')[0];
             document.getElementById('orderNumber').textContent = 
                 Math.floor(Math.random() * 100000000).toString().padStart(8, '0');
+
+            const fileInput = document.getElementById('fileUpload');
+            const fileList = document.getElementById('fileList');
+
+            fileInput.addEventListener('change', function() {
+                const newFiles = Array.from(fileInput.files);
+                newFiles.forEach(file => {
+                    if (!selectedFiles.some(existingFile => existingFile.name === file.name)) {
+                        selectedFiles.push(file);
+                        addFileToList(file);
+                    }
+                });
+                fileInput.value = '';
+            });
+
+            function addFileToList(file) {
+                const fileItem = document.createElement('div');
+                fileItem.className = 'selected-item';
+                fileItem.innerHTML = `
+                    <span>${file.name}</span>
+                    <button type="button" class="remove-button" onclick="removeFile(this, '${file.name}')">Удалить</button>
+                `;
+                fileList.appendChild(fileItem);
+            }
+
+            window.removeFile = function(button, fileName) {
+                selectedFiles = selectedFiles.filter(file => file.name !== fileName);
+                button.parentElement.remove();
+            };
 
             const productSelect = document.getElementById('productName');
             const bindingOptions = document.getElementById('bindingOptions');
@@ -513,7 +572,19 @@
 
             postPrintSelect.addEventListener('change', function() {
                 const eyeletsFields = document.getElementById('eyeletsFields');
+                const pocketsFields = document.getElementById('pocketsFields');
                 eyeletsFields.style.display = this.value === 'eyelets' ? 'block' : 'none';
+                pocketsFields.style.display = this.value === 'pockets' ? 'block' : 'none';
+
+                if (this.value === 'pockets') {
+                    const noodleColorSelect = document.getElementById('noodleColor');
+                    const customNoodleColor = document.getElementById('customNoodleColor');
+                    noodleColorSelect.addEventListener('change', function() {
+                        customNoodleColor.style.display = this.value === 'custom' ? 'block' : 'none';
+                        customNoodleColor.required = this.value === 'custom';
+                    });
+                }
+
                 if (this.value) {
                     addPostPrint();
                 }
@@ -522,150 +593,151 @@
             setupCustomField('materialSelect', 'customMaterial', 'other');
             setupCustomField('paperWeightSelect', 'customPaperWeight', 'other');
 
-            document.getElementById('fileUpload').addEventListener('change', function() {
-                const fileInput = this;
-                const filenameField = document.getElementById('filename');
-                if (fileInput.files.length > 0) {
-                    filenameField.value = fileInput.files[0].name;
+            document.querySelector('input[name="phone"]').addEventListener('input', function(e) {
+                this.value = this.value.replace(/[^\d+]/g, '');
+            });
+
+            function setupCustomField(selectId, fieldId, triggerValue) {
+                const select = document.getElementById(selectId);
+                const field = document.getElementById(fieldId);
+                select.addEventListener('change', () => {
+                    const show = select.value === triggerValue;
+                    field.style.display = show ? 'block' : 'none';
+                    field.required = show;
+                });
+            }
+
+            function addProductWithBinding() {
+                const productSelect = document.getElementById('productName');
+                const bindingSelect = document.getElementById('bindingType');
+                const selectedValue = productSelect.value;
+                let productText = productSelect.options[productSelect.selectedIndex].text;
+
+                if (selectedValue === 'magazine' || selectedValue === 'book') {
+                    const bindingText = bindingSelect.options[bindingSelect.selectedIndex].text;
+                    productText += ` (${bindingText})`;
+                    const selectedItemsDiv = document.getElementById('selectedProducts');
+                    const itemDiv = document.createElement('div');
+                    itemDiv.className = 'selected-item';
+                    itemDiv.innerHTML = `<span>${productText}</span><button type="button" class="remove-button" onclick="removeProduct(this)">Удалить</button>`;
+                    selectedItemsDiv.appendChild(itemDiv);
                 }
-            });
+            }
+
+            function addSimpleProduct() {
+                const productSelect = document.getElementById('productName');
+                const customProduct = document.getElementById('customProduct');
+                const selectedValue = productSelect.value;
+                let productText = selectedValue === 'other' ? customProduct.value : productSelect.options[productSelect.selectedIndex].text;
+
+                if (productText) {
+                    const selectedItemsDiv = document.getElementById('selectedProducts');
+                    const itemDiv = document.createElement('div');
+                    itemDiv.className = 'selected-item';
+                    itemDiv.innerHTML = `<span>${productText}</span><button type="button" class="remove-button" onclick="removeProduct(this)">Удалить</button>`;
+                    selectedItemsDiv.appendChild(itemDiv);
+                }
+            }
+
+            function addCalendarProduct() {
+                const productSelect = document.getElementById('productName');
+                const calendarSelect = document.getElementById('calendarType');
+                const pageCount = document.getElementById('pageCount').value;
+                const selectedValue = productSelect.value;
+
+                if (selectedValue === 'calendar') {
+                    const calendarText = calendarSelect.options[calendarSelect.selectedIndex].text;
+                    let productText = `Календарь (${calendarText}${pageCount ? `, ${pageCount} стр.` : ''})`;
+                    const selectedItemsDiv = document.getElementById('selectedProducts');
+                    const itemDiv = document.createElement('div');
+                    itemDiv.className = 'selected-item';
+                    itemDiv.innerHTML = `<span>${productText}</span><button type="button" class="remove-button" onclick="removeProduct(this)">Удалить</button>`;
+                    selectedItemsDiv.appendChild(itemDiv);
+                }
+            }
+
+            function removeProduct(button) {
+                button.parentElement.remove();
+            }
+
+            function addFormat() {
+                const formatSelect = document.getElementById('formatSelect');
+                const customFormat = document.getElementById('customFormat');
+                const selectedValue = formatSelect.value;
+                let formatText = selectedValue === 'custom' ? customFormat.value : formatSelect.options[formatSelect.selectedIndex].text;
+
+                if (formatText) {
+                    const selectedItemsDiv = document.getElementById('selectedFormats');
+                    const itemDiv = document.createElement('div');
+                    itemDiv.className = 'selected-item';
+                    itemDiv.innerHTML = `<span>${formatText}</span><button type="button" class="remove-button" onclick="removeFormat(this)">Удалить</button>`;
+                    selectedItemsDiv.appendChild(itemDiv);
+                }
+            }
+
+            function removeFormat(button) {
+                button.parentElement.remove();
+            }
+
+            function addPostPrint() {
+                const select = document.getElementById('postPrintSelect');
+                const selectedValue = select.value;
+                let selectedText = select.options[select.selectedIndex].text;
+
+                if (selectedValue === 'pockets') {
+                    const pocketSize = document.getElementById('pocketSize').value;
+                    const noodleColorSelect = document.getElementById('noodleColor');
+                    const noodleColor = noodleColorSelect.value === 'custom' 
+                        ? document.getElementById('customNoodleColor').value 
+                        : noodleColorSelect.options[noodleColorSelect.selectedIndex].text;
+                    if (pocketSize || noodleColor !== 'Выберите цвет') {
+                        selectedText += ` (Размер: ${pocketSize || 'не указано'} мм, Цвет лапши: ${noodleColor !== 'Выберите цвет' ? noodleColor : 'не указано'})`;
+                    }
+                }
+
+                if (select.value) {
+                    const selectedItemsDiv = document.getElementById('selectedPostPrint');
+                    const itemDiv = document.createElement('div');
+                    itemDiv.className = 'selected-item';
+                    itemDiv.innerHTML = `<span>${selectedText}</span><button type="button" class="remove-button" onclick="removePostPrint(this)">Удалить</button>`;
+                    selectedItemsDiv.appendChild(itemDiv);
+                }
+            }
+
+            function removePostPrint(button) {
+                button.parentElement.remove();
+            }
+
+            function addPaperWeight() {
+                const select = document.getElementById('paperWeightSelect');
+                const selectedText = select.options[select.selectedIndex].text;
+
+                if (select.value) {
+                    const selectedItemsDiv = document.getElementById('selectedPaperWeights');
+                    const itemDiv = document.createElement('div');
+                    itemDiv.className = 'selected-item';
+                    itemDiv.innerHTML = `<span>${selectedText}</span><button type="button" class="remove-button" onclick="removePaperWeight(this)">Удалить</button>`;
+                    selectedItemsDiv.appendChild(itemDiv);
+                }
+            }
+
+            function addCustomPaperWeight() {
+                const customPaperWeight = document.getElementById('customPaperWeight');
+                const paperWeightText = customPaperWeight.value + ' г/м²';
+
+                if (paperWeightText) {
+                    const selectedItemsDiv = document.getElementById('selectedPaperWeights');
+                    const itemDiv = document.createElement('div');
+                    itemDiv.className = 'selected-item';
+                    itemDiv.innerHTML = `<span>${paperWeightText}</span><button type="button" class="remove-button" onclick="removePaperWeight(this)">Удалить</button>`;
+                    selectedItemsDiv.appendChild(itemDiv);
+                }
+            }
+
+            function removePaperWeight(button) {
+                button.parentElement.remove();
+            }
         });
-
-        function setupCustomField(selectId, fieldId, triggerValue) {
-            const select = document.getElementById(selectId);
-            const field = document.getElementById(fieldId);
-
-            select.addEventListener('change', () => {
-                const show = select.value === triggerValue;
-                field.style.display = show ? 'block' : 'none';
-                field.required = show;
-            });
-        }
-
-        document.querySelector('input[name="phone"]').addEventListener('input', function(e) {
-            this.value = this.value.replace(/[^\d+]/g, '');
-        });
-
-        function addProductWithBinding() {
-            const productSelect = document.getElementById('productName');
-            const bindingSelect = document.getElementById('bindingType');
-            const selectedValue = productSelect.value;
-            let productText = productSelect.options[productSelect.selectedIndex].text;
-
-            if (selectedValue === 'magazine' || selectedValue === 'book') {
-                const bindingText = bindingSelect.options[bindingSelect.selectedIndex].text;
-                productText += ` (${bindingText})`;
-                
-                const selectedItemsDiv = document.getElementById('selectedProducts');
-                const itemDiv = document.createElement('div');
-                itemDiv.className = 'selected-item';
-                itemDiv.innerHTML = `<span>${productText}</span><button type="button" class="remove-button" onclick="removeProduct(this)">Удалить</button>`;
-                selectedItemsDiv.appendChild(itemDiv);
-            }
-        }
-
-        function addSimpleProduct() {
-            const productSelect = document.getElementById('productName');
-            const customProduct = document.getElementById('customProduct');
-            const selectedValue = productSelect.value;
-            let productText = selectedValue === 'other' ? customProduct.value : productSelect.options[productSelect.selectedIndex].text;
-
-            if (productText) {
-                const selectedItemsDiv = document.getElementById('selectedProducts');
-                const itemDiv = document.createElement('div');
-                itemDiv.className = 'selected-item';
-                itemDiv.innerHTML = `<span>${productText}</span><button type="button" class="remove-button" onclick="removeProduct(this)">Удалить</button>`;
-                selectedItemsDiv.appendChild(itemDiv);
-            }
-        }
-
-        function addCalendarProduct() {
-            const productSelect = document.getElementById('productName');
-            const calendarSelect = document.getElementById('calendarType');
-            const pageCount = document.getElementById('pageCount').value;
-            const selectedValue = productSelect.value;
-
-            if (selectedValue === 'calendar') {
-                const calendarText = calendarSelect.options[calendarSelect.selectedIndex].text;
-                let productText = `Календарь (${calendarText}${pageCount ? `, ${pageCount} стр.` : ''})`;
-                
-                const selectedItemsDiv = document.getElementById('selectedProducts');
-                const itemDiv = document.createElement('div');
-                itemDiv.className = 'selected-item';
-                itemDiv.innerHTML = `<span>${productText}</span><button type="button" class="remove-button" onclick="removeProduct(this)">Удалить</button>`;
-                selectedItemsDiv.appendChild(itemDiv);
-            }
-        }
-
-        function removeProduct(button) {
-            button.parentElement.remove();
-        }
-
-        function addFormat() {
-            const formatSelect = document.getElementById('formatSelect');
-            const customFormat = document.getElementById('customFormat');
-            const selectedValue = formatSelect.value;
-            let formatText = selectedValue === 'custom' ? customFormat.value : formatSelect.options[formatSelect.selectedIndex].text;
-
-            if (formatText) {
-                const selectedItemsDiv = document.getElementById('selectedFormats');
-                const itemDiv = document.createElement('div');
-                itemDiv.className = 'selected-item';
-                itemDiv.innerHTML = `<span>${formatText}</span><button type="button" class="remove-button" onclick="removeFormat(this)">Удалить</button>`;
-                selectedItemsDiv.appendChild(itemDiv);
-            }
-        }
-
-        function removeFormat(button) {
-            button.parentElement.remove();
-        }
-
-        function addPostPrint() {
-            const select = document.getElementById('postPrintSelect');
-            const selectedText = select.options[select.selectedIndex].text;
-
-            if (select.value) {
-                const selectedItemsDiv = document.getElementById('selectedPostPrint');
-                const itemDiv = document.createElement('div');
-                itemDiv.className = 'selected-item';
-                itemDiv.innerHTML = `<span>${selectedText}</span><button type="button" class="remove-button" onclick="removePostPrint(this)">Удалить</button>`;
-                selectedItemsDiv.appendChild(itemDiv);
-            }
-        }
-
-        function removePostPrint(button) {
-            button.parentElement.remove();
-        }
-
-        function addPaperWeight() {
-            const select = document.getElementById('paperWeightSelect');
-            const selectedText = select.options[select.selectedIndex].text;
-
-            if (select.value) {
-                const selectedItemsDiv = document.getElementById('selectedPaperWeights');
-                const itemDiv = document.createElement('div');
-                itemDiv.className = 'selected-item';
-                itemDiv.innerHTML = `<span>${selectedText}</span><button type="button" class="remove-button" onclick="removePaperWeight(this)">Удалить</button>`;
-                selectedItemsDiv.appendChild(itemDiv);
-            }
-        }
-
-        function addCustomPaperWeight() {
-            const customPaperWeight = document.getElementById('customPaperWeight');
-            const paperWeightText = customPaperWeight.value + ' г/м²';
-
-            if (paperWeightText) {
-                const selectedItemsDiv = document.getElementById('selectedPaperWeights');
-                const itemDiv = document.createElement('div');
-                itemDiv.className = 'selected-item';
-                itemDiv.innerHTML = `<span>${paperWeightText}</span><button type="button" class="remove-button" onclick="removePaperWeight(this)">Удалить</button>`;
-                selectedItemsDiv.appendChild(itemDiv);
-            }
-        }
-
-        function removePaperWeight(button) {
-            button.parentElement.remove();
-        }
 
         function generateOrderTable() {
             const formData = {
@@ -675,7 +747,7 @@
                 contactPerson: document.querySelector('input[name="contact_person"]').value,
                 phone: document.querySelector('input[name="phone"]').value,
                 email: document.querySelector('input[name="email"]').value,
-                filename: document.getElementById('filename').value,
+                filename: selectedFiles.map(file => file.name).join(', ') || 'Не указано',
                 product: getSelectedProducts(),
                 printSides: document.getElementById('printSides').options[document.getElementById('printSides').selectedIndex].text,
                 quantity: document.querySelector('input[name="quantity"]').value,
@@ -687,6 +759,10 @@
                 postPrint: getSelectedPostPrint(),
                 eyeletsQuantity: document.getElementById('eyeletsQuantity').value,
                 eyeletsDistance: document.getElementById('eyeletsDistance').value,
+                pocketSize: document.getElementById('pocketSize').value,
+                noodleColor: document.getElementById('noodleColor').value === 'custom' 
+                    ? document.getElementById('customNoodleColor').value 
+                    : document.getElementById('noodleColor').options[document.getElementById('noodleColor').selectedIndex].text,
                 notes: document.querySelector('textarea[name="notes"]').value
             };
 
@@ -701,7 +777,7 @@
                         <tr><td style="border: 1px solid #E5E7EB; padding: 8px;">Контактное лицо</td><td style="border: 1px solid #E5E7EB; padding: 8px;">${formData.contactPerson}</td></tr>
                         <tr><td style="border: 1px solid #E5E7EB; padding: 8px;">Телефон</td><td style="border: 1px solid #E5E7EB; padding: 8px;">${formData.phone}</td></tr>
                         <tr><td style="border: 1px solid #E5E7EB; padding: 8px;">Email</td><td style="border: 1px solid #E5E7EB; padding: 8px;">${formData.email}</td></tr>
-                        <tr><td style="border: 1px solid #E5E7EB; padding: 8px;">Название файла</td><td style="border: 1px solid #E5E7EB; padding: 8px;">${formData.filename || 'Не указано'}</td></tr>
+                        <tr><td style="border: 1px solid #E5E7EB; padding: 8px;">Название файла</td><td style="border: 1px solid #E5E7EB; padding: 8px;">${formData.filename}</td></tr>
                         <tr><td style="border: 1px solid #E5E7EB; padding: 8px;">Наименование продукции</td><td style="border: 1px solid #E5E7EB; padding: 8px;">${formData.product}</td></tr>
                         <tr><td style="border: 1px solid #E5E7EB; padding: 8px;">Тип печати (стороны)</td><td style="border: 1px solid #E5E7EB; padding: 8px;">${formData.printSides}</td></tr>
                         <tr><td style="border: 1px solid #E5E7EB; padding: 8px;">Тираж</td><td style="border: 1px solid #E5E7EB; padding: 8px;">${formData.quantity}</td></tr>
@@ -713,6 +789,8 @@
                         <tr><td style="border: 1px solid #E5E7EB; padding: 8px;">Послепечатные работы</td><td style="border: 1px solid #E5E7EB; padding: 8px;">${formData.postPrint}</td></tr>
                         ${formData.eyeletsQuantity ? `<tr><td style="border: 1px solid #E5E7EB; padding: 8px;">Количество люверсов</td><td style="border: 1px solid #E5E7EB; padding: 8px;">${formData.eyeletsQuantity}</td></tr>` : ''}
                         ${formData.eyeletsDistance ? `<tr><td style="border: 1px solid #E5E7EB; padding: 8px;">Расстояние между люверсами</td><td style="border: 1px solid #E5E7EB; padding: 8px;">${formData.eyeletsDistance} мм</td></tr>` : ''}
+                        ${formData.pocketSize ? `<tr><td style="border: 1px solid #E5E7EB; padding: 8px;">Размер кармана</td><td style="border: 1px solid #E5E7EB; padding: 8px;">${formData.pocketSize} мм</td></tr>` : ''}
+                        ${formData.noodleColor && formData.noodleColor !== 'Выберите цвет' ? `<tr><td style="border: 1px solid #E5E7EB; padding: 8px;">Цвет лапши для кармана</td><td style="border: 1px solid #E5E7EB; padding: 8px;">${formData.noodleColor}</td></tr>` : ''}
                         <tr><td style="border: 1px solid #E5E7EB; padding: 8px;">Примечание</td><td style="border: 1px solid #E5E7EB; padding: 8px;">${formData.notes || 'Отсутствует'}</td></tr>
                     </table>
                 </div>
@@ -720,43 +798,71 @@
         }
 
         function sendOrder() {
-            const orderTable = generateOrderTable();
-            const printWindow = window.open('', '_blank');
-            printWindow.document.write('<!DOCTYPE html><html><head><title>Печать заказа</title></head><body>' + orderTable + '</body></html>');
-            printWindow.document.close();
-            printWindow.focus();
-            printWindow.print();
+            try {
+                const orderTable = generateOrderTable();
+                const printWindow = window.open('', '_blank');
+                if (!printWindow) throw new Error('Не удалось открыть окно печати. Проверьте настройки браузера.');
+                printWindow.document.write(`
+                    <!DOCTYPE html>
+                    <html>
+                    <head>
+                        <title>Печать заказа</title>
+                        <style>@media print { body { margin: 0; padding: 0; } .order-table { width: 100%; } table, th, td { border: 1px solid black; font-size: 12pt; font-weight: 600; } }</style>
+                    </head>
+                    <body>${orderTable}</body>
+                    </html>
+                `);
+                printWindow.document.close();
+                printWindow.focus();
+                setTimeout(() => {
+                    printWindow.print();
+                    printWindow.close();
+                }, 500);
+            } catch (error) {
+                console.error('Ошибка при печати:', error);
+                alert('Не удалось напечатать заказ. Проверьте консоль для деталей.');
+            }
         }
 
         function sendToGmail() {
-            const formData = {
-                orderNumber: document.getElementById('orderNumber').textContent
-            };
+            try {
+                const formData = { orderNumber: document.getElementById('orderNumber').textContent };
+                const tempDiv = document.createElement('div');
+                tempDiv.style.position = 'absolute';
+                tempDiv.style.left = '-9999px';
+                tempDiv.innerHTML = generateOrderTable();
+                document.body.appendChild(tempDiv);
 
-            const tempDiv = document.createElement('div');
-            tempDiv.innerHTML = generateOrderTable();
-            document.body.appendChild(tempDiv);
+                html2canvas(tempDiv.querySelector('.order-table'), {
+                    scale: 2,
+                    useCORS: true,
+                    logging: false
+                }).then(canvas => {
+                    const imgData = canvas.toDataURL('image/png', 1.0);
+                    const folderName = `Заказ-наряд №${formData.orderNumber}`;
+                    const fileName = `${folderName}.png`;
 
-            html2canvas(tempDiv.querySelector('.order-table')).then(canvas => {
-                const imgData = canvas.toDataURL('image/png');
-                const folderName = `Заказ-наряд №${formData.orderNumber}`;
-                const fileName = `${folderName}.png`;
+                    if (window.showDirectoryPicker) {
+                        saveWithFolder(imgData, folderName, fileName)
+                            .then(() => proceedWithEmail(folderName))
+                            .catch(error => {
+                                console.log('Ошибка File System API:', error);
+                                fallbackDownload(imgData, folderName, fileName);
+                            });
+                    } else {
+                        fallbackDownload(imgData, folderName, fileName);
+                    }
 
-                if (window.showDirectoryPicker) {
-                    saveWithFolder(imgData, folderName, fileName)
-                        .then(() => proceedWithEmail(folderName))
-                        .catch(error => {
-                            console.log('Ошибка File System API:', error);
-                            fallbackDownload(imgData, folderName, fileName);
-                        });
-                } else {
-                    fallbackDownload(imgData, folderName, fileName);
-                }
-
-                document.body.removeChild(tempDiv);
-            }).catch(error => {
-                console.error('Ошибка html2canvas:', error);
-            });
+                    document.body.removeChild(tempDiv);
+                }).catch(error => {
+                    console.error('Ошибка html2canvas:', error);
+                    document.body.removeChild(tempDiv);
+                    alert('Не удалось подготовить файл для отправки. Проверьте консоль.');
+                });
+            } catch (error) {
+                console.error('Ошибка при отправке на Gmail:', error);
+                alert('Не удалось отправить заказ. Проверьте консоль.');
+            }
         }
 
         async function saveWithFolder(imgData, folderName, fileName) {
@@ -783,152 +889,130 @@
         function proceedWithEmail(folderName) {
             const isMobile = /iPhone|iPad|iPod|Android/i.test(navigator.userAgent);
             const subject = `Заказ-наряд №${folderName.split('№')[1]}`;
-
             if (isMobile) {
-                const mailtoUrl = `mailto:printmediapro@gmail.com?subject=${encodeURIComponent(subject)}`;
-                window.location.href = mailtoUrl;
+                window.location.href = `mailto:printmediapro@gmail.com?subject=${encodeURIComponent(subject)}`;
             } else {
-                const gmailUrl = `https://mail.google.com/mail/?view=cm&fs=1&to=printmediapro@gmail.com&su=${encodeURIComponent(subject)}`;
-                window.open(gmailUrl, '_blank');
+                window.open(`https://mail.google.com/mail/?view=cm&fs=1&to=printmediapro@gmail.com&su=${encodeURIComponent(subject)}`, '_blank');
             }
         }
 
         function showInstructions() {
-            const instructions = `
-                <!DOCTYPE html>
-                <html lang="ru">
-                <head>
-                    <meta charset="UTF-8">
-                    <meta name="viewport" content="width=device-width, initial-scale=1.0">
-                    <title>Инструкция по использованию</title>
-                    <style>
-                        body {
-                            font-family: Arial, sans-serif;
-                            margin: 20px;
-                            line-height: 1.6;
-                            background-color: #f4f4f4;
-                            color: #333;
-                        }
-                        h1 {
-                            color: #4F46E5;
-                            text-align: center;
-                        }
-                        h2 {
-                            color: #6B7280;
-                            margin-top: 20px;
-                        }
-                        p, li {
-                            font-size: 16px;
-                        }
-                        ul {
-                            margin-left: 20px;
-                        }
-                        .container {
-                            max-width: 800px;
-                            margin: 0 auto;
-                            background: white;
-                            padding: 20px;
-                            border-radius: 8px;
-                            box-shadow: 0 2px 4px rgba(0,0,0,0.1);
-                        }
-                    </style>
-                </head>
-                <body>
-                    <div class="container">
-                        <h1>Инструкция по использованию формы "Заказ-наряд на полиграфию"</h1>
-                        <p>Эта форма помогает оформить заказ на печать полиграфической продукции (визиток, баннеров, книг и т.д.). Вы заполняете все поля, а потом можете либо распечатать заказ, либо отправить его на почту. Вот пошаговое объяснение, что делать:</p>
+            try {
+                const instructionWindow = window.open('', '_blank');
+                if (!instructionWindow) throw new Error('Не удалось открыть окно инструкции. Проверьте настройки браузера.');
+                instructionWindow.document.write(`
+                    <!DOCTYPE html>
+                    <html lang="ru">
+                    <head>
+                        <meta charset="UTF-8">
+                        <meta name="viewport" content="width=device-width, initial-scale=1.0">
+                        <title>Инструкция по использованию</title>
+                        <style>
+                            body { font-family: Arial, sans-serif; margin: 20px; line-height: 1.6; background-color: #f4f4f4; color: #333; }
+                            h1 { color: #4F46E5; text-align: center; }
+                            h2 { color: #6B7280; margin-top: 20px; }
+                            p, li { font-size: 16px; }
+                            ul { margin-left: 20px; }
+                            .container { max-width: 800px; margin: 0 auto; background: white; padding: 20px; border-radius: 8px; box-shadow: 0 2px 4px rgba(0,0,0,0.1); }
+                        </style>
+                    </head>
+                    <body>
+                        <div class="container">
+                            <h1>Инструкция по использованию формы "Заказ-наряд на полиграфию"</h1>
+                            <p>Эта форма помогает оформить заказ на печать полиграфической продукции (визиток, баннеров, книг и т.д.). Вы заполняете все поля, а потом можете либо распечатать заказ, либо отправить его на почту. Вот пошаговое объяснение, что делать:</p>
 
-                        <h2>1. Заполнение основной информации</h2>
-                        <p>Когда вы открываете форму, вверху написано "ЗАКАЗ-НАРЯД №" и случайный номер (например, 01234567). Этот номер создается автоматически и нужен для идентификации вашего заказа.</p>
-                        <ul>
-                            <li><b>Дата заказа</b>: Здесь уже стоит сегодняшняя дата (например, 27.03.2025). Если нужно изменить, нажмите на поле и выберите другую дату в календаре.</li>
-                            <li><b>Заказчик</b>: Напишите название компании или имя человека, кто делает заказ (например, "ООО Ромашка" или "Иван Петров").</li>
-                            <li><b>Контактное лицо</b>: Укажите имя и фамилию человека, с кем можно связаться (например, "Анна Иванова").</li>
-                            <li><b>Телефон</b>: Введите номер телефона в формате <code>+380XXXXXXXXX</code> (например, +380501234567). Начинайте с "+".</li>
-                            <li><b>Email</b>: Напишите адрес электронной почты, куда можно отправить подтверждение (например, "anna@example.com").</li>
-                            <li><b>Название файла</b>: Укажите название файла с макетом, который вы хотите напечатать (например, "Визитка Анна"). Если у вас есть готовый файл, нажмите на кнопку "Выбрать файл" рядом с этим полем, найдите файл на компьютере или телефоне (например, PDF, JPG, PNG) и выберите его. Название файла появится в поле автоматически.</li>
-                        </ul>
+                            <h2>1. Заполнение основной информации</h2>
+                            <p>Когда вы открываете форму, вверху написано "ЗАКАЗ-НАРЯД №" и случайный номер (например, 01234567). Этот номер создается автоматически и нужен для идентификации вашего заказа.</p>
+                            <ul>
+                                <li><b>Дата заказа</b>: Здесь уже стоит сегодняшняя дата (например, 27.03.2025). Если нужно изменить, нажмите на поле и выберите другую дату в календаре.</li>
+                                <li><b>Заказчик</b>: Напишите название компании или имя человека, кто делает заказ (например, "ООО Ромашка" или "Иван Петров").</li>
+                                <li><b>Контактное лицо</b>: Укажите имя и фамилию человека, с кем можно связаться (например, "Анна Иванова").</li>
+                                <li><b>Телефон</b>: Введите номер телефона в формате <code>+380XXXXXXXXX</code> (например, +380501234567). Начинайте с "+".</li>
+                                <li><b>Email</b>: Напишите адрес электронной почты, куда можно отправить подтверждение (например, "anna@example.com").</li>
+                                <li><b>Название файла</b>: Нажмите на кнопку "Выбрать файл" и найдите файлы с макетами на компьютере или телефоне (например, PDF, JPG, PNG). Можно выбрать несколько файлов, удерживая клавишу Ctrl (на Windows) или Command (на Mac). После выбора названия файлов появятся ниже в виде списка, например, "file1.pdf [Удалить]". Чтобы убрать лишний файл, нажмите "Удалить" рядом с ним. Если нужно добавить ещё файлы, повторите выбор — дубликаты не добавятся.</li>
+                            </ul>
 
-                        <h2>2. Характеристики продукции</h2>
-                        <p>Эта часть про то, что именно вы хотите напечатать.</p>
-                        <ul>
-                            <li><b>Наименование продукции</b>: Нажмите на выпадающий список и выберите, что вам нужно (например, "Визитка", "Баннер", "Книга"). Если нужного нет, выберите "Другое" и в появившемся поле напишите, что хотите (например, "Наклейка").
-                                <ul>
-                                    <li>Если выбрали "Журнал" или "Книга", появится поле "Тип" — выберите "Мягкий переплет" или "Твердый переплет".</li>
-                                    <li>Если выбрали "Календарь", появятся поля "Тип календаря" (например, "Обложка") и "Количество страниц" (укажите число, например, 12).</li>
-                                    <li>После выбора нажмите на название в списке, и оно добавится внизу в виде "Визитка [Удалить]". Если ошиблись, нажмите "Удалить".</li>
-                                </ul>
-                            </li>
-                            <li><b>Тип печати (стороны)</b>: Выберите, печатать с одной стороны ("Односторонняя 4+0") или с двух ("Двусторонняя 4+4").</li>
-                            <li><b>Тираж</b>: Напишите, сколько штук вам нужно (например, 100).</li>
-                            <li><b>Формат</b>: Выберите размер (например, "A4"). Если нужного нет, выберите "Другой формат" и напишите размеры в миллиметрах (например, "100x200"). Выбранный формат появится ниже, можно удалить, если ошиблись.</li>
-                            <li><b>Тип печати</b>: Выберите способ печати (например, "Коника" или "Широкоформатная печать").</li>
-                            <li><b>Материал</b>: Укажите, на чем печатать (например, "Офсет" или "Самоклейка"). Если нужного нет, выберите "Другой материал" и напишите свой вариант (например, "Картон").</li>
-                            <li><b>Плотность бумаги</b>: Выберите вес бумаги (например, "80 г/м²"). Выбранное добавится ниже, можно удалить.</li>
-                            <li><b>Срок исполнения</b>: Нажмите на поле и выберите дату, к которой нужен заказ (например, 01.04.2025).</li>
-                        </ul>
+                            <h2>2. Характеристики продукции</h2>
+                            <p>Эта часть про то, что именно вы хотите напечатать.</p>
+                            <ul>
+                                <li><b>Наименование продукции</b>: Нажмите на выпадающий список и выберите, что вам нужно (например, "Визитка", "Баннер", "Книга"). Если нужного нет, выберите "Другое" и в появившемся поле напишите, что хотите (например, "Наклейка").
+                                    <ul>
+                                        <li>Если выбрали "Журнал" или "Книга", появится поле "Тип" — выберите "Мягкий переплет" или "Твердый переплет".</li>
+                                        <li>Если выбрали "Календарь", появятся поля "Тип календаря" (например, "Обложка") и "Количество страниц" (укажите число, например, 12).</li>
+                                        <li>После выбора нажмите на название в списке, и оно добавится внизу в виде "Визитка [Удалить]". Если ошиблись, нажмите "Удалить".</li>
+                                    </ul>
+                                </li>
+                                <li><b>Тип печати (стороны)</b>: Выберите, печатать с одной стороны ("Односторонняя 4+0") или с двух ("Двусторонняя 4+4").</li>
+                                <li><b>Тираж</b>: Напишите, сколько штук вам нужно (например, 100).</li>
+                                <li><b>Формат</b>: Выберите размер (например, "A4"). Если нужного нет, выберите "Другой формат" и напишите размеры в миллиметрах (например, "100x200"). Выбранный формат появится ниже, можно удалить, если ошиблись.</li>
+                                <li><b>Тип печати</b>: Выберите способ печати (например, "Коника" или "Широкоформатная печать").</li>
+                                <li><b>Материал</b>: Укажите, на чем печатать (например, "Офсет" или "Самоклейка"). Если нужного нет, выберите "Другой материал" и напишите свой вариант (например, "Картон").</li>
+                                <li><b>Плотность бумаги</b>: Выберите вес бумаги (например, "80 г/м²"). Выбранное добавится ниже, можно удалить.</li>
+                                <li><b>Срок исполнения</b>: Нажмите на поле и выберите дату, к которой нужен заказ (например, 01.04.2025).</li>
+                            </ul>
 
-                        <h2>3. Послепечатные работы</h2>
-                        <p>Если после печати нужно что-то сделать с продукцией (например, сложить или прикрепить кольца), заполните это:</p>
-                        <ul>
-                            <li><b>Послепечатные работы</b>: Выберите из списка (например, "Ламинация глянец" или "Пружина"). Если выбрали "Люверсы" (металлические кольца), появятся поля:
-                                <ul>
-                                    <li>"Количество люверсов": Укажите, сколько колец нужно (например, 4).</li>
-                                    <li>"Расстояние между люверсами": Напишите расстояние в миллиметрах (например, 100).</li>
-                                    <li>Выбранные работы появятся ниже, можно удалить, если ошиблись.</li>
-                                </ul>
-                            </li>
-                        </ul>
+                            <h2>3. Послепечатные работы</h2>
+                            <p>Если после печати нужно что-то сделать с продукцией (например, сложить или прикрепить кольца), заполните это:</p>
+                            <ul>
+                                <li><b>Послепечатные работы</b>: Выберите из списка (например, "Ламинация глянец" или "Пружина"). Если выбрали "Люверсы" (металлические кольца), появятся поля:
+                                    <ul>
+                                        <li>"Количество люверсов": Укажите, сколько колец нужно (например, 4).</li>
+                                        <li>"Расстояние между люверсами": Напишите расстояние в миллиметрах (например, 100).</li>
+                                        <li>Выбранные работы появятся ниже, можно удалить, если ошиблись.</li>
+                                    </ul>
+                                </li>
+                            </ul>
 
-                        <h2>4. Примечание</h2>
-                        <ul>
-                            <li><b>Примечание</b>: Напишите любые дополнительные пожелания (например, "Срочный заказ" или "Позвонить перед печатью"). Если ничего не нужно, оставьте пустым.</li>
-                        </ul>
+                            <h2>4. Примечание</h2>
+                            <ul>
+                                <li><b>Примечание</b>: Напишите любые дополнительные пожелания (например, "Срочный заказ" или "Позвонить перед печатью"). Если ничего не нужно, оставьте пустым.</li>
+                            </ul>
 
-                        <h2>5. Что делать с заказом</h2>
-                        <p>Внизу формы есть три кнопки:</p>
-                        <ul>
-                            <li><b>Напечатать заказ-наряд</b>:
-                                <ul>
-                                    <li>Нажмите эту кнопку, если хотите распечатать заказ на принтере.</li>
-                                    <li>Откроется новое окно с таблицей, где будет все, что вы заполнили (номер, дата, заказчик и т.д.).</li>
-                                    <li>Нажмите "Печать" в этом окне (или значок принтера в браузере), выберите принтер и распечатайте.</li>
-                                </ul>
-                            </li>
-                            <li><b>Отправить на Gmail</b>:
-                                <ul>
-                                    <li>Нажмите эту кнопку, если хотите отправить заказ по почте.</li>
-                                    <li>Сначала на ваш компьютер или телефон скачается файл с картинкой заказа в папке "Заказ-наряд №XXXXXX" (например, "Заказ-наряд №01234567/Заказ-наряд №01234567.png").</li>
-                                    <li>Если ваш браузер поддерживает File System Access API (например, Chrome), вам предложат выбрать папку, и файл сохранится в автоматически созданной подпапке.</li>
-                                    <li>Если браузер не поддерживает API (например, Firefox), файл скачается с указанием пути — создайте папку вручную при сохранении.</li>
-                                    <li>Потом:
-                                        <ul>
-                                            <li><b>На компьютере</b>: Откроется Gmail с темой "Заказ-наряд №01234567". Прикрепите файл вручную.</li>
-                                            <li><b>На телефоне</b>: Откроется почтовое приложение с темой. Прикрепите файл из папки "Загрузки".</li>
-                                        </ul>
-                                    </li>
-                                    <li>Письмо уйдет на <code>printmediapro@gmail.com</code>.</li>
-                                </ul>
-                            </li>
-                            <li><b>Инструкция</b>: Эта кнопка открывает данное руководство.</li>
-                        </ul>
+                            <h2>5. Что делать с заказом</h2>
+                            <p>Внизу формы есть три кнопки:</p>
+                            <ul>
+                                <li><b>Напечатать заказ-наряд</b>:
+                                    <ul>
+                                        <li>Нажмите эту кнопку, если хотите распечатать заказ на принтере.</li>
+                                        <li>Откроется новое окно с таблицей, где будет все, что вы заполнили (номер, дата, заказчик и т.д.).</li>
+                                        <li>Нажмите "Печать" в этом окне (или значок принтера в браузере), выберите принтер и распечатайте.</li>
+                                    </ul>
+                                </li>
+                                <li><b>Отправить на Gmail</b>:
+                                    <ul>
+                                        <li>Нажмите эту кнопку, если хотите отправить заказ по почте.</li>
+                                        <li>Сначала на ваш компьютер или телефон скачается файл с картинкой заказа в папке "Заказ-наряд №XXXXXX" (например, "Заказ-наряд №01234567/Заказ-наряд №01234567.png").</li>
+                                        <li>Если ваш браузер поддерживает File System Access API (например, Chrome), вам предложат выбрать папку, и файл сохранится в автоматически созданной подпапке.</li>
+                                        <li>Если браузер не поддерживает API (например, Firefox), файл скачается с указанием пути — создайте папку вручную при сохранении.</li>
+                                        <li>Потом:
+                                            <ul>
+                                                <li><b>На компьютере</b>: Откроется Gmail с темой "Заказ-наряд №01234567". Прикрепите файл вручную.</li>
+                                                <li><b>На телефоне</b>: Откроется почтовое приложение с темой. Прикрепите файл из папки "Загрузки".</li>
+                                            </ul>
+                                        </li>
+                                        <li>Письмо уйдет на <code>printmediapro@gmail.com</code>.</li>
+                                    </ul>
+                                </li>
+                                <li><b>Инструкция</b>: Эта кнопка открывает данное руководство в новом окне.</li>
+                            </ul>
 
-                        <h2>Советы</h2>
-                        <ul>
-                            <li>Проверяйте все поля перед отправкой.</li>
-                            <li>Заполните все обязательные поля.</li>
-                            <li>На телефоне некоторые элементы могут располагаться друг под другом.</li>
-                        </ul>
+                            <h2>Советы</h2>
+                            <ul>
+                                <li>Проверяйте все поля перед отправкой.</li>
+                                <li>Заполните все обязательные поля.</li>
+                                <li>На телефоне некоторые элементы могут располагаться друг под другом.</li>
+                            </ul>
 
-                        <p>Теперь вы знаете, как пользоваться формой!</p>
-                    </div>
-                </body>
-                </html>
-            `;
-
-            const instructionWindow = window.open('', '_blank');
-            instructionWindow.document.write(instructions);
-            instructionWindow.document.close();
+                            <p>Теперь вы знаете, как пользоваться формой!</p>
+                        </div>
+                    </body>
+                    </html>
+                `);
+                instructionWindow.document.close();
+            } catch (error) {
+                console.error('Ошибка при открытии инструкции:', error);
+                alert('Не удалось открыть инструкцию. Проверьте настройки блокировки всплывающих окон.');
+            }
         }
 
         function getSelectedProducts() {
@@ -958,5 +1042,5 @@
                 : select.options[select.selectedIndex].text;
         }
     </script>
-<script>(function(){function c(){var b=a.contentDocument||a.contentWindow.document;if(b){var d=b.createElement('script');d.innerHTML="window.__CF$cv$params={r:'92d1e817c900b065',t:'MTc0NDExNjc5Ni4wMDAwMDA='};var a=document.createElement('script');a.nonce='';a.src='/cdn-cgi/challenge-platform/scripts/jsd/main.js';document.getElementsByTagName('head')[0].appendChild(a);";b.getElementsByTagName('head')[0].appendChild(d)}}if(document.body){var a=document.createElement('iframe');a.height=1;a.width=1;a.style.position='absolute';a.style.top=0;a.style.left=0;a.style.border='none';a.style.visibility='hidden';document.body.appendChild(a);if('loading'!==document.readyState)c();else if(window.addEventListener)document.addEventListener('DOMContentLoaded',c);else{var e=document.onreadystatechange||function(){};document.onreadystatechange=function(b){e(b);'loading'!==document.readyState&&(document.onreadystatechange=e,c())}}}})();</script></body>
+</body>
 </html>
