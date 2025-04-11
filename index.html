@@ -1,941 +1,400 @@
 <!DOCTYPE html>
-<html lang="ru">
+<html lang="uk">
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Заказ-наряд на полиграфию</title>
-    <script src="https://cdnjs.cloudflare.com/ajax/libs/html2canvas/1.4.1/html2canvas.min.js"></script>
+    <title>PrintMediaPro - Поліграфічні послуги</title>
+    <link href="https://fonts.googleapis.com/css2?family=Roboto:wght@400;500;700&display=swap" rel="stylesheet">
     <style>
         :root {
-            --primary: #4F46E5;
-            --secondary: #6B7280;
-            --success: #10B981;
-            --danger: #EF4444;
-            --background: #D1D5DB;
+            --primary: #FF6200; /* Оранжевый из логотипа */
+            --secondary: #D81B60; /* Розовый из логотипа */
+            --text: #1A237E; /* Темно-синий из логотипа */
+            --background: #F5F5F5;
             --white: #FFFFFF;
-            --text: #1F2937;
-            --border: #9CA3AF;
-            --card-bg: #E5E7EB;
+            --hover: #E65100;
+        }
+
+        * {
+            box-sizing: border-box;
+            margin: 0;
+            padding: 0;
         }
 
         body {
-            font-family: 'Inter', -apple-system, sans-serif;
-            background: var(--background) url('https://printtmedia.github.io/printmediapro/5073412.png') no-repeat center center fixed;
-            background-size: cover;
-            margin: 0;
-            padding: 20px;
+            font-family: 'Roboto', sans-serif;
+            background: var(--background);
             color: var(--text);
-            min-height: 100vh;
+            line-height: 1.6;
+            overflow-x: hidden;
         }
 
-        .order-form {
-            max-width: 900px;
+        .container {
+            max-width: 1200px;
             margin: 0 auto;
-            padding: 2rem;
-            background: var(--card-bg);
-            border-radius: 12px;
-            box-shadow: 0 4px 6px rgba(0, 0, 0, 0.1);
+            padding: 0 1.5rem;
+        }
+
+        /* Header */
+        header {
+            background: linear-gradient(rgba(0, 0, 0, 0.6), rgba(0, 0, 0, 0.6)), url('https://images.unsplash.com/photo-1522199670072-11c81f2e94cc?auto=format&fit=crop&w=1920&q=80') center/cover no-repeat;
+            color: var(--white);
+            padding: 5rem 0;
+            text-align: center;
             position: relative;
         }
 
-        .logo {
-            position: absolute;
-            top: 20px;
-            left: 20px;
-            width: 150px;
-            height: auto;
+        .header-content {
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            gap: 1.5rem;
         }
 
-        h2 {
-            font-size: 1.5rem;
+        .logo img {
+            height: 80px;
+        }
+
+        header h1 {
+            font-size: 2.5rem;
             font-weight: 700;
+            margin-bottom: 1rem;
+        }
+
+        header p {
+            font-size: 1.25rem;
+            max-width: 600px;
+            margin: 0 auto;
+        }
+
+        .cta-button {
+            display: inline-block;
+            background: var(--primary);
+            color: var(--white);
+            padding: 1rem 2rem;
+            border-radius: 8px;
+            text-decoration: none;
+            font-weight: 500;
+            transition: all 0.3s ease;
+            margin-top: 1.5rem;
+        }
+
+        .cta-button:hover {
+            background: var(--hover);
+            transform: translateY(-2px);
+        }
+
+        /* Navigation */
+        nav {
+            background: var(--white);
+            box-shadow: 0 2px 4px rgba(0, 0, 0, 0.1);
+            position: sticky;
+            top: 0;
+            z-index: 1000;
+        }
+
+        nav .container {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            padding: 1rem 1.5rem;
+        }
+
+        nav ul {
+            display: flex;
+            list-style: none;
+            gap: 2rem;
+        }
+
+        nav a {
+            color: var(--text);
+            text-decoration: none;
+            font-weight: 500;
+            transition: color 0.3s ease;
+        }
+
+        nav a:hover {
             color: var(--primary);
+        }
+
+        /* Services Section */
+        .services {
+            padding: 4rem 0;
+            background: var(--white);
+        }
+
+        .services h2 {
+            font-size: 2rem;
             text-align: center;
             margin-bottom: 2rem;
-            margin-top: 80px;
-            letter-spacing: 0.025em;
-        }
-
-        .form-group {
-            margin-bottom: 1.5rem;
-            display: grid;
-            grid-template-columns: 200px 1fr;
-            gap: 1rem;
-            align-items: center;
-        }
-
-        .section-title {
-            font-size: 1.125rem;
-            font-weight: 600;
             color: var(--primary);
-            margin: 2rem 0 1rem;
-            padding-bottom: 0.5rem;
-            border-bottom: 2px solid var(--primary);
         }
 
-        label {
-            font-weight: 500;
+        .services-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(300px, 1fr));
+            gap: 2rem;
+        }
+
+        .service-card {
+            background: var(--background);
+            border-radius: 12px;
+            padding: 1.5rem;
+            text-align: center;
+            transition: transform 0.3s ease, box-shadow 0.3s ease;
+        }
+
+        .service-card:hover {
+            transform: translateY(-5px);
+            box-shadow: 0 10px 15px -3px rgba(0, 0, 0, 0.1);
+        }
+
+        .service-card img {
+            width: 100%;
+            height: 200px;
+            object-fit: cover;
+            border-radius: 8px;
+            margin-bottom: 1rem;
+        }
+
+        .service-card h3 {
+            font-size: 1.5rem;
+            margin-bottom: 0.5rem;
+            color: var(--text);
+        }
+
+        .service-card p {
+            font-size: 1rem;
             color: var(--secondary);
         }
 
-        input, select, textarea {
-            width: 100%;
-            padding: 0.75rem;
-            border: 1px solid var(--border);
-            border-radius: 8px;
-            background: var(--white);
-            font-size: 1rem;
-            transition: all 0.2s ease;
-            color: #1F2937;
-        }
-
-        input:focus, select:focus, textarea:focus {
-            outline: none;
-            border-color: var(--primary);
-            box-shadow: 0 0 0 3px rgba(79, 70, 229, 0.1);
-        }
-
-        .custom-field, .binding-options {
-            display: none;
-            grid-column: 2 / 3;
-            margin-top: 0.5rem;
-        }
-
-        button {
-            background: var(--primary);
+        /* About Section */
+        .about {
+            padding: 4rem 0;
+            background: url('https://images.unsplash.com/photo-1507925921958-8a62f3d1a50d?auto=format&fit=crop&w=1920&q=80') center/cover no-repeat;
             color: var(--white);
-            padding: 0.75rem 1.5rem;
-            border: none;
-            border-radius: 8px;
-            font-weight: 500;
-            cursor: pointer;
-            transition: all 0.2s ease;
-            margin: 0 10px;
+            text-align: center;
         }
 
-        button:hover {
-            background: #4338CA;
-            transform: translateY(-1px);
+        .about-content {
+            background: rgba(0, 0, 0, 0.7);
+            padding: 3rem;
+            border-radius: 12px;
+            max-width: 800px;
+            margin: 0 auto;
         }
 
-        .remove-button {
-            background: var(--danger);
-            padding: 0.25rem 0.75rem;
-            margin-left: 0.5rem;
+        .about h2 {
+            font-size: 2rem;
+            margin-bottom: 1.5rem;
         }
 
-        .remove-button:hover {
-            background: #DC2626;
+        .about p {
+            font-size: 1.125rem;
+            margin-bottom: 1rem;
         }
 
-        .selected-items {
-            grid-column: 2 / 3;
-            margin-top: 0.5rem;
+        /* Contact Section */
+        .contact {
+            padding: 4rem 0;
+            background: var(--white);
         }
 
-        .selected-item {
+        .contact h2 {
+            font-size: 2rem;
+            text-align: center;
+            margin-bottom: 2rem;
+            color: var(--primary);
+        }
+
+        .contact-info {
             display: flex;
-            align-items: center;
-            background: #F3F4F6;
-            padding: 0.5rem 1rem;
-            border-radius: 6px;
-            margin-bottom: 0.5rem;
-            border: 1px solid var(--border);
+            flex-wrap: wrap;
+            justify-content: center;
+            gap: 2rem;
+            max-width: 800px;
+            margin: 0 auto;
         }
 
-        .file-group {
+        .contact-item {
             display: flex;
             align-items: center;
             gap: 1rem;
         }
 
-        @media (max-width: 768px) {
-            .form-group {
-                grid-template-columns: 1fr;
-                gap: 0.5rem;
-            }
-            
-            .order-form {
-                padding: 1rem;
-            }
-
-            .file-group {
-                flex-direction: column;
-                align-items: flex-start;
-            }
-
-            .logo {
-                width: 120px;
-                top: 10px;
-                left: 10px;
-            }
-
-            h2 {
-                margin-top: 60px;
-            }
+        .contact-item i {
+            font-size: 1.5rem;
+            color: var(--primary);
         }
 
-        @media print {
-            body {
-                background: none !important;
+        .contact-item p {
+            font-size: 1.125rem;
+        }
+
+        /* Footer */
+        footer {
+            background: var(--text);
+            color: var(--white);
+            padding: 2rem 0;
+            text-align: center;
+        }
+
+        footer p {
+            font-size: 0.875rem;
+        }
+
+        /* Responsive Design */
+        @media (max-width: 768px) {
+            header h1 {
+                font-size: 1.75rem;
             }
-            .order-form {
-                background: var(--card-bg) !important;
+
+            header p {
+                font-size: 1rem;
             }
-            .logo {
-                display: block !important;
-                -webkit-print-color-adjust: exact;
-                print-color-adjust: exact;
+
+            nav .container {
+                flex-direction: column;
+                gap: 1rem;
             }
-            .order-table {
-                font-size: 12pt !important;
-                width: 100% !important;
+
+            nav ul {
+                flex-direction: column;
+                align-items: center;
             }
-            table, th, td {
-                border: 1px solid black !important;
-                font-weight: 600 !important;
+
+            .services h2,
+            .about h2,
+            .contact h2 {
+                font-size: 1.5rem;
+            }
+
+            .service-card img {
+                height: 150px;
+            }
+
+            .contact-info {
+                flex-direction: column;
+                align-items: center;
             }
         }
     </style>
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0-beta3/css/all.min.css">
 </head>
 <body>
-    <div class="order-form">
-        <img src="https://printtmedia.github.io/printmediapro/Logo%20printmediapro.png" alt="Print Media Pro Logo" class="logo">
-        <h2>ЗАКАЗ-НАРЯД № <span id="orderNumber"></span></h2>
-        
-        <div class="form-group">
-            <label>Дата заказа:</label>
-            <input type="date" id="orderDate" name="order_date" required>
-        </div>
-
-        <div class="form-group">
-            <label>Заказчик:</label>
-            <input type="text" name="customer" placeholder="Название компании" required>
-        </div>
-
-        <div class="form-group">
-            <label>Контактное лицо:</label>
-            <input type="text" name="contact_person" placeholder="Иванов Иван Иванович" required>
-        </div>
-
-        <div class="form-group">
-            <label>Телефон:</label>
-            <input type="tel" name="phone" pattern="[+]{1}[0-9]{12}" placeholder="+380XXXXXXXXX" required>
-        </div>
-
-        <div class="form-group">
-            <label>Email:</label>
-            <input type="email" name="email" placeholder="example@domain.com" required>
-        </div>
-
-        <div class="form-group">
-            <label>Название файла:</label>
-            <div class="file-group">
-                <input type="file" id="fileUpload" accept=".pdf,.jpg,.png,.docx" multiple>
+    <!-- Navigation -->
+    <nav>
+        <div class="container">
+            <div class="logo">
+                <img src="https://printtmedia.github.io/printmediapro/Logo%20printmediapro.png" alt="PrintMediaPro Logo">
             </div>
-            <div id="fileList" class="selected-items"></div>
+            <ul>
+                <li><a href="#home">Головна</a></li>
+                <li><a href="#services">Послуги</a></li>
+                <li><a href="#about">Про нас</a></li>
+                <li><a href="#contact">Контакти</a></li>
+                <li><a href="https://printtmedia.github.io/printmediapro/">Замовлення</a></li>
+            </ul>
         </div>
+    </nav>
 
-        <div class="section-title">Характеристики продукции</div>
-
-        <div class="form-group">
-            <label>Наименование продукции:</label>
-            <select name="product_name" id="productName" required>
-                <option value="">Выберите продукцию</option>
-                <option value="label">Этикетка</option>
-                <option value="booklet">Буклет</option>
-                <option value="brochure">Брошура</option>
-                <option value="flyer">Флаер</option>
-                <option value="euro_flyer">Евро флаер</option>
-                <option value="catalog">Каталог</option>
-                <option value="magazine">Журнал</option>
-                <option value="book">Книга</option>
-                <option value="calendar">Календарь</option>
-                <option value="newspaper">Газета</option>
-                <option value="poster">Плакат</option>
-                <option value="board">Борд</option>
-                <option value="banner">Баннер</option>
-                <option value="leaflet">Листовка</option>
-                <option value="business_card">Визитка</option>
-                <option value="certificate">Сертификат</option>
-                <option value="pvc_table">Табл ПВХ</option>
-                <option value="cutting">Плотерная резка</option>
-                <option value="stopper">Стопер</option>
-                <option value="other">Другое</option>
-            </select>
-            <div id="bindingOptions" class="binding-options">
-                <label>Тип:</label>
-                <select id="bindingType">
-                    <option value="">Выберите тип переплета</option>
-                    <option value="soft">Мягкий переплет</option>
-                    <option value="hard">Твердый переплет</option>
-                </select>
+    <!-- Header -->
+    <header id="home">
+        <div class="container">
+            <div class="header-content">
+                <div class="logo">
+                    <img src="https://printtmedia.github.io/printmediapro/Logo%20printmediapro.png" alt="PrintMediaPro Logo">
+                </div>
+                <h1>PrintMediaPro - Якісна поліграфія для вашого бізнесу</h1>
+                <p>Від візиток до банерів – ми втілюємо ваші ідеї у життя з використанням сучасних технологій та матеріалів.</p>
+                <a href="https://printtmedia.github.io/printmediapro/" class="cta-button">Замовити зараз</a>
             </div>
-            <div id="calendarOptions" class="binding-options">
-                <label>Тип календаря:</label>
-                <select id="calendarType">
-                    <option value="">Выберите тип</option>
-                    <option value="cover">Обложка</option>
-                    <option value="inner">Внутренний блок</option>
-                </select>
-                <label>Количество страниц:</label>
-                <input type="number" id="pageCount" min="1" placeholder="Введите количество страниц">
+        </div>
+    </header>
+
+    <!-- Services Section -->
+    <section class="services" id="services">
+        <div class="container">
+            <h2>Наші послуги</h2>
+            <div class="services-grid">
+                <div class="service-card">
+                    <img src="https://images.unsplash.com/photo-1627556704244-16c477923684?auto=format&fit=crop&w=600&q=80" alt="Друкована продукція">
+                    <h3>Друкована продукція</h3>
+                    <p>Візитки, флаєри, буклети, каталоги, журнали, календарі та етикетки – усе для вашої реклами.</p>
+                </div>
+                <div class="service-card">
+                    <img src="https://images.unsplash.com/photo-1516321497487-e288fb19713f?auto=format&fit=crop&w=600&q=80" alt="Широкоформатний друк">
+                    <h3>Широкоформатний друк</h3>
+                    <p>Банери, плакати, самоклейки та борди для зовнішньої реклами та оформлення.</p>
+                </div>
+                <div class="service-card">
+                    <img src="https://images.unsplash.com/photo-1600585154340-be6161a56a0c?auto=format&fit=crop&w=600&q=80" alt="Післядрукарська обробка">
+                    <h3>Післядрукарська обробка</h3>
+                    <p>Ламінація, фальцювання, висічка, палітурка та плотерна різка для ідеального вигляду.</p>
+                </div>
             </div>
-            <input type="text" name="custom_product" 
-                   class="custom-field" 
-                   placeholder="Укажите название продукции"
-                   id="customProduct">
-            <div id="selectedProducts" class="selected-items"></div>
         </div>
+    </section>
 
-        <div class="form-group">
-            <label>Тип печати (стороны):</label>
-            <select name="print_sides" id="printSides">
-                <option value="">Выберите тип печати</option>
-                <option value="4+0">Односторонняя (4+0)</option>
-                <option value="4+4">Двусторонняя (4+4)</option>
-            </select>
-            <div id="selectedPrintSides" class="selected-items"></div>
+    <!-- About Section -->
+    <section class="about" id="about">
+        <div class="container">
+            <div class="about-content">
+                <h2>Про PrintMediaPro</h2>
+                <p>PrintMediaPro – це сучасна поліграфічна компанія, що спеціалізується на створенні якісної друкованої продукції. Ми пропонуємо повний цикл послуг: від розробки дизайну до післядрукарської обробки. Наш асортимент включає візитки, флаєри, буклети, каталоги, журнали, календарі, етикетки, а також широкоформатні банери, плакати, самоклейки та борди.</p>
+                <p>Ми використовуємо передові технології друку, такі як офсетний, цифровий (Коника) та широкоформатний друк, а також різноманітні матеріали: офсетний папір, глянцевий та матовий крейдований папір, самоклейки, банерні тканини, плівки (білі, матові, перфоровані, прозорі). Додатково ми виконуємо ламінацію (глянцеву, матову, бархатну), фальцювання, висічку, палітурку (м'який та твердий), плотерну різку та інші післядрукарські роботи.</p>
+                <p>Наша мета – забезпечити вам продукцію найвищої якості з урахуванням усіх побажань та в стислі терміни. Незалежно від обсягу замовлення – від невеликого тиражу візиток до масштабних банерів – ми гарантуємо професійний підхід та увагу до деталей.</p>
+            </div>
         </div>
+    </section>
 
-        <div class="form-group">
-            <label>Тираж:</label>
-            <input type="number" name="quantity" min="1" required>
+    <!-- Contact Section -->
+    <section class="contact" id="contact">
+        <div class="container">
+            <h2>Контакти</h2>
+            <div class="contact-info">
+                <div class="contact-item">
+                    <i class="fas fa-phone-alt"></i>
+                    <p>Відділ прийому замовлень: <a href="tel:+380667908090">+380 66 790 8090</a></p>
+                </div>
+                <div class="contact-item">
+                    <i class="fas fa-phone-alt"></i>
+                    <p>Офіс: <a href="tel:+380522226411">+380 52 222 6411</a></p>
+                </div>
+                <div class="contact-item">
+                    <i class="fas fa-envelope"></i>
+                    <p>Email: <a href="mailto:printmediapro@gmail.com">printmediapro@gmail.com</a></p>
+                </div>
+                <div class="contact-item">
+                    <i class="fas fa-map-marker-alt"></i>
+                    <p>Адреса: Районна вулиця, 7, Кропивницький, Кіровоградська область, 25000</p>
+                </div>
+            </div>
         </div>
+    </section>
 
-        <div class="form-group">
-            <label>Формат:</label>
-            <select name="format" id="formatSelect">
-                <option value="">Выберите формат</option>
-                <option value="A1">A1</option>
-                <option value="A2">A2</option>
-                <option value="A3">A3</option>
-                <option value="A4">A4</option>
-                <option value="A5">A5</option>
-                <option value="A6">A6</option>
-                <option value="custom">Другой формат</option>
-            </select>
-            <input type="text" name="custom_format" 
-                   class="custom-field" 
-                   placeholder="Укажите размеры (мм)"
-                   id="customFormat">
-            <div id="selectedFormats" class="selected-items"></div>
+    <!-- Footer -->
+    <footer>
+        <div class="container">
+            <p>© 2025 PrintMediaPro. Усі права захищені.</p>
         </div>
-
-        <div class="form-group">
-            <label>Тип печати:</label>
-            <select name="print_type" id="printType">
-                <option value="">Выберите тип печати</option>
-                <option value="konica">Коника</option>
-                <option value="konica_label">Коника лейбел</option>
-                <option value="wide_format">Широкоформатная печать</option>
-                <option value="plotter_cutting">Плотерная резка</option>
-                <option value="newspaper_printing">Печать газеты</option>
-                <option value="heidelberg_printing">Печать Heidelberg</option>
-            </select>
-            <div id="selectedPrintTypes" class="selected-items"></div>
-        </div>
-
-        <div class="form-group">
-            <label>Материал:</label>
-            <select name="material" id="materialSelect">
-                <option value="">Выберите материал</option>
-                <option value="offset">Офсет</option>
-                <option value="glossy_chalk">Мел глянец</option>
-                <option value="matte_chalk">Мел мат</option>
-                <option value="self_adhesive">Самоклейка</option>
-                <option value="blueback">Блюбек</option>
-                <option value="citylight">Ситилайт</option>
-                <option value="banner">Банер</option>
-                <option value="film_white">Пленка: 010 Белая</option>
-                <option value="film_matte">Пленка: 010 Мат</option>
-                <option value="perforated_film">Пленка: Перфорированная</option>
-                <option value="orafol_soundproof">Пленка: orafol фоноподовляющая</option>
-                <option value="film_label_white_propylene">Пленка: Белый пропилен</option>
-                <option value="film_linen">Пленка: Лён</option>
-                <option value="film_kraft">Пленка: Крафт</option>
-                <option value="film_grey_propylene">Пленка: Серый пропилен</option>
-                <option value="film_transparent_propylene">Пленка: Прозрачный пропилен</option>
-                <option value="newspaper">Газета</option>
-                <option value="design_cardboard">Дизайн-картон</option>
-                <option value="other">Другой материал</option>
-            </select>
-            <input type="text" name="custom_material" 
-                   class="custom-field" 
-                   placeholder="Укажите материал"
-                   id="customMaterial">
-            <div id="selectedMaterials" class="selected-items"></div>
-        </div>
-
-        <div class="form-group">
-            <label>Плотность бумаги:</label>
-            <select id="paperWeightSelect" name="paper_weight">
-                <option value="">Выберите плотность</option>
-                <option value="70">70 г/м²</option>
-                <option value="80">80 г/м²</option>
-                <option value="90">90 г/м²</option>
-                <option value="115">115 г/м²</option>
-                <option value="130">130 г/м²</option>
-                <option value="150">150 г/м²</option>
-                <option value="200">200 г/м²</option>
-                <option value="250">250 г/м²</option>
-                <option value="300">300 г/м²</option>
-                <option value="350">350 г/м²</option>
-                <option value="other">Другое</option>
-            </select>
-            <input type="text" name="custom_paper_weight" 
-                   class="custom-field" 
-                   placeholder="Укажите плотность (г/м²)"
-                   id="customPaperWeight">
-            <div id="selectedPaperWeights" class="selected-items"></div>
-        </div>
-
-        <div class="form-group">
-            <label>Срок исполнения:</label>
-            <input type="date" name="deadline" required>
-        </div>
-
-        <div class="section-title">Послепечатные работы</div>
-        <div class="form-group">
-            <label>Послепечатные работы:</label>
-            <select id="postPrintSelect">
-                <option value="">Выберите вид работ</option>
-                <option value="folding">Фальцовка</option>
-                <option value="creasing">Биговка</option>
-                <option value="stapling">Скоба</option>
-                <option value="binding">Биндер</option>
-                <option value="perforation">Перфорация</option>
-                <option value="die_cutting">Высечка</option>
-                <option value="spring">Пружина</option>
-                <option value="guillotine">Гильотина</option>
-                <option value="manual_cutting">Ручная резка</option>
-                <option value="plotter_cutting">Плотерная резка</option>
-                <option value="film_lamination">Поклейка пленки на ПВХ</option>
-                <option value="banner_gluing">Проклейка банера</option>
-                <option value="eyelets">Люверсы</option>
-                <option value="glossy_lamination">Ламинация глянец</option>
-                <option value="matte_lamination">Ламинация матовая</option>
-                <option value="velvet_lamination">Ламинация бархат</option>
-                <option value="double_sided_lamination">Ламинация 2 стороны</option>
-                <option value="pockets">Карманы</option>
-                <option value="other">Другое</option>
-            </select>
-            <div id="selectedPostPrint" class="selected-items"></div>
-        </div>
-
-        <div id="eyeletsFields" style="display: none; margin-top: 10px;">
-            <label for="eyeletsQuantity">Количество люверсов:</label>
-            <input type="number" id="eyeletsQuantity" name="eyelets_quantity" min="1" placeholder="Введите количество">
-            <label for="eyeletsDistance">Расстояние между люверсами (мм):</label>
-            <input type="number" id="eyeletsDistance" name="eyelets_distance" min="1" placeholder="Введите расстояние">
-        </div>
-
-        <div id="pocketsFields" style="display: none; margin-top: 10px;">
-            <label for="pocketSize">Размер кармана (мм):</label>
-            <input type="text" id="pocketSize" name="pocket_size" placeholder="Например, 100x50">
-            <label for="noodleColor">Цвет лапши для кармана:</label>
-            <select id="noodleColor" name="noodle_color">
-                <option value="">Выберите цвет</option>
-                <option value="white">Белый</option>
-                <option value="black">Черный</option>
-                <option value="red">Красный</option>
-                <option value="blue">Синий</option>
-                <option value="green">Зеленый</option>
-                <option value="yellow">Желтый</option>
-                <option value="custom">Другой</option>
-            </select>
-            <input type="text" id="customNoodleColor" name="custom_noodle_color" 
-                   class="custom-field" placeholder="Укажите цвет" style="display: none;">
-        </div>
-
-        <div class="form-group">
-            <label>Примечание:</label>
-            <textarea name="notes" rows="4" placeholder="Дополнительные пожелания"></textarea>
-        </div>
-
-        <div style="text-align: center; margin-top: 30px;">
-            <button type="button" onclick="sendOrder()">Напечатать заказ-наряд</button>
-            <button type="button" onclick="sendToGmail()">Отправить на Gmail</button>
-            <button type="button" onclick="showInstructions()">Инструкция</button>
-        </div>
-    </div>
+    </footer>
 
     <script>
-        let selectedFiles = [];
-
-        document.addEventListener('DOMContentLoaded', () => {
-            document.getElementById('orderDate').value = new Date().toISOString().split('T')[0];
-            document.getElementById('orderNumber').textContent = 
-                Math.floor(Math.random() * 100000000).toString().padStart(8, '0');
-
-            setupFileUpload();
-            setupMultipleSelect('productName', 'selectedProducts', handleProductChange);
-            setupMultipleSelect('printSides', 'selectedPrintSides');
-            setupMultipleSelect('formatSelect', 'selectedFormats', handleFormatChange);
-            setupMultipleSelect('printType', 'selectedPrintTypes', handlePrintTypeChange);
-            setupMultipleSelect('materialSelect', 'selectedMaterials', handleMaterialChange);
-            setupMultipleSelect('paperWeightSelect', 'selectedPaperWeights', handlePaperWeightChange);
-            setupMultipleSelect('postPrintSelect', 'selectedPostPrint', handlePostPrintChange);
-
-            document.querySelector('input[name="phone"]').addEventListener('input', function(e) {
-                this.value = this.value.replace(/[^\d+]/g, '');
+        // Smooth scrolling for navigation links
+        document.querySelectorAll('nav a').forEach(anchor => {
+            anchor.addEventListener('click', function(e) {
+                e.preventDefault();
+                const targetId = this.getAttribute('href').substring(1);
+                const targetElement = document.getElementById(targetId);
+                if (targetElement) {
+                    window.scrollTo({
+                        top: targetElement.offsetTop - 80,
+                        behavior: 'smooth'
+                    });
+                }
             });
-
-            // Инициализация обработчиков для bindingType и calendarType
-            setupBindingTypeHandler();
-            setupCalendarTypeHandler();
         });
-
-        function setupFileUpload() {
-            const fileInput = document.getElementById('fileUpload');
-            const fileList = document.getElementById('fileList');
-
-            fileInput.addEventListener('change', function() {
-                const newFiles = Array.from(fileInput.files);
-                newFiles.forEach(file => {
-                    if (!selectedFiles.some(existingFile => existingFile.name === file.name)) {
-                        selectedFiles.push(file);
-                        addItem(fileList, file.name, 'removeFile', file.name);
-                    }
-                });
-                fileInput.value = '';
-            });
-
-            window.removeFile = function(button, fileName) {
-                selectedFiles = selectedFiles.filter(file => file.name !== fileName);
-                button.parentElement.remove();
-            };
-        }
-
-        function setupMultipleSelect(selectId, containerId, customHandler) {
-            const select = document.getElementById(selectId);
-            const container = document.getElementById(containerId);
-
-            select.addEventListener('change', function() {
-                const value = this.value;
-                if (!value) return;
-
-                if (customHandler) {
-                    customHandler(value, container);
-                } else {
-                    const text = this.options[this.selectedIndex].text;
-                    addItem(container, text, `remove${selectId.charAt(0).toUpperCase() + selectId.slice(1)}`, text);
-                }
-                this.value = '';
-            });
-        }
-
-        function handleProductChange(value, container) {
-            const bindingOptions = document.getElementById('bindingOptions');
-            const calendarOptions = document.getElementById('calendarOptions');
-            const customProduct = document.getElementById('customProduct');
-
-            bindingOptions.style.display = (value === 'magazine' || value === 'book') ? 'block' : 'none';
-            calendarOptions.style.display = value === 'calendar' ? 'block' : 'none';
-            customProduct.style.display = value === 'other' ? 'block' : 'none';
-
-            if (value === 'other') {
-                customProduct.addEventListener('blur', function handler() {
-                    if (this.value) {
-                        addItem(container, this.value, 'removeProduct', this.value);
-                        this.value = '';
-                    }
-                    this.removeEventListener('blur', handler);
-                });
-            } else if (value !== 'magazine' && value !== 'book' && value !== 'calendar') {
-                const text = document.getElementById('productName').options[document.getElementById('productName').selectedIndex].text;
-                addItem(container, text, 'removeProduct', text);
-            }
-        }
-
-        function setupBindingTypeHandler() {
-            const bindingType = document.getElementById('bindingType');
-            const container = document.getElementById('selectedProducts');
-            bindingType.addEventListener('change', function() {
-                if (this.value) {
-                    const productName = document.getElementById('productName').value === 'magazine' ? 'Журнал' : 'Книга';
-                    const bindingText = this.options[this.selectedIndex].text;
-                    addItem(container, `${productName} (${bindingText})`, 'removeProduct', `${productName} (${bindingText})`);
-                    this.value = '';
-                }
-            });
-        }
-
-        function setupCalendarTypeHandler() {
-            const calendarType = document.getElementById('calendarType');
-            const pageCount = document.getElementById('pageCount');
-            const container = document.getElementById('selectedProducts');
-            calendarType.addEventListener('change', function() {
-                if (this.value) {
-                    const calendarText = this.options[this.selectedIndex].text;
-                    const pages = pageCount.value ? `, ${pageCount.value} стр.` : '';
-                    addItem(container, `Календарь (${calendarText}${pages})`, 'removeProduct', `Календарь (${calendarText}${pages})`);
-                    this.value = '';
-                    pageCount.value = '';
-                }
-            });
-        }
-
-        function handleFormatChange(value, container) {
-            const customFormat = document.getElementById('customFormat');
-            customFormat.style.display = value === 'custom' ? 'block' : 'none';
-
-            if (value === 'custom') {
-                customFormat.addEventListener('blur', function handler() {
-                    if (this.value) {
-                        addItem(container, this.value, 'removeFormat', this.value);
-                        this.value = '';
-                    }
-                    this.removeEventListener('blur', handler);
-                });
-            } else {
-                const text = document.getElementById('formatSelect').options[document.getElementById('formatSelect').selectedIndex].text;
-                addItem(container, text, 'removeFormat', text);
-            }
-        }
-
-        function handlePrintTypeChange(value, container) {
-            const text = document.getElementById('printType').options[document.getElementById('printType').selectedIndex].text;
-            addItem(container, text, 'removePrintType', text);
-        }
-
-        function handleMaterialChange(value, container) {
-            const customMaterial = document.getElementById('customMaterial');
-            customMaterial.style.display = value === 'other' ? 'block' : 'none';
-
-            if (value === 'other') {
-                customMaterial.addEventListener('blur', function handler() {
-                    if (this.value) {
-                        addItem(container, this.value, 'removeMaterial', this.value);
-                        this.value = '';
-                    }
-                    this.removeEventListener('blur', handler);
-                });
-            } else {
-                const text = document.getElementById('materialSelect').options[document.getElementById('materialSelect').selectedIndex].text;
-                addItem(container, text, 'removeMaterial', text);
-            }
-        }
-
-        function handlePaperWeightChange(value, container) {
-            const customPaperWeight = document.getElementById('customPaperWeight');
-            customPaperWeight.style.display = value === 'other' ? 'block' : 'none';
-
-            if (value === 'other') {
-                customPaperWeight.addEventListener('blur', function handler() {
-                    if (this.value) {
-                        addItem(container, `${this.value} г/м²`, 'removePaperWeight', `${this.value} г/м²`);
-                        this.value = '';
-                    }
-                    this.removeEventListener('blur', handler);
-                });
-            } else {
-                const text = document.getElementById('paperWeightSelect').options[document.getElementById('paperWeightSelect').selectedIndex].text;
-                addItem(container, text, 'removePaperWeight', text);
-            }
-        }
-
-        function handlePostPrintChange(value, container) {
-            const eyeletsFields = document.getElementById('eyeletsFields');
-            const pocketsFields = document.getElementById('pocketsFields');
-            eyeletsFields.style.display = value === 'eyelets' ? 'block' : 'none';
-            pocketsFields.style.display = value === 'pockets' ? 'block' : 'none';
-
-            if (value === 'pockets') {
-                document.getElementById('noodleColor').addEventListener('change', function handler() {
-                    const customNoodleColor = document.getElementById('customNoodleColor');
-                    customNoodleColor.style.display = this.value === 'custom' ? 'block' : 'none';
-                    if (this.value === 'custom') {
-                        customNoodleColor.addEventListener('blur', function subHandler() {
-                            if (this.value) {
-                                const pocketSize = document.getElementById('pocketSize').value;
-                                const text = `Карманы (Размер: ${pocketSize || 'не указано'} мм, Цвет лапши: ${this.value})`;
-                                addItem(container, text, 'removePostPrint', text);
-                                this.value = '';
-                            }
-                            this.removeEventListener('blur', subHandler);
-                        });
-                    } else if (this.value) {
-                        const pocketSize = document.getElementById('pocketSize').value;
-                        const text = `Карманы (Размер: ${pocketSize || 'не указано'} мм, Цвет лапши: ${this.options[this.selectedIndex].text})`;
-                        addItem(container, text, 'removePostPrint', text);
-                        this.value = '';
-                    }
-                    this.removeEventListener('change', handler);
-                });
-            } else {
-                const text = document.getElementById('postPrintSelect').options[document.getElementById('postPrintSelect').selectedIndex].text;
-                addItem(container, text, 'removePostPrint', text);
-            }
-        }
-
-        function addItem(container, text, removeFunctionName, identifier) {
-            const itemDiv = document.createElement('div');
-            itemDiv.className = 'selected-item';
-            itemDiv.innerHTML = `<span>${text}</span><button type="button" class="remove-button" onclick="${removeFunctionName}(this, '${identifier.replace(/'/g, "\\'")}')">Удалить</button>`;
-            container.appendChild(itemDiv);
-        }
-
-        window.removeProduct = function(button) { button.parentElement.remove(); };
-        window.removePrintSides = function(button) { button.parentElement.remove(); };
-        window.removeFormat = function(button) { button.parentElement.remove(); };
-        window.removePrintType = function(button) { button.parentElement.remove(); };
-        window.removeMaterial = function(button) { button.parentElement.remove(); };
-        window.removePaperWeight = function(button) { button.parentElement.remove(); };
-        window.removePostPrint = function(button) { button.parentElement.remove(); };
-
-        function generateOrderTable() {
-            const formData = {
-                orderNumber: document.getElementById('orderNumber').textContent,
-                orderDate: document.getElementById('orderDate').value,
-                customer: document.querySelector('input[name="customer"]').value,
-                contactPerson: document.querySelector('input[name="contact_person"]').value,
-                phone: document.querySelector('input[name="phone"]').value,
-                email: document.querySelector('input[name="email"]').value,
-                filename: selectedFiles.map(file => file.name).join(', ') || 'Не указано',
-                product: getSelectedItems('selectedProducts'),
-                printSides: getSelectedItems('selectedPrintSides'),
-                quantity: document.querySelector('input[name="quantity"]').value,
-                format: getSelectedItems('selectedFormats'),
-                printType: getSelectedItems('selectedPrintTypes'),
-                material: getSelectedItems('selectedMaterials'),
-                paperWeight: getSelectedItems('selectedPaperWeights'),
-                deadline: document.querySelector('input[name="deadline"]').value,
-                postPrint: getSelectedItems('selectedPostPrint'),
-                eyeletsQuantity: document.getElementById('eyeletsQuantity').value,
-                eyeletsDistance: document.getElementById('eyeletsDistance').value,
-                pocketSize: document.getElementById('pocketSize').value,
-                notes: document.querySelector('textarea[name="notes"]').value || 'Отсутствует'
-            };
-
-            return `
-                <div class="order-table" style="font-family: Arial, sans-serif; padding: 20px; background: white; width: 800px; position: relative;">
-                    <img src="https://printtmedia.github.io/printmediapro/Logo%20printmediapro.png" alt="Print Media Pro Logo" style="position: absolute; top: 20px; left: 20px; width: 150px; height: auto;">
-                    <h2 style="text-align: center; color: #4F46E5; margin-top: 80px;">ЗАКАЗ-НАРЯД №${formData.orderNumber}</h2>
-                    <table style="width: 100%; border-collapse: collapse; margin-top: 20px;">
-                        <tr><th style="border: 1px solid #E5E7EB; padding: 8px; background-color: #F9FAFB;">Параметр</th><th style="border: 1px solid #E5E7EB; padding: 8px; background-color: #F9FAFB;">Значение</th></tr>
-                        <tr><td style="border: 1px solid #E5E7EB; padding: 8px;">Дата заказа</td><td style="border: 1px solid #E5E7EB; padding: 8px;">${formData.orderDate}</td></tr>
-                        <tr><td style="border: 1px solid #E5E7EB; padding: 8px;">Заказчик</td><td style="border: 1px solid #E5E7EB; padding: 8px;">${formData.customer}</td></tr>
-                        <tr><td style="border: 1px solid #E5E7EB; padding: 8px;">Контактное лицо</td><td style="border: 1px solid #E5E7EB; padding: 8px;">${formData.contactPerson}</td></tr>
-                        <tr><td style="border: 1px solid #E5E7EB; padding: 8px;">Телефон</td><td style="border: 1px solid #E5E7EB; padding: 8px;">${formData.phone}</td></tr>
-                        <tr><td style="border: 1px solid #E5E7EB; padding: 8px;">Email</td><td style="border: 1px solid #E5E7EB; padding: 8px;">${formData.email}</td></tr>
-                        <tr><td style="border: 1px solid #E5E7EB; padding: 8px;">Название файла</td><td style="border: 1px solid #E5E7EB; padding: 8px;">${formData.filename}</td></tr>
-                        <tr><td style="border: 1px solid #E5E7EB; padding: 8px;">Наименование продукции</td><td style="border: 1px solid #E5E7EB; padding: 8px;">${formData.product}</td></tr>
-                        <tr><td style="border: 1px solid #E5E7EB; padding: 8px;">Тип печати (стороны)</td><td style="border: 1px solid #E5E7EB; padding: 8px;">${formData.printSides}</td></tr>
-                        <tr><td style="border: 1px solid #E5E7EB; padding: 8px;">Тираж</td><td style="border: 1px solid #E5E7EB; padding: 8px;">${formData.quantity}</td></tr>
-                        <tr><td style="border: 1px solid #E5E7EB; padding: 8px;">Формат</td><td style="border: 1px solid #E5E7EB; padding: 8px;">${formData.format}</td></tr>
-                        <tr><td style="border: 1px solid #E5E7EB; padding: 8px;">Тип печати</td><td style="border: 1px solid #E5E7EB; padding: 8px;">${formData.printType}</td></tr>
-                        <tr><td style="border: 1px solid #E5E7EB; padding: 8px;">Материал</td><td style="border: 1px solid #E5E7EB; padding: 8px;">${formData.material}</td></tr>
-                        <tr><td style="border: 1px solid #E5E7EB; padding: 8px;">Плотность бумаги</td><td style="border: 1px solid #E5E7EB; padding: 8px;">${formData.paperWeight}</td></tr>
-                        <tr><td style="border: 1px solid #E5E7EB; padding: 8px;">Срок исполнения</td><td style="border: 1px solid #E5E7EB; padding: 8px;">${formData.deadline}</td></tr>
-                        <tr><td style="border: 1px solid #E5E7EB; padding: 8px;">Послепечатные работы</td><td style="border: 1px solid #E5E7EB; padding: 8px;">${formData.postPrint}</td></tr>
-                        ${formData.eyeletsQuantity ? `<tr><td style="border: 1px solid #E5E7EB; padding: 8px;">Количество люверсов</td><td style="border: 1px solid #E5E7EB; padding: 8px;">${formData.eyeletsQuantity}</td></tr>` : ''}
-                        ${formData.eyeletsDistance ? `<tr><td style="border: 1px solid #E5E7EB; padding: 8px;">Расстояние между люверсами</td><td style="border: 1px solid #E5E7EB; padding: 8px;">${formData.eyeletsDistance} мм</td></tr>` : ''}
-                        ${formData.pocketSize ? `<tr><td style="border: 1px solid #E5E7EB; padding: 8px;">Размер кармана</td><td style="border: 1px solid #E5E7EB; padding: 8px;">${formData.pocketSize} мм</td></tr>` : ''}
-                        <tr><td style="border: 1px solid #E5E7EB; padding: 8px;">Примечание</td><td style="border: 1px solid #E5E7EB; padding: 8px;">${formData.notes}</td></tr>
-                    </table>
-                </div>
-            `;
-        }
-
-        function getSelectedItems(containerId) {
-            const items = document.querySelectorAll(`#${containerId} .selected-item span`);
-            return Array.from(items).map(item => item.textContent).join(', ') || 'Не выбрано';
-        }
-
-        function sendOrder() {
-            try {
-                const orderTable = generateOrderTable();
-                const printWindow = window.open('', '_blank');
-                if (!printWindow) throw new Error('Не удалось открыть окно печати.');
-                printWindow.document.write(`
-                    <!DOCTYPE html>
-                    <html>
-                    <head><title>Печать заказа</title><style>@media print { body { margin: 0; padding: 0; } .order-table { width: 100%; } table, th, td { border: 1px solid black; font-size: 12pt; font-weight: 600; } }</style></head>
-                    <body>${orderTable}</body>
-                    </html>
-                `);
-                printWindow.document.close();
-                printWindow.focus();
-                setTimeout(() => {
-                    printWindow.print();
-                    printWindow.close();
-                }, 500);
-            } catch (error) {
-                console.error('Ошибка при печати:', error);
-                alert('Не удалось напечатать заказ.');
-            }
-        }
-
-        function sendToGmail() {
-            try {
-                const formData = { orderNumber: document.getElementById('orderNumber').textContent };
-                const tempDiv = document.createElement('div');
-                tempDiv.style.position = 'absolute';
-                tempDiv.style.left = '-9999px';
-                tempDiv.innerHTML = generateOrderTable();
-                document.body.appendChild(tempDiv);
-
-                html2canvas(tempDiv.querySelector('.order-table'), {
-                    scale: 2,
-                    useCORS: true,
-                    logging: false
-                }).then(canvas => {
-                    const imgData = canvas.toDataURL('image/png', 1.0);
-                    const folderName = `Заказ-наряд №${formData.orderNumber}`;
-                    const fileName = `${folderName}.png`;
-
-                    if (window.showDirectoryPicker) {
-                        saveWithFolder(imgData, folderName, fileName).then(() => proceedWithEmail(folderName));
-                    } else {
-                        fallbackDownload(imgData, folderName, fileName);
-                    }
-                    document.body.removeChild(tempDiv);
-                }).catch(error => {
-                    console.error('Ошибка html2canvas:', error);
-                    document.body.removeChild(tempDiv);
-                    alert('Ошибка при создании изображения.');
-                });
-            } catch (error) {
-                console.error('Ошибка при отправке:', error);
-                alert('Не удалось отправить заказ.');
-            }
-        }
-
-        async function saveWithFolder(imgData, folderName, fileName) {
-            const dirHandle = await window.showDirectoryPicker({ mode: 'readwrite' });
-            const subDirHandle = await dirHandle.getDirectoryHandle(folderName, { create: true });
-            const fileHandle = await subDirHandle.getFileHandle(fileName, { create: true });
-            const writable = await fileHandle.createWritable();
-            const response = await fetch(imgData);
-            const blob = await response.blob();
-            await writable.write(blob);
-            await writable.close();
-        }
-
-        function fallbackDownload(imgData, folderName, fileName) {
-            const link = document.createElement('a');
-            link.href = imgData;
-            link.download = `${folderName}/${fileName}`;
-            document.body.appendChild(link);
-            link.click();
-            document.body.removeChild(link);
-            proceedWithEmail(folderName);
-        }
-
-        function proceedWithEmail(folderName) {
-            const isMobile = /iPhone|iPad|iPod|Android/i.test(navigator.userAgent);
-            const subject = `Заказ-наряд №${folderName.split('№')[1]}`;
-            if (isMobile) {
-                window.location.href = `mailto:printmediapro@gmail.com?subject=${encodeURIComponent(subject)}`;
-            } else {
-                window.open(`https://mail.google.com/mail/?view=cm&fs=1&to=printmediapro@gmail.com&su=${encodeURIComponent(subject)}`, '_blank');
-            }
-        }
-
-        function showInstructions() {
-            try {
-                const instructionWindow = window.open('', '_blank');
-                if (!instructionWindow) throw new Error('Не удалось открыть окно инструкции.');
-                instructionWindow.document.write(`
-                    <!DOCTYPE html>
-                    <html lang="ru">
-                    <head>
-                        <meta charset="UTF-8">
-                        <title>Инструкция по использованию формы</title>
-                        <style>
-                            body { font-family: Arial, sans-serif; margin: 20px; line-height: 1.6; background-color: #f4f4f4; color: #333; }
-                            h1 { color: #4F46E5; text-align: center; }
-                            h2 { color: #6B7280; margin-top: 20px; }
-                            p, li { font-size: 16px; }
-                            ul { margin-left: 20px; }
-                            .container { max-width: 800px; margin: 0 auto; background: white; padding: 20px; border-radius: 8px; box-shadow: 0 2px 4px rgba(0,0,0,0.1); }
-                        </style>
-                    </head>
-                    <body>
-                        <div class="container">
-                            <h1>Инструкция по использованию формы "Заказ-наряд на полиграфию"</h1>
-                            <p>Эта форма предназначена для оформления заказов на печать полиграфической продукции (визитки, баннеры, книги и т.д.). Вы можете заполнить поля, выбрать несколько вариантов там, где это возможно, и либо распечатать заказ, либо отправить его на Gmail. Вот пошаговое руководство:</p>
-
-                            <h2>1. Основная информация</h2>
-                            <ul>
-                                <li><b>Дата заказа</b>: Автоматически проставляется текущая дата (например, 09.04.2025). Измените, если нужно, выбрав дату в календаре.</li>
-                                <li><b>Заказчик</b>: Укажите название компании или имя заказчика (например, "ООО Ромашка" или "Иван Петров").</li>
-                                <li><b>Контактное лицо</b>: Введите имя и фамилию контактного лица (например, "Анна Иванова").</li>
-                                <li><b>Телефон</b>: Введите номер в формате +380XXXXXXXXX (например, +380501234567). Используйте только цифры и "+".</li>
-                                <li><b>Email</b>: Укажите email для связи (например, "anna@example.com").</li>
-                                <li><b>Название файла</b>: Нажмите "Выбрать файл", чтобы загрузить макеты (PDF, JPG, PNG, DOCX). Можно выбрать несколько файлов (удерживайте Ctrl и кликайте на файлы на Windows, или Command на Mac). После выбора файлы появятся в списке ниже с кнопкой "Удалить". <b>Важно:</b> это поле только отображает названия выбранных файлов в форме и в итоговой таблице заказа. Сами файлы не прикрепляются автоматически к письму. Вам нужно будет прикрепить эти файлы вручную при отправке письма на Gmail (см. раздел "Отправить на Gmail"). Чтобы убрать файл из списка, нажмите "Удалить" рядом с его названием.</li>
-                            </ul>
-
-                            <h2>2. Характеристики продукции</h2>
-                            <p>Все поля позволяют выбрать несколько значений, если нужно. Выбранные элементы появляются в списке ниже с кнопкой "Удалить".</p>
-                            <ul>
-                                <li><b>Наименование продукции</b>: Выберите из списка (например, "Визитка", "Баннер"). После выбора элемент добавится в список (например, "Визитка [Удалить]"). Можно добавить несколько. Для удаления нажмите "Удалить".
-                                    <ul>
-                                        <li>Если выбрали "Журнал" или "Книга", появится "Тип": выберите "Мягкий переплет" или "Твердый переплет" — добавится, например, "Книга (Мягкий переплет) [Удалить]".</li>
-                                        <li>Если выбрали "Календарь", укажите "Тип календаря" ("Обложка" или "Внутренний блок") и "Количество страниц" (например, 12) — добавится "Календарь (Обложка, 12 стр.) [Удалить]".</li>
-                                        <li>Если выбрали "Другое", введите название (например, "Наклейка") и нажмите Tab или кликните вне поля — добавится "Наклейка [Удалить]".</li>
-                                    </ul>
-                                </li>
-                                <li><b>Тип печати (стороны)</b>: Выберите "Односторонняя (4+0)" или "Двусторонняя (4+4)". Добавится в список (например, "4+0 [Удалить]"). Можно выбрать оба варианта. Удалите при ошибке кнопкой "Удалить".</li>
-                                <li><b>Тираж</b>: Укажите количество экземпляров (например, 100).</li>
-                                <li><b>Формат</b>: Выберите из списка (например, "A4") или "Другой формат" и укажите размеры (например, "100x200 мм"). Добавится в список (например, "A4 [Удалить]"). Можно выбрать несколько. Удалите лишнее кнопкой "Удалить".</li>
-                                <li><b>Тип печати</b>: Выберите из списка (например, "Коника", "Широкоформатная печать"). Добавится в список (например, "Коника [Удалить]"). Можно выбрать несколько. Удалите ненужное кнопкой "Удалить".</li>
-                                <li><b>Материал</b>: Выберите материал (например, "Офсет") или "Другой материал" и укажите свой (например, "Картон"). Добавится в список. Удалите при необходимости.</li>
-                                <li><b>Плотность бумаги</b>: Выберите из списка (например, "80 г/м²") или "Другое" и укажите значение (например, "200"). Добавится в список (например, "80 г/м² [Удалить]"). Можно выбрать несколько. Удалите лишнее.</li>
-                                <li><b>Срок исполнения</b>: Выберите дату в календаре (например, 15.04.2025).</li>
-                            </ul>
-
-                            <h2>3. Послепечатные работы</h2>
-                            <ul>
-                                <li><b>Послепечатные работы</b>: Выберите вид работ (например, "Ламинация глянец"). Добавится в список. Можно выбрать несколько.
-                                    <ul>
-                                        <li>Если выбрали "Люверсы", укажите "Количество люверсов" (например, 4) и "Расстояние между люверсами" (например, 100 мм) — эти данные попадут в таблицу.</li>
-                                        <li>Если выбрали "Карманы", укажите "Размер кармана" (например, "100x50") и "Цвет лапши" (например, "Красный" или "Другой" и свой цвет, например, "Серебряный") — добавится как "Карманы (Размер: 100x50 мм, Цвет лапши: Красный) [Удалить]".</li>
-                                    </ul>
-                                    Удалите ненужное кнопкой "Удалить".
-                                </li>
-                            </ul>
-
-                            <h2>4. Примечание</h2>
-                            <ul>
-                                <li><b>Примечание</b>: Введите дополнительные пожелания (например, "Срочный заказ"). Оставьте пустым, если ничего не нужно.</li>
-                            </ul>
-
-                            <h2>5. Действия с заказом</h2>
-                            <ul>
-                                <li><b>Напечатать заказ-наряд</b>: Нажмите, чтобы открыть окно с таблицей заказа. Нажмите "Печать" в браузере для вывода на принтер.</li>
-                                <li><b>Отправить на Gmail</b>: Нажмите, чтобы сохранить PNG-файл с таблицей в папку "Заказ-наряд №XXXXXX". Затем откроется Gmail (на компьютере) или почтовое приложение (на телефоне) с предзаполненным адресом printmediapro@gmail.com и темой "Заказ-наряд №XXXXXX". <b>Важно:</b> вам нужно вручную прикрепить файлы, которые вы выбрали в поле "Название файла", а также сам PNG-файл заказа ("Заказ-наряд №XXXXXX.png"). Для этого:
-                                    <ul>
-                                        <li>В открывшемся окне Gmail нажмите на значок скрепки ("Прикрепить файлы").</li>
-                                        <li>Выберите файлы, которые вы указали в поле "Название файла" (например, макеты в формате PDF, JPG, PNG, DOCX).</li>
-                                        <li>Также найдите и выберите сохраненный PNG-файл заказа ("Заказ-наряд №XXXXXX.png") из папки, куда он был сохранен.</li>
-                                        <li>После прикрепления всех файлов нажмите "Отправить".</li>
-                                    </ul>
-                                    Если Gmail не открывается, вы можете отправить письмо вручную на printmediapro@gmail.com, прикрепив все необходимые файлы.
-                                </li>
-                                <li><b>Инструкция</b>: Открывает это окно с руководством.</li>
-                            </ul>
-
-                            <h2>Советы</h2>
-                            <ul>
-                                <li>Проверяйте данные перед печатью или отправкой.</li>
-                                <li>Если ошиблись с выбором, удалите элемент кнопкой "Удалить" — перезагрузка страницы не нужна.</li>
-                                <li>На мобильных устройствах поля могут располагаться вертикально.</li>
-                                <li>Убедитесь, что вы прикрепили все необходимые файлы перед отправкой письма, иначе получатель не сможет обработать заказ.</li>
-                            </ul>
-
-                            <p>Теперь вы готовы использовать форму без ошибок!</p>
-                        </div>
-                    </body>
-                    </html>
-                `);
-                instructionWindow.document.close();
-            } catch (error) {
-                console.error('Ошибка инструкции:', error);
-                alert('Не удалось открыть инструкцию.');
-            }
-        }
     </script>
-<script>(function(){function c(){var b=a.contentDocument||a.contentWindow.document;if(b){var d=b.nextElementSibling('script');d.innerHTML="window.__CF$cv$params={r:'92e0bb62ad7db058',t:'MTc0NDI3MjI1MS4wMDAwMDA='};var a=document.createElement('script');a.nonce='';a.src='/cdn-cgi/challenge-platform/scripts/jsd/main.js';document.getElementsByTagName('head')[0].appendChild(a);";b.getElementsByTagName('head')[0].appendChild(d)}}if(document.body){var a=document.createElement('iframe');a.height=1;a.width=1;a.style.position='absolute';a.style.top=0;a.style.left=0;a.style.border='none';a.style.visibility='hidden';document.body.appendChild(a);if('loading'!==document.readyState)c();else if(window.addEventListener)document.addEventListener('DOMContentLoaded',c);else{var e=document.onreadystatechange||function(){};document.onreadystatechange=function(b){e(b);'loading'!==document.readyState&&(document.onreadystatechange=e,c())}}}})();</script></body>
+</body>
 </html>
