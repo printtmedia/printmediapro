@@ -5,11 +5,12 @@
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>PrintMediaPro - Поліграфічні послуги</title>
     <link href="https://fonts.googleapis.com/css2?family=Roboto:wght@400;500;700&display=swap" rel="stylesheet">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0-beta3/css/all.min.css">
     <style>
         :root {
-            --primary: #FF6200; /* Оранжевый из логотипа */
-            --secondary: #D81B60; /* Розовый из логотипа */
-            --text: #1A237E; /* Темно-синий из логотипа */
+            --primary: #FF6200;
+            --secondary: #D81B60;
+            --text: #1A237E;
             --background: #F5F5F5;
             --white: #FFFFFF;
             --hover: #E65100;
@@ -35,7 +36,6 @@
             padding: 0 1.5rem;
         }
 
-        /* Header */
         header {
             background: linear-gradient(rgba(0, 0, 0, 0.6), rgba(0, 0, 0, 0.6)), url('https://images.unsplash.com/photo-1522199670072-11c81f2e94cc?auto=format&fit=crop&w=1920&q=80') center/cover no-repeat;
             color: var(--white);
@@ -84,7 +84,6 @@
             transform: translateY(-2px);
         }
 
-        /* Navigation */
         nav {
             background: var(--white);
             box-shadow: 0 2px 4px rgba(0, 0, 0, 0.1);
@@ -117,7 +116,6 @@
             color: var(--primary);
         }
 
-        /* Services Section */
         .services {
             padding: 4rem 0;
             background: var(--white);
@@ -168,7 +166,6 @@
             color: var(--secondary);
         }
 
-        /* About Section */
         .about {
             padding: 4rem 0;
             background: url('https://images.unsplash.com/photo-1507925921958-8a62f3d1a50d?auto=format&fit=crop&w=1920&q=80') center/cover no-repeat;
@@ -194,7 +191,6 @@
             margin-bottom: 1rem;
         }
 
-        /* Contact Section */
         .contact {
             padding: 4rem 0;
             background: var(--white);
@@ -231,7 +227,6 @@
             font-size: 1.125rem;
         }
 
-        /* Footer */
         footer {
             background: var(--text);
             color: var(--white);
@@ -243,7 +238,6 @@
             font-size: 0.875rem;
         }
 
-        /* Responsive Design */
         @media (max-width: 768px) {
             header h1 {
                 font-size: 1.75rem;
@@ -279,21 +273,20 @@
             }
         }
     </style>
-    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0-beta3/css/all.min.css">
 </head>
 <body>
     <!-- Navigation -->
     <nav>
         <div class="container">
             <div class="logo">
-                <img src="https://printtmedia.github.io/printmediapro/Logo%20printmediapro.png" alt="PrintMediaPro Logo">
+                <img src="Logo printmediapro.png" alt="PrintMediaPro Logo">
             </div>
             <ul>
                 <li><a href="#home">Головна</a></li>
                 <li><a href="#services">Послуги</a></li>
                 <li><a href="#about">Про нас</a></li>
                 <li><a href="#contact">Контакти</a></li>
-                <li><a href="https://printtmedia.github.io/printmediapro/">Замовлення</a></li>
+                <li><a href="order.html">Замовлення</a></li>
             </ul>
         </div>
     </nav>
@@ -303,11 +296,11 @@
         <div class="container">
             <div class="header-content">
                 <div class="logo">
-                    <img src="https://printtmedia.github.io/printmediapro/Logo%20printmediapro.png" alt="PrintMediaPro Logo">
+                    <img src="Logo printmediapro.png" alt="PrintMediaPro Logo">
                 </div>
                 <h1>PrintMediaPro - Якісна поліграфія для вашого бізнесу</h1>
                 <p>Від візиток до банерів – ми втілюємо ваші ідеї у життя з використанням сучасних технологій та матеріалів.</p>
-                <a href="https://printtmedia.github.io/printmediapro/" class="cta-button">Замовити зараз</a>
+                <a href="order.html" class="cta-button">Замовити зараз</a>
             </div>
         </div>
     </header>
@@ -384,14 +377,17 @@
         // Smooth scrolling for navigation links
         document.querySelectorAll('nav a').forEach(anchor => {
             anchor.addEventListener('click', function(e) {
-                e.preventDefault();
-                const targetId = this.getAttribute('href').substring(1);
-                const targetElement = document.getElementById(targetId);
-                if (targetElement) {
-                    window.scrollTo({
-                        top: targetElement.offsetTop - 80,
-                        behavior: 'smooth'
-                    });
+                const href = this.getAttribute('href');
+                if (href.startsWith('#')) {
+                    e.preventDefault();
+                    const targetId = href.substring(1);
+                    const targetElement = document.getElementById(targetId);
+                    if (targetElement) {
+                        window.scrollTo({
+                            top: targetElement.offsetTop - 80,
+                            behavior: 'smooth'
+                        });
+                    }
                 }
             });
         });
