@@ -3,17 +3,21 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <meta name="description" content="PrintMediaPro – якісні поліграфічні послуги: візитки, банери, флаєри та більше в Кропивницькому.">
+    <meta name="keywords" content="поліграфія, друк, візитки, банери, Кропивницький">
     <title>PrintMediaPro - Поліграфічні послуги</title>
-    <link href="https://fonts.googleapis.com/css2?family=Roboto:wght@400;500;700&display=swap" rel="stylesheet">
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;700&family=Poppins:wght@500;700&display=swap" rel="stylesheet">
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0-beta3/css/all.min.css">
     <style>
         :root {
-            --primary: #FF6200;
-            --secondary: #D81B60;
-            --text: #1A237E;
-            --background: #F5F5F5;
+            --primary: #FF6200; /* Оранжевый */
+            --secondary: #D81B60; /* Розовый */
+            --text: #1A237E; /* Темно-синий */
+            --background: #1C2526; /* Темный графитовый */
             --white: #FFFFFF;
-            --hover: #E65100;
+            --hover: #E65100; /* Темнее оранжевый */
+            --card-bg: #F8FAFA; /* Светлый фон карточек */
+            --accent-bg: #E8ECEF; /* Светлый акцентный фон */
         }
 
         * {
@@ -23,80 +27,44 @@
         }
 
         body {
-            font-family: 'Roboto', sans-serif;
+            font-family: 'Inter', sans-serif;
             background: var(--background);
-            color: var(--text);
-            line-height: 1.6;
+            color: var(--white);
+            line-height: 1.8;
             overflow-x: hidden;
         }
 
         .container {
-            max-width: 1200px;
+            max-width: 1280px;
             margin: 0 auto;
-            padding: 0 1.5rem;
+            padding: 0 2rem;
         }
 
-        header {
-            background: linear-gradient(rgba(0, 0, 0, 0.6), rgba(0, 0, 0, 0.6)), url('https://images.unsplash.com/photo-1522199670072-11c81f2e94cc?auto=format&fit=crop&w=1920&q=80') center/cover no-repeat;
-            color: var(--white);
-            padding: 5rem 0;
-            text-align: center;
-            position: relative;
-        }
-
-        .header-content {
-            display: flex;
-            flex-direction: column;
-            align-items: center;
-            gap: 1.5rem;
-        }
-
-        .logo img {
-            height: 80px;
-        }
-
-        header h1 {
-            font-size: 2.5rem;
-            font-weight: 700;
-            margin-bottom: 1rem;
-        }
-
-        header p {
-            font-size: 1.25rem;
-            max-width: 600px;
-            margin: 0 auto;
-        }
-
-        .cta-button {
-            display: inline-block;
-            background: var(--primary);
-            color: var(--white);
-            padding: 1rem 2rem;
-            border-radius: 8px;
-            text-decoration: none;
-            font-weight: 500;
-            transition: all 0.3s ease;
-            margin-top: 1.5rem;
-        }
-
-        .cta-button:hover {
-            background: var(--hover);
-            transform: translateY(-2px);
-        }
-
+        /* Навигация */
         nav {
-            background: var(--white);
-            box-shadow: 0 2px 4px rgba(0, 0, 0, 0.1);
-            position: sticky;
+            background: rgba(28, 37, 38, 0.9);
+            backdrop-filter: blur(12px);
+            position: fixed;
+            width: 100%;
             top: 0;
             z-index: 1000;
+            padding: 0.75rem 0;
+            animation: slideDown 0.8s cubic-bezier(0.4, 0, 0.2, 1) forwards;
         }
 
         nav .container {
             display: flex;
             justify-content: space-between;
             align-items: center;
-            padding: 1rem 1.5rem;
+        }
+
+        .logo img {
+            height: 50px;
+            transition: transform 0.5s cubic-bezier(0.4, 0, 0.2, 1);
+        }
+
+        .logo img:hover {
+            transform: scale(1.1);
         }
 
         nav ul {
@@ -106,180 +74,440 @@
         }
 
         nav a {
-            color: var(--text);
+            color: var(--white);
             text-decoration: none;
             font-weight: 500;
-            transition: color 0.3s ease;
+            font-size: 1rem;
+            text-transform: uppercase;
+            letter-spacing: 0.05em;
+            transition: color 0.4s cubic-bezier(0.4, 0, 0.2, 1);
         }
 
         nav a:hover {
             color: var(--primary);
         }
 
+        .menu-toggle {
+            display: none;
+            cursor: pointer;
+            font-size: 1.5rem;
+            color: var(--white);
+        }
+
+        /* Хедер */
+        header {
+            background: linear-gradient(180deg, rgba(28, 37, 38, 0.8), rgba(28, 37, 38, 0.6)), url('https://images.unsplash.com/photo-1522199670072-11c81f2e94cc?auto=format&fit=crop&w=1920&q=80') center/cover no-repeat;
+            color: var(--white);
+            padding: 8rem 0;
+            text-align: center;
+            margin-top: 60px;
+            position: relative;
+            overflow: hidden;
+        }
+
+        header::before {
+            content: '';
+            position: absolute;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            background: radial-gradient(circle, transparent 20%, rgba(28, 37, 38, 0.4) 80%);
+        }
+
+        .header-content {
+            position: relative;
+            opacity: 0;
+            animation: fadeInUp 1.2s cubic-bezier(0.4, 0, 0.2, 1) 0.2s forwards;
+        }
+
+        .header-logo img {
+            height: 140px;
+            filter: drop-shadow(0 0 15px rgba(255, 98, 0, 0.4));
+            transition: transform 0.8s cubic-bezier(0.4, 0, 0.2, 1);
+            margin-bottom: 2rem;
+        }
+
+        .header-logo img:hover {
+            transform: scale(1.08) rotate(3deg);
+        }
+
+        header h1 {
+            font-family: 'Poppins', sans-serif;
+            font-size: 4rem;
+            font-weight: 700;
+            margin-bottom: 1.5rem;
+            letter-spacing: -0.02em;
+        }
+
+        header p {
+            font-size: 1.5rem;
+            max-width: 600px;
+            margin: 0 auto;
+            opacity: 0.9;
+        }
+
+        .cta-button {
+            display: inline-block;
+            background: var(--primary);
+            color: var(--white);
+            padding: 1rem 3rem;
+            border-radius: 50px;
+            text-decoration: none;
+            font-weight: 600;
+            font-size: 1.1rem;
+            margin-top: 2rem;
+            box-shadow: 0 6px 15px rgba(0, 0, 0, 0.2);
+            transition: all 0.4s cubic-bezier(0.4, 0, 0.2, 1);
+        }
+
+        .cta-button:hover {
+            background: var(--hover);
+            transform: translateY(-4px);
+            box-shadow: 0 10px 20px rgba(0, 0, 0, 0.3);
+        }
+
+        /* Секция услуг */
         .services {
-            padding: 4rem 0;
-            background: var(--white);
+            padding: 6rem 0;
+            background: var(--accent-bg);
         }
 
         .services h2 {
-            font-size: 2rem;
+            font-family: 'Poppins', sans-serif;
+            font-size: 3rem;
             text-align: center;
-            margin-bottom: 2rem;
-            color: var(--primary);
+            margin-bottom: 4rem;
+            color: var(--text);
+            position: relative;
+            opacity: 0;
+            animation: fadeIn 1s cubic-bezier(0.4, 0, 0.2, 1) forwards;
+        }
+
+        .services h2::after {
+            content: '';
+            position: absolute;
+            bottom: -12px;
+            left: 50%;
+            transform: translateX(-50%);
+            width: 80px;
+            height: 4px;
+            background: var(--primary);
+            border-radius: 2px;
         }
 
         .services-grid {
             display: grid;
-            grid-template-columns: repeat(auto-fit, minmax(300px, 1fr));
-            gap: 2rem;
+            grid-template-columns: repeat(2, 1fr);
+            gap: 2.5rem;
         }
 
         .service-card {
-            background: var(--background);
-            border-radius: 12px;
-            padding: 1.5rem;
+            background: var(--card-bg);
+            border-radius: 20px;
+            padding: 2.5rem;
             text-align: center;
-            transition: transform 0.3s ease, box-shadow 0.3s ease;
+            box-shadow: 0 8px 25px rgba(0, 0, 0, 0.1);
+            position: relative;
+            overflow: hidden;
+            transition: all 0.5s cubic-bezier(0.4, 0, 0.2, 1);
+            opacity: 0;
+            animation: fadeInUp 0.8s cubic-bezier(0.4, 0, 0.2, 1) forwards;
         }
 
+        .service-card::before {
+            content: '';
+            position: absolute;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 6px;
+            background: linear-gradient(90deg, var(--primary), var(--secondary));
+            transition: opacity 0.4s cubic-bezier(0.4, 0, 0.2, 1);
+        }
+
+        .service-card:nth-child(1) { animation-delay: 0.2s; }
+        .service-card:nth-child(2) { animation-delay: 0.4s; }
+        .service-card:nth-child(3) { animation-delay: 0.6s; }
+        .service-card:nth-child(4) { animation-delay: 0.8s; }
+
         .service-card:hover {
-            transform: translateY(-5px);
-            box-shadow: 0 10px 15px -3px rgba(0, 0, 0, 0.1);
+            transform: translateY(-8px);
+            box-shadow: 0 12px 30px rgba(0, 0, 0, 0.15);
+            filter: brightness(1.05);
         }
 
         .service-card img {
             width: 100%;
-            height: 200px;
+            height: 180px;
             object-fit: cover;
-            border-radius: 8px;
-            margin-bottom: 1rem;
+            border-radius: 12px;
+            margin-bottom: 1.5rem;
+            transition: transform 0.6s cubic-bezier(0.4, 0, 0.2, 1);
+        }
+
+        .service-card:hover img {
+            transform: scale(1.06);
         }
 
         .service-card h3 {
-            font-size: 1.5rem;
-            margin-bottom: 0.5rem;
-            color: var(--text);
+            font-family: 'Poppins', sans-serif;
+            font-size: 2rem;
+            margin-bottom: 1rem;
+            color: var(--primary);
         }
 
         .service-card p {
-            font-size: 1rem;
-            color: var(--secondary);
-        }
-
-        .about {
-            padding: 4rem 0;
-            background: url('https://images.unsplash.com/photo-1507925921958-8a62f3d1a50d?auto=format&fit=crop&w=1920&q=80') center/cover no-repeat;
-            color: var(--white);
-            text-align: center;
-        }
-
-        .about-content {
-            background: rgba(0, 0, 0, 0.7);
-            padding: 3rem;
-            border-radius: 12px;
-            max-width: 800px;
-            margin: 0 auto;
-        }
-
-        .about h2 {
-            font-size: 2rem;
-            margin-bottom: 1.5rem;
-        }
-
-        .about p {
-            font-size: 1.125rem;
+            font-size: 1.1rem;
+            color: var(--text);
             margin-bottom: 1rem;
         }
 
-        .contact {
-            padding: 4rem 0;
-            background: var(--white);
+        .service-card .highlight {
+            color: var(--secondary);
+            font-weight: 600;
         }
 
-        .contact h2 {
-            font-size: 2rem;
+        /* Секция "О нас" */
+        .about {
+            padding: 6rem 0;
+            background: var(--background);
+        }
+
+        .about-content {
+            background: var(--card-bg);
+            padding: 3rem;
+            border-radius: 20px;
+            max-width: 800px;
+            margin: 0 auto;
             text-align: center;
+            color: var(--text);
+            box-shadow: 0 8px 25px rgba(0, 0, 0, 0.1);
+            opacity: 0;
+            animation: fadeInUp 1s cubic-bezier(0.4, 0, 0.2, 1) forwards;
+        }
+
+        .about h2 {
+            font-family: 'Poppins', sans-serif;
+            font-size: 3rem;
             margin-bottom: 2rem;
             color: var(--primary);
         }
 
+        .about p {
+            font-size: 1.2rem;
+            margin-bottom: 1.5rem;
+        }
+
+        /* Секция контактов */
+        .contact {
+            padding: 6rem 0;
+            background: var(--accent-bg);
+        }
+
+        .contact h2 {
+            font-family: 'Poppins', sans-serif;
+            font-size: 3rem;
+            text-align: center;
+            margin-bottom: 3rem;
+            color: var(--text);
+            opacity: 0;
+            animation: fadeIn 1s cubic-bezier(0.4, 0, 0.2, 1) forwards;
+        }
+
         .contact-info {
-            display: flex;
-            flex-wrap: wrap;
-            justify-content: center;
+            display: grid;
+            grid-template-columns: repeat(2, 1fr);
             gap: 2rem;
-            max-width: 800px;
+            max-width: 900px;
             margin: 0 auto;
         }
 
         .contact-item {
             display: flex;
             align-items: center;
-            gap: 1rem;
+            gap: 1.5rem;
+            background: var(--card-bg);
+            padding: 1.5rem;
+            border-radius: 12px;
+            box-shadow: 0 6px 15px rgba(0, 0, 0, 0.1);
+            transition: all 0.4s cubic-bezier(0.4, 0, 0.2, 1);
+            opacity: 0;
+            animation: fadeInUp 0.8s cubic-bezier(0.4, 0, 0.2, 1) forwards;
+        }
+
+        .contact-item:nth-child(1) { animation-delay: 0.2s; }
+        .contact-item:nth-child(2) { animation-delay: 0.4s; }
+        .contact-item:nth-child(3) { animation-delay: 0.6s; }
+        .contact-item:nth-child(4) { animation-delay: 0.8s; }
+
+        .contact-item:hover {
+            transform: translateY(-4px);
+            box-shadow: 0 8px 20px rgba(0, 0, 0, 0.15);
         }
 
         .contact-item i {
-            font-size: 1.5rem;
+            font-size: 2rem;
             color: var(--primary);
         }
 
         .contact-item p {
-            font-size: 1.125rem;
+            font-size: 1.1rem;
+            color: var(--text);
         }
 
+        .contact-item a {
+            color: var(--text);
+            text-decoration: none;
+            transition: color 0.4s cubic-bezier(0.4, 0, 0.2, 1);
+        }
+
+        .contact-item a:hover {
+            color: var(--secondary);
+        }
+
+        /* Футер */
         footer {
-            background: var(--text);
+            background: var(--background);
             color: var(--white);
-            padding: 2rem 0;
+            padding: 3rem 0;
             text-align: center;
         }
 
         footer p {
-            font-size: 0.875rem;
+            font-size: 1rem;
+            opacity: 0.8;
         }
 
+        .social-links {
+            margin-top: 1.5rem;
+            display: flex;
+            justify-content: center;
+            gap: 2rem;
+        }
+
+        .social-links a {
+            color: var(--white);
+            font-size: 1.8rem;
+            transition: all 0.4s cubic-bezier(0.4, 0, 0.2, 1);
+        }
+
+        .social-links a:hover {
+            color: var(--primary);
+            transform: scale(1.2);
+        }
+
+        /* Анимации */
+        @keyframes slideDown {
+            from { transform: translateY(-100%); opacity: 0; }
+            to { transform: translateY(0); opacity: 1; }
+        }
+
+        @keyframes fadeIn {
+            from { opacity: 0; }
+            to { opacity: 1; }
+        }
+
+        @keyframes fadeInUp {
+            from { opacity: 0; transform: translateY(40px); }
+            to { opacity: 1; transform: translateY(0); }
+        }
+
+        /* Медиа-запросы */
         @media (max-width: 768px) {
-            header h1 {
-                font-size: 1.75rem;
+            nav {
+                padding: 0.5rem 0;
             }
 
-            header p {
-                font-size: 1rem;
-            }
-
-            nav .container {
-                flex-direction: column;
-                gap: 1rem;
+            .logo img {
+                height: 40px;
             }
 
             nav ul {
+                display: none;
                 flex-direction: column;
-                align-items: center;
+                position: absolute;
+                top: 100%;
+                left: 0;
+                width: 100%;
+                background: var(--background);
+                padding: 1.5rem;
+                text-align: center;
             }
 
-            .services h2,
-            .about h2,
-            .contact h2 {
-                font-size: 1.5rem;
+            nav ul.active {
+                display: flex;
+            }
+
+            .menu-toggle {
+                display: block;
+            }
+
+            header {
+                padding: 4rem 0;
+                margin-top: 50px;
+            }
+
+            header h1 {
+                font-size: 2.5rem;
+            }
+
+            header p {
+                font-size: 1.2rem;
+            }
+
+            .header-logo img {
+                height: 100px;
+            }
+
+            .services, .about, .contact {
+                padding: 3rem 0;
+            }
+
+            .services h2, .about h2, .contact h2 {
+                font-size: 2rem;
+            }
+
+            .services-grid, .contact-info {
+                grid-template-columns: 1fr;
+                gap: 1.5rem;
+            }
+
+            .service-card {
+                padding: 1.5rem;
             }
 
             .service-card img {
                 height: 150px;
             }
 
-            .contact-info {
-                flex-direction: column;
-                align-items: center;
+            .service-card h3 {
+                font-size: 1.5rem;
+            }
+
+            .about-content {
+                padding: 2rem;
+            }
+
+            .contact-item {
+                padding: 1rem;
+            }
+
+            .contact-item i {
+                font-size: 1.5rem;
             }
         }
     </style>
 </head>
 <body>
-    <!-- Navigation -->
+    <!-- Навигация -->
     <nav>
         <div class="container">
             <div class="logo">
-                <img src="Logo printmediapro.png" alt="PrintMediaPro Logo">
+                <img src="https://raw.githubusercontent.com/printtmedia/printmediapro/main/Logo%20printmediapro%20golovna.png" alt="PrintMediaPro Logo">
+            </div>
+            <div class="menu-toggle">
+                <i class="fas fa-bars"></i>
             </div>
             <ul>
                 <li><a href="#home">Головна</a></li>
@@ -291,45 +519,50 @@
         </div>
     </nav>
 
-    <!-- Header -->
+    <!-- Хедер -->
     <header id="home">
         <div class="container">
             <div class="header-content">
-                <div class="logo">
-                    <img src="Logo printmediapro.png" alt="PrintMediaPro Logo">
+                <div class="header-logo">
+                    <img src="https://raw.githubusercontent.com/printtmedia/printmediapro/main/Logo%20printmediapro.png" alt="PrintMediaPro Logos">
                 </div>
-                <h1>PrintMediaPro - Якісна поліграфія для вашого бізнесу</h1>
-                <p>Від візиток до банерів – ми втілюємо ваші ідеї у життя з використанням сучасних технологій та матеріалів.</p>
+                <h1>PrintMediaPro – Якісна поліграфія</h1>
+                <p>Візитки, банери, флаєри – швидко і професійно</p>
                 <a href="order.html" class="cta-button">Замовити зараз</a>
             </div>
         </div>
     </header>
 
-    <!-- Services Section -->
+    <!-- Секция услуг -->
     <section class="services" id="services">
         <div class="container">
             <h2>Наші послуги</h2>
             <div class="services-grid">
                 <div class="service-card">
-                    <img src="https://images.unsplash.com/photo-1627556704244-16c477923684?auto=format&fit=crop&w=600&q=80" alt="Друкована продукція">
+                    <img src="https://raw.githubusercontent.com/printtmedia/printmediapro/main/Друкована%20продукція.png" alt="Друкована продукція">
                     <h3>Друкована продукція</h3>
-                    <p>Візитки, флаєри, буклети, каталоги, журнали, календарі та етикетки – усе для вашої реклами.</p>
+                    <p>Створюємо професійну рекламну продукцію для вашого бренду: <span class="highlight">візитки</span>, флаєри, буклети, каталоги, журнали, календарі та етикетки. Використовуємо офсетний і цифровий друк для ідеальної якості, яскравих кольорів і чіткості деталей.</p>
                 </div>
                 <div class="service-card">
-                    <img src="https://images.unsplash.com/photo-1516321497487-e288fb19713f?auto=format&fit=crop&w=600&q=80" alt="Широкоформатний друк">
+                    <img src="https://raw.githubusercontent.com/printtmedia/printmediapro/main/Широкоформатний%20друк.png" alt="Широкоформатний друк">
                     <h3>Широкоформатний друк</h3>
-                    <p>Банери, плакати, самоклейки та борди для зовнішньої реклами та оформлення.</p>
+                    <p>Рішення для зовнішньої реклами: <span class="highlight">банери</span>, плакати, самоклейки та борди. Друкуємо на банерних тканинах і плівках, гарантуючи стійкість до сонця, дощу та вітру для довговічної реклами.</p>
                 </div>
                 <div class="service-card">
-                    <img src="https://images.unsplash.com/photo-1600585154340-be6161a56a0c?auto=format&fit=crop&w=600&q=80" alt="Післядрукарська обробка">
+                    <img src="https://raw.githubusercontent.com/printtmedia/printmediapro/main/dbdbac8996ddf5630e75bb9901485283.png" alt="Післядрукарська обробка">
                     <h3>Післядрукарська обробка</h3>
-                    <p>Ламінація, фальцювання, висічка, палітурка та плотерна різка для ідеального вигляду.</p>
+                    <p>Додаємо досконалості: <span class="highlight">ламінація</span> (глянцева, матова, бархатна), фальцювання, висічка, палітурка та плотерна різка. Ваші матеріали виглядатимуть професійно та прослужать довго.</p>
+                </div>
+                <div class="service-card">
+                    <img src="https://raw.githubusercontent.com/printtmedia/printmediapro/main/Вибіркове%20лакування%20та%20покриття%20фолгою.png" alt="Вибіркове лакування">
+                    <h3>Вибіркове лакування</h3>
+                    <p>Підкреслюємо стиль за допомогою <span class="highlight">вибіркового лакування</span> та фольги. Глянцеві, матові чи металеві акценти додають преміального вигляду вашим візиткам, запрошенням і упаковці.</p>
                 </div>
             </div>
         </div>
     </section>
 
-    <!-- About Section -->
+    <!-- Секция "О нас" -->
     <section class="about" id="about">
         <div class="container">
             <div class="about-content">
@@ -341,14 +574,14 @@
         </div>
     </section>
 
-    <!-- Contact Section -->
+    <!-- Секция контактов -->
     <section class="contact" id="contact">
         <div class="container">
             <h2>Контакти</h2>
             <div class="contact-info">
                 <div class="contact-item">
                     <i class="fas fa-phone-alt"></i>
-                    <p>Відділ прийому замовлень: <a href="tel:+380667908090">+380 66 790 8090</a></p>
+                    <p>Замовлення: <a href="tel:+380667908090">+380 66 790 8090</a></p>
                 </div>
                 <div class="contact-item">
                     <i class="fas fa-phone-alt"></i>
@@ -356,25 +589,37 @@
                 </div>
                 <div class="contact-item">
                     <i class="fas fa-envelope"></i>
-                    <p>Email: <a href="mailto:printmediapro@gmail.com">printmediapro@gmail.com</a></p>
+                    <p>Email: <a href="mailto:info@printmediapro.com">info@printmediapro.com</a></p>
                 </div>
                 <div class="contact-item">
                     <i class="fas fa-map-marker-alt"></i>
-                    <p>Адреса: Районна вулиця, 7, Кропивницький, Кіровоградська область, 25000</p>
+                    <p>Районна вулиця, 7, Кропивницький</p>
                 </div>
             </div>
         </div>
     </section>
 
-    <!-- Footer -->
+    <!-- Футер -->
     <footer>
         <div class="container">
             <p>© 2025 PrintMediaPro. Усі права захищені.</p>
+            <div class="social-links">
+                <a href="#"><i class="fab fa-instagram"></i></a>
+                <a href="#"><i class="fab fa-facebook-f"></i></a>
+            </div>
         </div>
     </footer>
 
     <script>
-        // Smooth scrolling for navigation links
+        // Гамбургер-меню
+        const menuToggle = document.querySelector('.menu-toggle');
+        const navUl = document.querySelector('nav ul');
+
+        menuToggle.addEventListener('click', () => {
+            navUl.classList.toggle('active');
+        });
+
+        // Плавная прокрутка
         document.querySelectorAll('nav a').forEach(anchor => {
             anchor.addEventListener('click', function(e) {
                 const href = this.getAttribute('href');
@@ -384,12 +629,26 @@
                     const targetElement = document.getElementById(targetId);
                     if (targetElement) {
                         window.scrollTo({
-                            top: targetElement.offsetTop - 80,
+                            top: targetElement.offsetTop - 60,
                             behavior: 'smooth'
                         });
                     }
                 }
             });
+        });
+
+        // Анимация при скролле
+        const observer = new IntersectionObserver((entries) => {
+            entries.forEach(entry => {
+                if (entry.isIntersecting) {
+                    entry.target.classList.add('visible');
+                }
+            });
+        }, { threshold: 0.1 });
+
+        document.querySelectorAll('.service-card, .contact-item, .about-content').forEach(el => {
+            el.classList.add('animate');
+            observer.observe(el);
         });
     </script>
 </body>
