@@ -3,11 +3,13 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <meta name="description" content="PrintMediaPro – якісні поліграфічні послуги: візитки, банери, флаєри та більше в Кропивницькому.">
-    <meta name="keywords" content="поліграфія, друк, візитки, банери, Кропивницький">
+    <meta name="description" content="PrintMediaPro – якісні поліграфічні послуги: візитки, банери, етикетки, стенди та більше в Кропивницькому.">
+    <meta name="keywords" content="поліграфія, друк, візитки, банери, етикетки, стенди, Кропивницький">
     <title>PrintMediaPro - Поліграфічні послуги</title>
     <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;700&family=Poppins:wght@500;700&display=swap" rel="stylesheet">
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0-beta3/css/all.min.css">
+    <!-- Leaflet CSS -->
+    <link rel="stylesheet" href="https://unpkg.com/leaflet@1.9.4/dist/leaflet.css" integrity="sha256-p4NxAoJBhIIN+hmNHrzRCf9tD/miZyoHS5obTRR9BMY=" crossorigin=""/>
     <style>
         :root {
             --primary: #FF6200; /* Оранжевый */
@@ -230,6 +232,8 @@
         .service-card:nth-child(2) { animation-delay: 0.4s; }
         .service-card:nth-child(3) { animation-delay: 0.6s; }
         .service-card:nth-child(4) { animation-delay: 0.8s; }
+        .service-card:nth-child(5) { animation-delay: 1s; }
+        .service-card:nth-child(6) { animation-delay: 1.2s; }
 
         .service-card:hover {
             transform: translateY(-8px);
@@ -239,8 +243,8 @@
 
         .service-card img {
             width: 100%;
-            height: 180px;
-            object-fit: cover;
+            max-height: 180px;
+            object-fit: contain;
             border-radius: 12px;
             margin-bottom: 1.5rem;
             transition: transform 0.6s cubic-bezier(0.4, 0, 0.2, 1);
@@ -366,6 +370,44 @@
             color: var(--secondary);
         }
 
+        /* Секция карты */
+        .map-section {
+            padding: 6rem 0;
+            background: var(--background);
+        }
+
+        .map-section h2 {
+            font-family: 'Poppins', sans-serif;
+            font-size: 3rem;
+            text-align: center;
+            margin-bottom: 3rem;
+            color: var(--primary); /* Оранжевый */
+            opacity: 0;
+            animation: fadeIn 1s cubic-bezier(0.4, 0, 0.2, 1) forwards;
+        }
+
+        .map-container {
+            background: var(--card-bg);
+            padding: 0;
+            border-radius: 20px;
+            box-shadow: 0 8px 25px rgba(0, 0, 0, 0.1);
+            margin: 0;
+            width: 100vw;
+            position: relative;
+            left: 50%;
+            right: 50%;
+            margin-left: -50vw;
+            margin-right: -50vw;
+            opacity: 0;
+            animation: fadeInUp 0.8s cubic-bezier(0.4, 0, 0.2, 1) 0.2s forwards;
+        }
+
+        #map {
+            height: 400px;
+            width: 100%;
+            border-radius: 12px;
+        }
+
         /* Футер */
         footer {
             background: var(--background);
@@ -460,11 +502,11 @@
                 height: 100px;
             }
 
-            .services, .about, .contact {
+            .services, .about, .contact, .map-section {
                 padding: 3rem 0;
             }
 
-            .services h2, .about h2, .contact h2 {
+            .services h2, .about h2, .contact h2, .map-section h2 {
                 font-size: 2rem;
             }
 
@@ -478,7 +520,7 @@
             }
 
             .service-card img {
-                height: 150px;
+                max-height: 150px;
             }
 
             .service-card h3 {
@@ -489,12 +531,24 @@
                 padding: 2rem;
             }
 
+            .map-container {
+                width: 100vw;
+                margin-left: -50vw;
+                margin-right: -50vw;
+                left: 50%;
+                right: 50%;
+            }
+
             .contact-item {
                 padding: 1rem;
             }
 
             .contact-item i {
                 font-size: 1.5rem;
+            }
+
+            #map {
+                height: 300px;
             }
         }
     </style>
@@ -527,7 +581,7 @@
                     <img src="https://raw.githubusercontent.com/printtmedia/printmediapro/main/Logo%20printmediapro.png" alt="PrintMediaPro Logos">
                 </div>
                 <h1>PrintMediaPro – Якісна поліграфія</h1>
-                <p>Візитки, банери, флаєри – швидко і професійно</p>
+                <p>Візитки, банери, етикетки, стенди – швидко і професійно</p>
                 <a href="order.html" class="cta-button">Замовити зараз</a>
             </div>
         </div>
@@ -541,7 +595,7 @@
                 <div class="service-card">
                     <img src="https://raw.githubusercontent.com/printtmedia/printmediapro/main/Друкована%20продукція.png" alt="Друкована продукція">
                     <h3>Друкована продукція</h3>
-                    <p>Створюємо професійну рекламну продукцію для вашого бренду: <span class="highlight">візитки</span>, флаєри, буклети, каталоги, журнали, календарі та етикетки. Використовуємо офсетний і цифровий друк для ідеальної якості, яскравих кольорів і чіткості деталей.</p>
+                    <p>Створюємо професійну рекламну продукцію для вашого бренду: <span class="highlight">візитки</span>, флаєри, буклети, каталоги, журнали, календарі. Використовуємо офсетний і цифровий друк для ідеальної якості, яскравих кольорів і чіткості деталей.</p>
                 </div>
                 <div class="service-card">
                     <img src="https://raw.githubusercontent.com/printtmedia/printmediapro/main/Широкоформатний%20друк.png" alt="Широкоформатний друк">
@@ -554,9 +608,19 @@
                     <p>Додаємо досконалості: <span class="highlight">ламінація</span> (глянцева, матова, бархатна), фальцювання, висічка, палітурка та плотерна різка. Ваші матеріали виглядатимуть професійно та прослужать довго.</p>
                 </div>
                 <div class="service-card">
-                    <img src="https://raw.githubusercontent.com/printtmedia/printmediapro/main/Вибіркове%20лакування%20та%20покриття%20фолгою.png" alt="Вибіркове лакування">
+                    <img src="https://raw.githubusercontent.com/printtmedia/printmediapro/main/%D0%92%D0%B8%D0%B1%D1%96%D1%80%D0%BA%D0%BE%D0%B2%D0%B5%20%D0%BB%D0%B0%D0%BA%D1%83%D0%B2%D0%B0%D0%BD%D0%BD%D1%8F%20%D1%82%D0%B0%20%D0%BF%D0%BE%D0%BA%D1%80%D0%B8%D1%82%D1%82%D1%8F%20%D1%84%D0%BE%D0%BB%D0%B3%D0%BE%D1%8E.png" alt="Вибіркове лакування">
                     <h3>Вибіркове лакування</h3>
                     <p>Підкреслюємо стиль за допомогою <span class="highlight">вибіркового лакування</span> та фольги. Глянцеві, матові чи металеві акценти додають преміального вигляду вашим візиткам, запрошенням і упаковці.</p>
+                </div>
+                <div class="service-card">
+                    <img src="https://raw.githubusercontent.com/printtmedia/printmediapro/main/%D0%86%D0%BD%D1%84%D0%BE%D1%80%D0%BC%D0%B0%D1%86%D1%96%D0%B9%D0%BD%D1%96%D0%B9%20%D1%81%D1%82%D0%B5%D0%BD%D0%B4.png" alt="Виготовлення стендів">
+                    <h3>Виготовлення стендів</h3>
+                    <p>Проектуємо та створюємо <span class="highlight">рекламні стенди</span> для виставок, магазинів і заходів. Від roll-up до складних конструкцій – використовуємо міцні матеріали та яскравий друк для ефективної презентації вашого бренду.</p>
+                </div>
+                <div class="service-card">
+                    <img src="https://raw.githubusercontent.com/printtmedia/printmediapro/main/%D0%94%D1%80%D1%83%D0%BA%20%D0%B5%D1%82%D0%B8%D0%BA%D0%B5%D1%82%D0%BE%D0%BA.png" alt="Виготовлення етикеток для харчової продукції">
+                    <h3>Виготовлення етикеток</h3>
+                    <p>Друкуємо <span class="highlight">етикетки для харчової продукції</span> на безпечних матеріалах. Яскраві кольори, чіткий текст і відповідність стандартам для упаковки продуктів харчування.</p>
                 </div>
             </div>
         </div>
@@ -566,11 +630,10 @@
     <section class="about" id="about">
         <div class="container">
             <div class="about-content">
-                <h2>Про 
-                    PrintMediaPro</h2>
-                <p>PrintMediaPro – це сучасна поліграфічна компанія, що спеціалізується на створенні якісної друкованої продукції. Ми пропонуємо повний цикл послуг: від розробки дизайну до післядрукарської обробки. Наш асортимент включає візитки, флаєри, буклети, каталоги, журнали, календарі, етикетки, а також широкоформатні банери, плакати, самоклейки та борди.</p>
+                <h2>Про PrintMediaPro</h2>
+                <p>PrintMediaPro – це сучасна поліграфічна компанія, що спеціалізується на створенні якісної друкованої продукції. Ми пропонуємо повний цикл послуг: від розробки дизайну до післядрукарської обробки. Наш асортимент включає візитки, флаєри, буклети, каталоги, журнали, календарі, етикетки для харчової продукції, стенди, а також широкоформатні банери, плакати, самоклейки та борди.</p>
                 <p>Ми використовуємо передові технології друку, такі як офсетний, цифровий (Коника) та широкоформатний друк, а також різноманітні матеріали: офсетний папір, глянцевий та матовий крейдований папір, самоклейки, банерні тканини, плівки (білі, матові, перфоровані, прозорі). Додатково ми виконуємо ламінацію (глянцеву, матову, бархатну), фальцювання, висічку, палітурку (м'який та твердий), плотерну різку та інші післядрукарські роботи.</p>
-                <p>Наша мета – забезпечити вам продукцію найвищої якості з урахуванням усіх побажань та в стислі терміни. Незалежно від обсягу замовлення – від невеликого тиражу візиток до масштабних банерів – ми гарантуємо професійний підхід та увагу до деталей.</p>
+                <p>Наша мета – забезпечити вам продукцію найвищої якості з урахуванням усіх побажань та в стислі терміни. Незалежно від обсягу замовлення – від невеликого тиражу візиток до масштабних банерів чи стендів – ми гарантуємо професійний підхід та увагу до деталей.</p>
             </div>
         </div>
     </section>
@@ -586,7 +649,7 @@
                 </div>
                 <div class="contact-item">
                     <i class="fas fa-phone-alt"></i>
-                    <p>Офіс: <a href="tel:+380522226411">+380522 22 64 11</a></p>
+                    <p>Офіс: <a href="tel:+380522226411">+380 52 222 6411</a></p>
                 </div>
                 <div class="contact-item">
                     <i class="fas fa-envelope"></i>
@@ -596,6 +659,16 @@
                     <i class="fas fa-map-marker-alt"></i>
                     <p>Районна вулиця, 7, Кропивницький</p>
                 </div>
+            </div>
+        </div>
+    </section>
+
+    <!-- Секция карты -->
+    <section class="map-section" id="map-section">
+        <div class="container">
+            <h2>Наше розташування</h2>
+            <div class="map-container">
+                <div id="map"></div>
             </div>
         </div>
     </section>
@@ -611,6 +684,8 @@
         </div>
     </footer>
 
+    <!-- Leaflet JS -->
+    <script src="https://unpkg.com/leaflet@1.9.4/dist/leaflet.js" integrity="sha256-20nQCchB9co0qIjJZRGuk2/Z9VM+kNiyxNV1lvTlZBo=" crossorigin=""></script>
     <script>
         // Гамбургер-меню
         const menuToggle = document.querySelector('.menu-toggle');
@@ -647,10 +722,62 @@
             });
         }, { threshold: 0.1 });
 
-        document.querySelectorAll('.service-card, .contact-item, .about-content').forEach(el => {
+        document.querySelectorAll('.service-card, .contact-item, .about-content, .map-container').forEach(el => {
             el.classList.add('animate');
             observer.observe(el);
         });
+
+        // Инициализация карты
+        function initMap() {
+            const mapContainer = document.getElementById('map');
+            if (!mapContainer) {
+                console.error('Map container not found');
+                return;
+            }
+
+            // Инициализация карты
+            const map = L.map('map').setView([48.5132, 32.2597], 15); // Начальные координаты Кропивницького
+
+            // Добавление тайлов OpenStreetMap
+            L.tileLayer('https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png', {
+                attribution: '© <a href="https://www.openstreetmap.org/copyright">OpenStreetMap</a>',
+                maxZoom: 18
+            }).addTo(map);
+
+            // Геокодирование адреса
+            const address = 'Районна вулиця, 7, Кропивницький';
+            fetch(`https://nominatim.openstreetmap.org/search?format=json&q=${encodeURIComponent(address)}`)
+                .then(response => response.json())
+                .then(data => {
+                    if (data && data.length > 0) {
+                        const lat = parseFloat(data[0].lat);
+                        const lon = parseFloat(data[0].lon);
+                        map.setView([lat, lon], 15);
+
+                        // Добавление маркера
+                        L.marker([lat, lon], {
+                            icon: L.icon({
+                                iconUrl: 'https://raw.githubusercontent.com/printtmedia/printmediapro/main/Logo%20printmediapro.png',
+                                iconSize: [40, 40],
+                                iconAnchor: [20, 40],
+                                popupAnchor: [0, -40]
+                            })
+                        }).addTo(map)
+                          .bindPopup('PrintMediaPro<br>Районна вулиця, 7')
+                          .openPopup();
+                    } else {
+                        console.error('Geocoding failed: No results');
+                        mapContainer.innerHTML = '<p style="color: #EF4444; text-align: center;">Не вдалося завантажити карту. Перевірте адресу.</p>';
+                    }
+                })
+                .catch(error => {
+                    console.error('Geocoding error:', error);
+                    mapContainer.innerHTML = '<p style="color: #EF4444; text-align: center;">Помилка завантаження карти.</p>';
+                });
+        }
+
+        // Запуск карты после загрузки страницы
+        document.addEventListener('DOMContentLoaded', initMap);
     </script>
 </body>
 </html>
