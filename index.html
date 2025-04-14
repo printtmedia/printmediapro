@@ -8,18 +8,17 @@
     <title>PrintMediaPro - Поліграфічні послуги</title>
     <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;700&family=Poppins:wght@500;700&display=swap" rel="stylesheet">
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0-beta3/css/all.min.css">
-    <!-- Leaflet CSS -->
     <link rel="stylesheet" href="https://unpkg.com/leaflet@1.9.4/dist/leaflet.css" integrity="sha256-p4NxAoJBhIIN+hmNHrzRCf9tD/miZyoHS5obTRR9BMY=" crossorigin=""/>
     <style>
         :root {
-            --primary: #FF6200; /* Оранжевый */
-            --secondary: #D81B60; /* Розовый */
-            --text: #1A237E; /* Темно-синий */
-            --background: #1C2526; /* Темный графитовый */
+            --primary: #FF6200;
+            --secondary: #D81B60;
+            --text: #1A237E;
+            --background: #1C2526;
             --white: #FFFFFF;
-            --hover: #E65100; /* Темнее оранжевый */
-            --card-bg: #F8FAFA; /* Светлый фон карточек */
-            --accent-bg: #E8ECEF; /* Светлый акцентный фон */
+            --hover: #E65100;
+            --card-bg: #F8FAFA;
+            --accent-bg: #E8ECEF;
         }
 
         * {
@@ -40,6 +39,9 @@
             max-width: 1280px;
             margin: 0 auto;
             padding: 0 2rem;
+            display: flex;
+            flex-direction: column;
+            align-items: center;
         }
 
         /* Навигация */
@@ -58,6 +60,7 @@
             display: flex;
             justify-content: space-between;
             align-items: center;
+            flex-direction: row;
         }
 
         .logo img {
@@ -81,7 +84,6 @@
             font-weight: 500;
             font-size: 1rem;
             text-transform: uppercase;
-            letter-spacing: 0.05em;
             transition: color 0.4s cubic-bezier(0.4, 0, 0.2, 1);
         }
 
@@ -104,7 +106,6 @@
             text-align: center;
             margin-top: 60px;
             position: relative;
-            overflow: hidden;
         }
 
         header::before {
@@ -119,8 +120,14 @@
 
         .header-content {
             position: relative;
-            opacity: 0;
-            animation: fadeInUp 1.2s cubic-bezier(0.4, 0, 0.2, 1) 0.2s forwards;
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+        }
+
+        .header-logo {
+            display: flex;
+            justify-content: center;
         }
 
         .header-logo img {
@@ -128,6 +135,8 @@
             filter: drop-shadow(0 0 15px rgba(255, 98, 0, 0.4));
             transition: transform 0.8s cubic-bezier(0.4, 0, 0.2, 1);
             margin-bottom: 2rem;
+            opacity: 0;
+            animation: fadeInUp 1s cubic-bezier(0.4, 0, 0.2, 1) 0.2s forwards;
         }
 
         .header-logo img:hover {
@@ -140,6 +149,7 @@
             font-weight: 700;
             margin-bottom: 1.5rem;
             letter-spacing: -0.02em;
+            text-align: center;
         }
 
         header p {
@@ -147,6 +157,7 @@
             max-width: 600px;
             margin: 0 auto;
             opacity: 0.9;
+            text-align: center;
         }
 
         .cta-button {
@@ -161,6 +172,8 @@
             margin-top: 2rem;
             box-shadow: 0 6px 15px rgba(0, 0, 0, 0.2);
             transition: all 0.4s cubic-bezier(0.4, 0, 0.2, 1);
+            opacity: 0;
+            animation: fadeInUp 1s cubic-bezier(0.4, 0, 0.2, 1) 0.6s forwards;
         }
 
         .cta-button:hover {
@@ -169,10 +182,60 @@
             box-shadow: 0 10px 20px rgba(0, 0, 0, 0.3);
         }
 
+        /* Анимация текста (для заголовков) */
+        .animated-text {
+            display: inline-block;
+            overflow: hidden;
+            text-align: center;
+        }
+
+        .animated-text span {
+            display: inline-block;
+            opacity: 0;
+            transform: translateY(30px);
+            animation: textPop 1s cubic-bezier(0.4, 0, 0.2, 1) forwards;
+        }
+
+        @keyframes textPop {
+            from {
+                opacity: 0;
+                transform: translateY(30px);
+            }
+            to {
+                opacity: 1;
+                transform: translateY(0);
+            }
+        }
+
         /* Секция услуг */
         .services {
             padding: 6rem 0;
             background: var(--accent-bg);
+            position: relative;
+            overflow: hidden;
+        }
+
+        .services .video-container {
+            position: absolute;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            z-index: 1;
+            opacity: 0;
+            animation: fadeIn 1s ease-in-out 0.2s forwards;
+        }
+
+        .services .video-container video {
+            width: 100%;
+            height: 100%;
+            object-fit: cover;
+            filter: brightness(0.5);
+        }
+
+        .services .container {
+            position: relative;
+            z-index: 2;
         }
 
         .services h2 {
@@ -182,8 +245,6 @@
             margin-bottom: 4rem;
             color: var(--text);
             position: relative;
-            opacity: 0;
-            animation: fadeIn 1s cubic-bezier(0.4, 0, 0.2, 1) forwards;
         }
 
         .services h2::after {
@@ -202,10 +263,11 @@
             display: grid;
             grid-template-columns: repeat(2, 1fr);
             gap: 2.5rem;
+            justify-items: center;
         }
 
         .service-card {
-            background: var(--card-bg);
+            background: var(--card-bg); /* Полностью непрозрачный фон */
             border-radius: 20px;
             padding: 2.5rem;
             text-align: center;
@@ -215,6 +277,11 @@
             transition: all 0.5s cubic-bezier(0.4, 0, 0.2, 1);
             opacity: 0;
             animation: fadeInUp 0.8s cubic-bezier(0.4, 0, 0.2, 1) forwards;
+            width: 600px; /* Фиксированная ширина */
+            height: 500px; /* Фиксированная высота */
+            display: flex;
+            flex-direction: column;
+            justify-content: space-between;
         }
 
         .service-card::before {
@@ -225,7 +292,6 @@
             width: 100%;
             height: 6px;
             background: linear-gradient(90deg, var(--primary), var(--secondary));
-            transition: opacity 0.4s cubic-bezier(0.4, 0, 0.2, 1);
         }
 
         .service-card:nth-child(1) { animation-delay: 0.2s; }
@@ -243,7 +309,7 @@
 
         .service-card img {
             width: 100%;
-            max-height: 180px;
+            height: 180px;
             object-fit: contain;
             border-radius: 12px;
             margin-bottom: 1.5rem;
@@ -259,17 +325,27 @@
             font-size: 2rem;
             margin-bottom: 1rem;
             color: var(--primary);
+            text-align: center;
         }
 
         .service-card p {
-            font-size: 1.1rem;
-            color: var(--text);
+            font-size: 1rem;
+            color: var(--text); /* Единый синий цвет */
+            font-weight: 500; /* Чуть жирнее */
             margin-bottom: 1rem;
+            text-align: center;
+            height: 220px; /* Фиксированная высота для текста */
+            overflow: hidden;
+            overflow-wrap: break-word;
+            display: flex;
+            align-items: center;
+            justify-content: center;
         }
 
-        .service-card .highlight {
-            color: var(--secondary);
-            font-weight: 600;
+        /* Эффект печатания текста */
+        .typing-text {
+            display: inline-block;
+            white-space: normal;
         }
 
         /* Секция "О нас" */
@@ -296,11 +372,13 @@
             font-size: 3rem;
             margin-bottom: 2rem;
             color: var(--primary);
+            text-align: center;
         }
 
         .about p {
             font-size: 1.2rem;
             margin-bottom: 1.5rem;
+            text-align: center;
         }
 
         /* Секция контактов */
@@ -315,8 +393,6 @@
             text-align: center;
             margin-bottom: 3rem;
             color: var(--text);
-            opacity: 0;
-            animation: fadeIn 1s cubic-bezier(0.4, 0, 0.2, 1) forwards;
         }
 
         .contact-info {
@@ -325,6 +401,7 @@
             gap: 2rem;
             max-width: 900px;
             margin: 0 auto;
+            justify-items: center;
         }
 
         .contact-item {
@@ -338,6 +415,8 @@
             transition: all 0.4s cubic-bezier(0.4, 0, 0.2, 1);
             opacity: 0;
             animation: fadeInUp 0.8s cubic-bezier(0.4, 0, 0.2, 1) forwards;
+            width: 100%;
+            max-width: 400px;
         }
 
         .contact-item:nth-child(1) { animation-delay: 0.2s; }
@@ -358,6 +437,7 @@
         .contact-item p {
             font-size: 1.1rem;
             color: var(--text);
+            text-align: left;
         }
 
         .contact-item a {
@@ -381,9 +461,7 @@
             font-size: 3rem;
             text-align: center;
             margin-bottom: 3rem;
-            color: var(--primary); /* Оранжевый */
-            opacity: 0;
-            animation: fadeIn 1s cubic-bezier(0.4, 0, 0.2, 1) forwards;
+            color: var(--primary);
         }
 
         .map-container {
@@ -391,13 +469,8 @@
             padding: 0;
             border-radius: 20px;
             box-shadow: 0 8px 25px rgba(0, 0, 0, 0.1);
-            margin: 0;
             width: 100vw;
-            position: relative;
-            left: 50%;
-            right: 50%;
-            margin-left: -50vw;
-            margin-right: -50vw;
+            margin: 0;
             opacity: 0;
             animation: fadeInUp 0.8s cubic-bezier(0.4, 0, 0.2, 1) 0.2s forwards;
         }
@@ -517,34 +590,38 @@
 
             .service-card {
                 padding: 1.5rem;
+                width: 100%; /* Адаптивная ширина */
+                height: 550px; /* Увеличенная высота для мобильных */
             }
 
             .service-card img {
-                max-height: 150px;
+                height: 150px;
             }
 
             .service-card h3 {
                 font-size: 1.5rem;
             }
 
+            .service-card p {
+                height: 260px; /* Увеличенная высота для текста на мобильных */
+            }
+
             .about-content {
                 padding: 2rem;
             }
 
-            .map-container {
-                width: 100vw;
-                margin-left: -50vw;
-                margin-right: -50vw;
-                left: 50%;
-                right: 50%;
-            }
-
             .contact-item {
                 padding: 1rem;
+                max-width: 100%;
             }
 
             .contact-item i {
                 font-size: 1.5rem;
+            }
+
+            .map-container {
+                width: 100vw;
+                margin: 0;
             }
 
             #map {
@@ -578,10 +655,10 @@
         <div class="container">
             <div class="header-content">
                 <div class="header-logo">
-                    <img src="https://raw.githubusercontent.com/printtmedia/printmediapro/main/Logo%20printmediapro.png" alt="PrintMediaPro Logos">
+                    <img src="https://raw.githubusercontent.com/printtmedia/printmediapro/main/Logo%20printmediapro.png" alt="PrintMediaPro Logo">
                 </div>
-                <h1>PrintMediaPro – Якісна поліграфія</h1>
-                <p>Візитки, банери, етикетки, стенди – швидко і професійно</p>
+                <h1 class="animated-text">PrintMediaPro – Якісна поліграфія</h1>
+                <p class="animated-text">Візитки, банери, етикетки, стенди – швидко і професійно</p>
                 <a href="order.html" class="cta-button">Замовити зараз</a>
             </div>
         </div>
@@ -589,38 +666,44 @@
 
     <!-- Секция услуг -->
     <section class="services" id="services">
+        <div class="video-container">
+            <video autoplay loop muted playsinline preload="metadata" aria-label="Відео нічного Сеулу з неоновими вивісками">
+                <source src="https://raw.githubusercontent.com/printtmedia/printmediapro/main/seoul-night.mp4" type="video/mp4">
+                Ваш браузер не підтримує відтворення відео.
+            </video>
+        </div>
         <div class="container">
-            <h2>Наші послуги</h2>
+            <h2 class="animated-text">Наші послуги</h2>
             <div class="services-grid">
                 <div class="service-card">
                     <img src="https://raw.githubusercontent.com/printtmedia/printmediapro/main/Друкована%20продукція.png" alt="Друкована продукція">
                     <h3>Друкована продукція</h3>
-                    <p>Створюємо професійну рекламну продукцію для вашого бренду: <span class="highlight">візитки</span>, флаєри, буклети, каталоги, журнали, календарі. Використовуємо офсетний і цифровий друк для ідеальної якості, яскравих кольорів і чіткості деталей.</p>
+                    <p class="typing-text">Створюємо професійну рекламну продукцію для вашого бренду: візитки, флаєри, буклети, каталоги, журнали, календарі. Використовуємо офсетний і цифровий друк для ідеальної якості, яскравих кольорів і чіткості деталей.</p>
                 </div>
                 <div class="service-card">
                     <img src="https://raw.githubusercontent.com/printtmedia/printmediapro/main/Широкоформатний%20друк.png" alt="Широкоформатний друк">
                     <h3>Широкоформатний друк</h3>
-                    <p>Рішення для зовнішньої реклами: <span class="highlight">банери</span>, плакати, самоклейки та борди. Друкуємо на банерних тканинах і плівках, гарантуючи стійкість до сонця, дощу та вітру для довговічної реклами.</p>
+                    <p class="typing-text">Рішення для зовнішньої реклами: банери, плакати, самоклейки та борди. Друкуємо на банерних тканинах і плівках, гарантуючи стійкість до сонця, дощу та вітру для довговічної реклами.</p>
                 </div>
                 <div class="service-card">
                     <img src="https://raw.githubusercontent.com/printtmedia/printmediapro/main/dbdbac8996ddf5630e75bb9901485283.png" alt="Післядрукарська обробка">
                     <h3>Післядрукарська обробка</h3>
-                    <p>Додаємо досконалості: <span class="highlight">ламінація</span> (глянцева, матова, бархатна), фальцювання, висічка, палітурка та плотерна різка. Ваші матеріали виглядатимуть професійно та прослужать довго.</p>
+                    <p class="typing-text">Додаємо досконалості: ламінація (глянцева, матова, бархатна), фальцювання, висічка, палітурка та плотерна різка. Ваші матеріали виглядатимуть професійно та прослужать довго.</p>
                 </div>
                 <div class="service-card">
                     <img src="https://raw.githubusercontent.com/printtmedia/printmediapro/main/%D0%92%D0%B8%D0%B1%D1%96%D1%80%D0%BA%D0%BE%D0%B2%D0%B5%20%D0%BB%D0%B0%D0%BA%D1%83%D0%B2%D0%B0%D0%BD%D0%BD%D1%8F%20%D1%82%D0%B0%20%D0%BF%D0%BE%D0%BA%D1%80%D0%B8%D1%82%D1%82%D1%8F%20%D1%84%D0%BE%D0%BB%D0%B3%D0%BE%D1%8E.png" alt="Вибіркове лакування">
                     <h3>Вибіркове лакування</h3>
-                    <p>Підкреслюємо стиль за допомогою <span class="highlight">вибіркового лакування</span> та фольги. Глянцеві, матові чи металеві акценти додають преміального вигляду вашим візиткам, запрошенням і упаковці.</p>
+                    <p class="typing-text">Підкреслюємо стиль за допомогою вибіркового лакування та фольги. Глянцеві, матові чи металеві акценти додають преміального вигляду вашим візиткам, запрошенням і упаковці.</p>
                 </div>
                 <div class="service-card">
                     <img src="https://raw.githubusercontent.com/printtmedia/printmediapro/main/%D0%86%D0%BD%D1%84%D0%BE%D1%80%D0%BC%D0%B0%D1%86%D1%96%D0%B9%D0%BD%D1%96%D0%B9%20%D1%81%D1%82%D0%B5%D0%BD%D0%B4.png" alt="Виготовлення стендів">
                     <h3>Виготовлення стендів</h3>
-                    <p>Проектуємо та створюємо <span class="highlight">рекламні стенди</span> для виставок, магазинів і заходів. Від roll-up до складних конструкцій – використовуємо міцні матеріали та яскравий друк для ефективної презентації вашого бренду.</p>
+                    <p class="typing-text">Проектуємо та створюємо рекламні стенди для виставок, магазинів і заходів. Від roll-up до складних конструкцій – використовуємо міцні матеріали та яскравий друк для ефективної презентації вашого бренду.</p>
                 </div>
                 <div class="service-card">
                     <img src="https://raw.githubusercontent.com/printtmedia/printmediapro/main/%D0%94%D1%80%D1%83%D0%BA%20%D0%B5%D1%82%D0%B8%D0%BA%D0%B5%D1%82%D0%BE%D0%BA.png" alt="Виготовлення етикеток для харчової продукції">
                     <h3>Виготовлення етикеток</h3>
-                    <p>Друкуємо <span class="highlight">етикетки для харчової продукції</span> на безпечних матеріалах. Яскраві кольори, чіткий текст і відповідність стандартам для упаковки продуктів харчування.</p>
+                    <p class="typing-text">Друкуємо етикетки для харчової продукції на безпечних матеріалах. Яскраві кольори, чіткий текст і відповідність стандартам для упаковки продуктів харчування.</p>
                 </div>
             </div>
         </div>
@@ -630,7 +713,7 @@
     <section class="about" id="about">
         <div class="container">
             <div class="about-content">
-                <h2>Про PrintMediaPro</h2>
+                <h2 class="animated-text">Про PrintMediaPro</h2>
                 <p>PrintMediaPro – це сучасна поліграфічна компанія, що спеціалізується на створенні якісної друкованої продукції. Ми пропонуємо повний цикл послуг: від розробки дизайну до післядрукарської обробки. Наш асортимент включає візитки, флаєри, буклети, каталоги, журнали, календарі, етикетки для харчової продукції, стенди, а також широкоформатні банери, плакати, самоклейки та борди.</p>
                 <p>Ми використовуємо передові технології друку, такі як офсетний, цифровий (Коника) та широкоформатний друк, а також різноманітні матеріали: офсетний папір, глянцевий та матовий крейдований папір, самоклейки, банерні тканини, плівки (білі, матові, перфоровані, прозорі). Додатково ми виконуємо ламінацію (глянцеву, матову, бархатну), фальцювання, висічку, палітурку (м'який та твердий), плотерну різку та інші післядрукарські роботи.</p>
                 <p>Наша мета – забезпечити вам продукцію найвищої якості з урахуванням усіх побажань та в стислі терміни. Незалежно від обсягу замовлення – від невеликого тиражу візиток до масштабних банерів чи стендів – ми гарантуємо професійний підхід та увагу до деталей.</p>
@@ -641,7 +724,7 @@
     <!-- Секция контактов -->
     <section class="contact" id="contact">
         <div class="container">
-            <h2>Контакти</h2>
+            <h2 class="animated-text">Контакти</h2>
             <div class="contact-info">
                 <div class="contact-item">
                     <i class="fas fa-phone-alt"></i>
@@ -666,7 +749,7 @@
     <!-- Секция карты -->
     <section class="map-section" id="map-section">
         <div class="container">
-            <h2>Наше розташування</h2>
+            <h2 class="animated-text">Наше розташування</h2>
             <div class="map-container">
                 <div id="map"></div>
             </div>
@@ -713,21 +796,81 @@
             });
         });
 
-        // Анимация при скролле
-        const observer = new IntersectionObserver((entries) => {
-            entries.forEach(entry => {
-                if (entry.isIntersecting) {
-                    entry.target.classList.add('visible');
-                }
+        // Анимация текста для заголовков
+        function animateText() {
+            document.querySelectorAll('.animated-text').forEach(text => {
+                const words = text.textContent.trim().split(/\s+/);
+                text.innerHTML = '';
+                words.forEach((word, index) => {
+                    const span = document.createElement('span');
+                    span.textContent = word;
+                    span.style.animationDelay = `${index * 0.2}s`;
+                    text.appendChild(span);
+                    if (index < words.length - 1) {
+                        text.appendChild(document.createTextNode(' '));
+                    }
+                });
             });
-        }, { threshold: 0.1 });
+        }
 
-        document.querySelectorAll('.service-card, .contact-item, .about-content, .map-container').forEach(el => {
-            el.classList.add('animate');
-            observer.observe(el);
+        // Эффект печатания текста для карточек
+        function typeText(element) {
+            const fullText = element.getAttribute('data-text'); // Полный текст
+
+            element.innerHTML = '';
+            let i = 0;
+
+            function type() {
+                if (i < fullText.length) {
+                    element.innerHTML = fullText.substring(0, i + 1);
+                    i++;
+                    setTimeout(type, 30); // Скорость печати 30 мс
+                }
+            }
+
+            type();
+        }
+
+        // Анимация при скролле
+        const observer = window.IntersectionObserver || false;
+
+        if (observer) {
+            const observerInstance = new IntersectionObserver((entries) => {
+                entries.forEach(entry => {
+                    if (entry.isIntersecting) {
+                        entry.target.classList.add('visible');
+                        if (entry.target.classList.contains('animated-text')) {
+                            animateText();
+                        }
+                        if (entry.target.classList.contains('typing-text')) {
+                            typeText(entry.target);
+                        }
+                    }
+                });
+            }, { threshold: 0.1 });
+
+            document.querySelectorAll('.service-card, .contact-item, .about-content, .map-container, .animated-text, .typing-text').forEach(el => {
+                el.classList.add('animate');
+                observerInstance.observe(el);
+            });
+        } else {
+            document.querySelectorAll('.animated-text').forEach(el => {
+                animateText();
+            });
+            document.querySelectorAll('.typing-text').forEach(el => {
+                typeText(el);
+            });
+        }
+
+        // Сохраняем исходный текст в атрибут data-text для карточек
+        document.querySelectorAll('.typing-text').forEach(el => {
+            el.setAttribute('data-text', el.innerHTML);
+            el.innerHTML = '';
         });
 
         // Инициализация карты
+        let mapInstance = null;
+
         function initMap() {
             const mapContainer = document.getElementById('map');
             if (!mapContainer) {
@@ -735,16 +878,13 @@
                 return;
             }
 
-            // Инициализация карты
-            const map = L.map('map').setView([48.5132, 32.2597], 15); // Начальные координаты Кропивницького
+            mapInstance = L.map('map').setView([48.5132, 32.2597], 15);
 
-            // Добавление тайлов OpenStreetMap
             L.tileLayer('https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png', {
                 attribution: '© <a href="https://www.openstreetmap.org/copyright">OpenStreetMap</a>',
                 maxZoom: 18
-            }).addTo(map);
+            }).addTo(mapInstance);
 
-            // Геокодирование адреса
             const address = 'Районна вулиця, 7, Кропивницький';
             fetch(`https://nominatim.openstreetmap.org/search?format=json&q=${encodeURIComponent(address)}`)
                 .then(response => response.json())
@@ -752,9 +892,8 @@
                     if (data && data.length > 0) {
                         const lat = parseFloat(data[0].lat);
                         const lon = parseFloat(data[0].lon);
-                        map.setView([lat, lon], 15);
+                        mapInstance.setView([lat, lon], 15);
 
-                        // Добавление маркера
                         L.marker([lat, lon], {
                             icon: L.icon({
                                 iconUrl: 'https://raw.githubusercontent.com/printtmedia/printmediapro/main/Logo%20printmediapro.png',
@@ -762,9 +901,13 @@
                                 iconAnchor: [20, 40],
                                 popupAnchor: [0, -40]
                             })
-                        }).addTo(map)
+                        }).addTo(mapInstance)
                           .bindPopup('PrintMediaPro<br>Районна вулиця, 7')
                           .openPopup();
+
+                        setTimeout(() => {
+                            mapInstance.invalidateSize();
+                        }, 100);
                     } else {
                         console.error('Geocoding failed: No results');
                         mapContainer.innerHTML = '<p style="color: #EF4444; text-align: center;">Не вдалося завантажити карту. Перевірте адресу.</p>';
@@ -776,8 +919,20 @@
                 });
         }
 
-        // Запуск карты после загрузки страницы
-        document.addEventListener('DOMContentLoaded', initMap);
+        // Запуск карты и анимации текста после загрузки страницы
+        document.addEventListener('DOMContentLoaded', () => {
+            initMap();
+            animateText();
+        });
+
+        // Обновление размеров карты при изменении размера окна
+        window.addEventListener('resize', () => {
+            if (mapInstance) {
+                setTimeout(() => {
+                    mapInstance.invalidateSize();
+                }, 100);
+            }
+        });
     </script>
 </body>
 </html>
