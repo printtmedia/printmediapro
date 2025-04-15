@@ -1,0 +1,1043 @@
+<script type="text/javascript">
+        var gk_isXlsx = false;
+        var gk_xlsxFileLookup = {};
+        var gk_fileData = {};
+        function loadFileData(filename) {
+        if (gk_isXlsx && gk_xlsxFileLookup[filename]) {
+            try {
+                var workbook = XLSX.read(gk_fileData[filename], { type: 'base64' });
+                var firstSheetName = workbook.SheetNames[0];
+                var worksheet = workbook.Sheets[firstSheetName];
+
+                // Convert sheet to JSON to filter blank rows
+                var jsonData = XLSX.utils.sheet_to_json(worksheet, { header: 1, blankrows: false, defval: '' });
+                // Filter out blank rows (rows where all cells are empty, null, or undefined)
+                var filteredData = jsonData.filter(row =>
+                    row.some(cell => cell !== '' && cell !== null && cell !== undefined)
+                );
+
+                // Convert filtered JSON back to CSV
+                var csv = XLSX.utils.aoa_to_sheet(filteredData); // Create a new sheet from filtered array of arrays
+                csv = XLSX.utils.sheet_to_csv(csv, { header: 1 });
+                return csv;
+            } catch (e) {
+                console.error(e);
+                return "";
+            }
+        }
+        return gk_fileData[filename] || "";
+        }
+        </script><!DOCTYPE html>
+<html lang="uk">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Замовлення-наряд на поліграфію</title>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/html2canvas/1.4.1/html2canvas.min.js"></script>
+    <style>
+        :root {
+            --primary: #4F46E5;
+            --secondary: #6B7280;
+            --success: #10B981;
+            --danger: #EF4444;
+            --background: #D1D5DB;
+            --white: #FFFFFF;
+            --text: #1F2937;
+            --border: #9CA3AF;
+            --card-bg: #E5E7EB;
+        }
+
+        body {
+            font-family: 'Inter', -apple-system, sans-serif;
+            background: var(--background) url('https://printtmedia.github.io/printmediapro/5073412.png') no-repeat center center fixed;
+            background-size: cover;
+            margin: 0;
+            padding: 20px;
+            color: var(--text);
+            min-height: 100vh;
+        }
+
+        .order-form {
+            max-width: 900px;
+            margin: 0 auto;
+            padding: 2rem;
+            background: var(--card-bg);
+            border-radius: 12px;
+            box-shadow: 0 4px 6px rgba(0, 0, 0, 0.1);
+            position: relative;
+        }
+
+        .logo-link {
+            position: absolute;
+            top: 20px;
+            left: 20px;
+        }
+
+        .logo {
+            width: 150px;
+            height: auto;
+            transition: transform 0.2s ease;
+        }
+
+        .logo:hover {
+            transform: scale(1.05);
+        }
+
+        .language-selector {
+            position: absolute;
+            top: 20px;
+            right: 20px;
+        }
+
+        .language-selector select {
+            padding: 0.5rem;
+            border: 1px solid var(--border);
+            border-radius: 8px;
+            background: var(--white);
+            font-size: 1rem;
+            color: var(--text);
+            cursor: pointer;
+            transition: all 0.2s ease;
+        }
+
+        .language-selector select:focus {
+            outline: none;
+            border-color: var(--primary);
+            box-shadow: 0 0 0 3px rgba(79, 70, 229, 0.1);
+        }
+
+        h2 {
+            font-size: 1.5rem;
+            font-weight: 700;
+            color: var(--primary);
+            text-align: center;
+            margin-bottom: 2rem;
+            margin-top: 80px;
+            letter-spacing: 0.025em;
+        }
+
+        .form-group {
+            margin-bottom: 1.5rem;
+            display: grid;
+            grid-template-columns: 200px 1fr;
+            gap: 1rem;
+            align-items: center;
+        }
+
+        .section-title {
+            font-size: 1.125rem;
+            font-weight: 600;
+            color: var(--primary);
+            margin: 2rem 0 1rem;
+            padding-bottom: 0.5rem;
+            border-bottom: 2px solid var(--primary);
+        }
+
+        label {
+            font-weight: 500;
+            color: var(--secondary);
+        }
+
+        input, select, textarea {
+            width: 100%;
+            padding: 0.75rem;
+            border: 1px solid var(--border);
+            border-radius: 8px;
+            background: var(--white);
+            font-size: 1rem;
+            transition: all 0.2s ease;
+            color: #1F2937;
+        }
+
+        input:focus, select:focus, textarea:focus {
+            outline: none;
+            border-color: var(--primary);
+            box-shadow: 0 0 0 3px rgba(79, 70, 229, 0.1);
+        }
+
+        .custom-field, .binding-options {
+            display: none;
+            grid-column: 2 / 3;
+            margin-top: 0.5rem;
+        }
+
+        button {
+            background: var(--primary);
+            color: var(--white);
+            padding: 0.75rem 1.5rem;
+            border: none;
+            border-radius: 8px;
+            font-weight: 500;
+            cursor: pointer;
+            transition: all 0.2s ease;
+            margin: 0 10px;
+        }
+
+        button:hover {
+            background: #4338CA;
+            transform: translateY(-1px);
+        }
+
+        .remove-button {
+            background: var(--danger);
+            padding: 0.25rem 0.75rem;
+            margin-left: 0.5rem;
+        }
+
+        .remove-button:hover {
+            background: #DC2626;
+        }
+
+        .selected-items {
+            grid-column: 2 / 3;
+            margin-top: 0.5rem;
+        }
+
+        .selected-item {
+            display: flex;
+            align-items: center;
+            background: #F3F4F6;
+            padding: 0.5rem 1rem;
+            border-radius: 6px;
+            margin-bottom: 0.5rem;
+            border: 1px solid var(--border);
+        }
+
+        .file-group {
+            display: flex;
+            align-items: center;
+            gap: 1rem;
+        }
+
+        @media (max-width: 768px) {
+            .form-group {
+                grid-template-columns: 1fr;
+                gap: 0.5rem;
+            }
+            
+            .order-form {
+                padding: 1rem;
+            }
+
+            .file-group {
+                flex-direction: column;
+                align-items: flex-start;
+            }
+
+            .logo {
+                width: 120px;
+                top: 10px;
+                left: 10px;
+            }
+
+            .language-selector {
+                top: 10px;
+                right: 10px;
+            }
+
+            h2 {
+                margin-top: 60px;
+            }
+        }
+
+        @media print {
+            body {
+                background: none !important;
+            }
+            .order-form {
+                background: var(--card-bg) !important;
+            }
+            .logo {
+                display: block !important;
+                -webkit-print-color-adjust: exact;
+                print-color-adjust: exact;
+            }
+            .order-table {
+                font-size: 12pt !important;
+                width: 100% !important;
+            }
+            table, th, td {
+                border: 1px solid black !important;
+                font-weight: 600 !important;
+            }
+        }
+    </style>
+</head>
+<body>
+    <div class="order-form">
+        <a href="index.html" class="logo-link">
+            <img src="https://printtmedia.github.io/printmediapro/Logo%20printmediapro.png" alt="Print Media Pro Logo" class="logo">
+        </a>
+        <div class="language-selector">
+            <select id="languageSwitch" onchange="switchLanguage(this.value)">
+                <option value="ru">Русский</option>
+                <option value="uk" selected>Українська</option>
+                <option value="en">English</option>
+            </select>
+        </div>
+        <h2>ЗАМОВЛЕННЯ-НАРЯД № <span id="orderNumber"></span></h2>
+        
+        <div class="form-group">
+            <label>Дата замовлення:</label>
+            <input type="date" id="orderDate" name="order_date" required>
+        </div>
+
+        <div class="form-group">
+            <label>Замовник:</label>
+            <input type="text" name="customer" placeholder="Назва компанії" required>
+        </div>
+
+        <div class="form-group">
+            <label>Контактна особа:</label>
+            <input type="text" name="contact_person" placeholder="Іванов Іван Іванович" required>
+        </div>
+
+        <div class="form-group">
+            <label>Телефон:</label>
+            <input type="tel" name="phone" pattern="[+]{1}[0-9]{12}" placeholder="+380XXXXXXXXX" required>
+        </div>
+
+        <div class="form-group">
+            <label>Email:</label>
+            <input type="email" name="email" placeholder="example@domain.com" required>
+        </div>
+
+        <div class="form-group">
+            <label>Назва файлу:</label>
+            <div class="file-group">
+                <input type="file" id="fileUpload" accept=".pdf,.jpg,.png,.docx" multiple>
+            </div>
+            <div id="fileList" class="selected-items"></div>
+        </div>
+
+        <div class="section-title">Характеристики продукції</div>
+
+        <div class="form-group">
+            <label>Найменування продукції:</label>
+            <select name="product_name" id="productName" required>
+                <option value="">Оберіть продукцію</option>
+                <option value="label">Етикетка</option>
+                <option value="booklet">Буклет</option>
+                <option value="brochure">Брошура</option>
+                <option value="flyer">Флаєр</option>
+                <option value="euro_flyer">Євро флаєр</option>
+                <option value="catalog">Каталог</option>
+                <option value="magazine">Журнал</option>
+                <option value="book">Книга</option>
+                <option value="calendar">Календар</option>
+                <option value="newspaper">Газета</option>
+                <option value="poster">Плакат</option>
+                <option value="board">Борд</option>
+                <option value="banner">Банер</option>
+                <option value="leaflet">Листівка</option>
+                <option value="business_card">Візитка</option>
+                <option value="certificate">Сертифікат</option>
+                <option value="pvc_table">Табл ПВХ</option>
+                <option value="cutting">Плотерна різка</option>
+                <option value="stopper">Стопер</option>
+                <option value="other">Інше</option>
+            </select>
+            <div id="bindingOptions" class="binding-options">
+                <label>Тип:</label>
+                <select id="bindingType">
+                    <option value="">Оберіть тип палітурки</option>
+                    <option value="soft">М’яка палітурка</option>
+                    <option value="hard">Тверда палітурка</option>
+                </select>
+            </div>
+            <div id="calendarOptions" class="binding-options">
+                <label>Тип календаря:</label>
+                <select id="calendarType">
+                    <option value="">Оберіть тип</option>
+                    <option value="cover">Обкладинка</option>
+                    <option value="inner">Внутрішній блок</option>
+                </select>
+                <label>Кількість сторінок:</label>
+                <input type="number" id="pageCount" min="1" placeholder="Введіть кількість сторінок">
+            </div>
+            <input type="text" name="custom_product" 
+                   class="custom-field" 
+                   placeholder="Вкажіть назву продукції"
+                   id="customProduct">
+            <div id="selectedProducts" class="selected-items"></div>
+        </div>
+
+        <div class="form-group">
+            <label>Тип друку (сторони):</label>
+            <select name="print_sides" id="printSides">
+                <option value="">Оберіть тип друку</option>
+                <option value="4+0">Односторонній (4+0)</option>
+                <option value="4+4">Двосторонній (4+4)</option>
+            </select>
+            <div id="selectedPrintSides" class="selected-items"></div>
+        </div>
+
+        <div class="form-group">
+            <label>Тираж:</label>
+            <input type="number" name="quantity" min="1" required>
+        </div>
+
+        <div class="form-group">
+            <label>Формат:</label>
+            <select name="format" id="formatSelect">
+                <option value="">Оберіть формат</option>
+                <option value="A1">A1</option>
+                <option value="A2">A2</option>
+                <option value="A3">A3</option>
+                <option value="A4">A4</option>
+                <option value="A5">A5</option>
+                <option value="A6">A6</option>
+                <option value="custom">Інший формат</option>
+            </select>
+            <input type="text" name="custom_format" 
+                   class="custom-field" 
+                   placeholder="Вкажіть розміри (мм)"
+                   id="customFormat">
+            <div id="selectedFormats" class="selected-items"></div>
+        </div>
+
+        <div class="form-group">
+            <label>Тип друку:</label>
+            <select name="print_type" id="printType">
+                <option value="">Оберіть тип друку</option>
+                <option value="konica">Коніка</option>
+                <option value="konica_label">Коніка лейбел</option>
+                <option value="wide_format">Широкоформатний друк</option>
+                <option value="plotter_cutting">Плотерна різка</option>
+                <option value="newspaper_printing">Друк газети</option>
+                <option value="heidelberg_printing">Друк Heidelberg</option>
+            </select>
+            <div id="selectedPrintTypes" class="selected-items"></div>
+        </div>
+
+        <div class="form-group">
+            <label>Матеріал:</label>
+            <select name="material" id="materialSelect">
+                <option value="">Оберіть матеріал</option>
+                <option value="offset">Офсет</option>
+                <option value="glossy_chalk">Крейда глянець</option>
+                <option value="matte_chalk">Крейда мат</option>
+                <option value="self_adhesive">Самоклейка</option>
+                <option value="blueback">Блюбек</option>
+                <option value="citylight">Сітілайт</option>
+                <option value="banner">Банер</option>
+                <option value="film_white">Плівка: 010 Біла</option>
+                <option value="film_matte">Плівка: 010 Мат</option>
+                <option value="perforated_film">Плівка: Перфорована</option>
+                <option value="orafol_soundproof">Плівка: orafol шумопоглинаюча</option>
+                <option value="film_label_white_propylene">Плівка: Білий поліпропілен</option>
+                <option value="film_linen">Плівка: Льон</option>
+                <option value="film_kraft">Плівка: Крафт</option>
+                <option value="film_grey_propylene">Плівка: Сірий поліпропілен</option>
+                <option value="film_transparent_propylene">Плівка: Прозорий поліпропілен</option>
+                <option value="newspaper">Газета</option>
+                <option value="design_cardboard">Дизайн-картон</option>
+                <option value="other">Інший матеріал</option>
+            </select>
+            <input type="text" name="custom_material" 
+                   class="custom-field" 
+                   placeholder="Вкажіть матеріал"
+                   id="customMaterial">
+            <div id="selectedMaterials" class="selected-items"></div>
+        </div>
+
+        <div class="form-group">
+            <label>Щільність паперу:</label>
+            <select id="paperWeightSelect" name="paper_weight">
+                <option value="">Оберіть щільність</option>
+                <option value="70">70 г/м²</option>
+                <option value="80">80 г/м²</option>
+                <option value="90">90 г/м²</option>
+                <option value="115">115 г/м²</option>
+                <option value="130">130 г/м²</option>
+                <option value="150">150 г/м²</option>
+                <option value="200">200 г/м²</option>
+                <option value="250">250 г/м²</option>
+                <option value="300">300 г/м²</option>
+                <option value="350">350 г/м²</option>
+                <option value="other">Інше</option>
+            </select>
+            <input type="text" name="custom_paper_weight" 
+                   class="custom-field" 
+                   placeholder="Вкажіть щільність (г/м²)"
+                   id="customPaperWeight">
+            <div id="selectedPaperWeights" class="selected-items"></div>
+        </div>
+
+        <div class="form-group">
+            <label>Термін виконання:</label>
+            <input type="date" name="deadline" required>
+        </div>
+
+        <div class="section-title">Післядрукарські роботи</div>
+        <div class="form-group">
+            <label>Післядрукарські роботи:</label>
+            <select id="postPrintSelect">
+                <option value="">Оберіть вид робіт</option>
+                <option value="folding">Фальцювання</option>
+                <option value="creasing">Біговка</option>
+                <option value="stapling">Скоба</option>
+                <option value="binding">Біндер</option>
+                <option value="perforation">Перфорація</option>
+                <option value="die_cutting">Висічка</option>
+                <option value="spring">Пружина</option>
+                <option value="guillotine">Гільйотина</option>
+                <option value="manual_cutting">Ручна різка</option>
+                <option value="plotter_cutting">Плотерна різка</option>
+                <option value="film_lamination">Поклейка плівки на ПВХ</option>
+                <option value="banner_gluing">Проклейка банера</option>
+                <option value="eyelets">Люверси</option>
+                <option value="glossy_lamination">Ламінація глянець</option>
+                <option value="matte_lamination">Ламінація матова</option>
+                <option value="velvet_lamination">Ламінація оксамит</option>
+                <option value="double_sided_lamination">Ламінація 2 сторони</option>
+                <option value="pockets">Кишені</option>
+                <option value="other">Інше</option>
+            </select>
+            <div id="selectedPostPrint" class="selected-items"></div>
+        </div>
+
+        <div id="eyeletsFields" style="display: none; margin-top: 10px;">
+            <label for="eyeletsQuantity">Кількість люверсів:</label>
+            <input type="number" id="eyeletsQuantity" name="eyelets_quantity" min="1" placeholder="Введіть кількість">
+            <label for="eyeletsDistance">Відстань між люверсами (мм):</label>
+            <input type="number" id="eyeletsDistance" name="eyelets_distance" min="1" placeholder="Введіть відстань">
+        </div>
+
+        <div id="pocketsFields" style="display: none; margin-top: 10px;">
+            <label for="pocketSize">Розмір кишені (мм):</label>
+            <input type="text" id="pocketSize" name="pocket_size" placeholder="Наприклад, 100x50">
+            <label for="noodleColor">Колір локшини для кишені:</label>
+            <select id="noodleColor" name="noodle_color">
+                <option value="">Оберіть колір</option>
+                <option value="white">Білий</option>
+                <option value="black">Чорний</option>
+                <option value="red">Червоний</option>
+                <option value="blue">Синій</option>
+                <option value="green">Зелений</option>
+                <option value="yellow">Жовтий</option>
+                <option value="custom">Інший</option>
+            </select>
+            <input type="text" id="customNoodleColor" name="custom_noodle_color" 
+                   class="custom-field" placeholder="Вкажіть колір" style="display: none;">
+        </div>
+
+        <div class="form-group">
+            <label>Примітка:</label>
+            <textarea name="notes" rows="4" placeholder="Додаткові побажання"></textarea>
+        </div>
+
+        <div style="text-align: center; margin-top: 30px;">
+            <button type="button" onclick="sendOrder()">Надрукувати замовлення-наряд</button>
+            <button type="button" onclick="sendToGmail()">Відправити на Gmail</button>
+            <button type="button" onclick="showInstructions()">Інструкція</button>
+        </div>
+    </div>
+
+    <script>
+        // Language switch functionality
+        document.addEventListener('DOMContentLoaded', () => {
+            // Check for saved language in localStorage
+            const savedLanguage = localStorage.getItem('language') || 'uk';
+            const languageSwitch = document.getElementById('languageSwitch');
+            languageSwitch.value = savedLanguage;
+
+            // Redirect to the correct language page if needed
+            if (savedLanguage !== 'uk') {
+                switchLanguage(savedLanguage);
+            }
+
+            // Existing initialization code
+            document.getElementById('orderDate').value = new Date().toISOString().split('T')[0];
+            document.getElementById('orderNumber').textContent = 
+                Math.floor(Math.random() * 100000000).toString().padStart(8, '0');
+
+            setupFileUpload();
+            setupMultipleSelect('productName', 'selectedProducts', handleProductChange);
+            setupMultipleSelect('printSides', 'selectedPrintSides');
+            setupMultipleSelect('formatSelect', 'selectedFormats', handleFormatChange);
+            setupMultipleSelect('printType', 'selectedPrintTypes', handlePrintTypeChange);
+            setupMultipleSelect('materialSelect', 'selectedMaterials', handleMaterialChange);
+            setupMultipleSelect('paperWeightSelect', 'selectedPaperWeights', handlePaperWeightChange);
+            setupMultipleSelect('postPrintSelect', 'selectedPostPrint', handlePostPrintChange);
+
+            document.querySelector('input[name="phone"]').addEventListener('input', function(e) {
+                this.value = this.value.replace(/[^\d+]/g, '');
+            });
+
+            setupBindingTypeHandler();
+            setupCalendarTypeHandler();
+        });
+
+        function switchLanguage(lang) {
+            localStorage.setItem('language', lang);
+            switch (lang) {
+                case 'ru':
+                    window.location.href = 'order_ru.html';
+                    break;
+                case 'uk':
+                    window.location.href = 'order_uk.html';
+                    break;
+                case 'en':
+                    window.location.href = 'order_en.html';
+                    break;
+                default:
+                    window.location.href = 'order_uk.html';
+            }
+        }
+
+        let selectedFiles = [];
+
+        function setupFileUpload() {
+            const fileInput = document.getElementById('fileUpload');
+            const fileList = document.getElementById('fileList');
+
+            fileInput.addEventListener('change', function() {
+                const newFiles = Array.from(fileInput.files);
+                newFiles.forEach(file => {
+                    if (!selectedFiles.some(existingFile => existingFile.name === file.name)) {
+                        selectedFiles.push(file);
+                        addItem(fileList, file.name, 'removeFile', file.name);
+                    }
+                });
+                fileInput.value = '';
+            });
+
+            window.removeFile = function(button, fileName) {
+                selectedFiles = selectedFiles.filter(file => file.name !== fileName);
+                button.parentElement.remove();
+            };
+        }
+
+        function setupMultipleSelect(selectId, containerId, customHandler) {
+            const select = document.getElementById(selectId);
+            const container = document.getElementById(containerId);
+
+            select.addEventListener('change', function() {
+                const value = this.value;
+                if (!value) return;
+
+                if (customHandler) {
+                    customHandler(value, container);
+                } else {
+                    const text = this.options[this.selectedIndex].text;
+                    addItem(container, text, `remove${selectId.charAt(0).toUpperCase() + selectId.slice(1)}`, text);
+                }
+                this.value = '';
+            });
+        }
+
+        function handleProductChange(value, container) {
+            const bindingOptions = document.getElementById('bindingOptions');
+            const calendarOptions = document.getElementById('calendarOptions');
+            const customProduct = document.getElementById('customProduct');
+
+            bindingOptions.style.display = (value === 'magazine' || value === 'book') ? 'block' : 'none';
+            calendarOptions.style.display = value === 'calendar' ? 'block' : 'none';
+            customProduct.style.display = value === 'other' ? 'block' : 'none';
+
+            if (value === 'other') {
+                customProduct.addEventListener('blur', function handler() {
+                    if (this.value) {
+                        addItem(container, this.value, 'removeProduct', this.value);
+                        this.value = '';
+                    }
+                    this.removeEventListener('blur', handler);
+                });
+            } else if (value !== 'magazine' && value !== 'book' && value !== 'calendar') {
+                const text = document.getElementById('productName').options[document.getElementById('productName').selectedIndex].text;
+                addItem(container, text, 'removeProduct', text);
+            }
+        }
+
+        function setupBindingTypeHandler() {
+            const bindingType = document.getElementById('bindingType');
+            const container = document.getElementById('selectedProducts');
+            bindingType.addEventListener('change', function() {
+                if (this.value) {
+                    const productName = document.getElementById('productName').value === 'magazine' ? 'Журнал' : 'Книга';
+                    const bindingText = this.options[this.selectedIndex].text;
+                    addItem(container, `${productName} (${bindingText})`, 'removeProduct', `${productName} (${bindingText})`);
+                    this.value = '';
+                }
+            });
+        }
+
+        function setupCalendarTypeHandler() {
+            const calendarType = document.getElementById('calendarType');
+            const pageCount = document.getElementById('pageCount');
+            const container = document.getElementById('selectedProducts');
+            calendarType.addEventListener('change', function() {
+                if (this.value) {
+                    const calendarText = this.options[this.selectedIndex].text;
+                    const pages = pageCount.value ? `, ${pageCount.value} стор.` : '';
+                    addItem(container, `Календар (${calendarText}${pages})`, 'removeProduct', `Календар (${calendarText}${pages})`);
+                    this.value = '';
+                    pageCount.value = '';
+                }
+            });
+        }
+
+        function handleFormatChange(value, container) {
+            const customFormat = document.getElementById('customFormat');
+            customFormat.style.display = value === 'custom' ? 'block' : 'none';
+
+            if (value === 'custom') {
+                customFormat.addEventListener('blur', function handler() {
+                    if (this.value) {
+                        addItem(container, this.value, 'removeFormat', this.value);
+                        this.value = '';
+                    }
+                    this.removeEventListener('blur', handler);
+                });
+            } else {
+                const text = document.getElementById('formatSelect').options[document.getElementById('formatSelect').selectedIndex].text;
+                addItem(container, text, 'removeFormat', text);
+            }
+        }
+
+        function handlePrintTypeChange(value, container) {
+            const text = document.getElementById('printType').options[document.getElementById('printType').selectedIndex].text;
+            addItem(container, text, 'removePrintType', text);
+        }
+
+        function handleMaterialChange(value, container) {
+            const customMaterial = document.getElementById('customMaterial');
+            customMaterial.style.display = value === 'other' ? 'block' : 'none';
+
+            if (value === 'other') {
+                customMaterial.addEventListener('blur', function handler() {
+                    if (this.value) {
+                        addItem(container, this.value, 'removeMaterial', this.value);
+                        this.value = '';
+                    }
+                    this.removeEventListener('blur', handler);
+                });
+            } else {
+                const text = document.getElementById('materialSelect').options[document.getElementById('materialSelect').selectedIndex].text;
+                addItem(container, text, 'removeMaterial', text);
+            }
+        }
+
+        function handlePaperWeightChange(value, container) {
+            const customPaperWeight = document.getElementById('customPaperWeight');
+            customPaperWeight.style.display = value === 'other' ? 'block' : 'none';
+
+            if (value === 'other') {
+                customPaperWeight.addEventListener('blur', function handler() {
+                    if (this.value) {
+                        addItem(container, `${this.value} г/м²`, 'removePaperWeight', `${this.value} г/м²`);
+                        this.value = '';
+                    }
+                    this.removeEventListener('blur', handler);
+                });
+            } else {
+                const text = document.getElementById('paperWeightSelect').options[document.getElementById('paperWeightSelect').selectedIndex].text;
+                addItem(container, text, 'removePaperWeight', text);
+            }
+        }
+
+        function handlePostPrintChange(value, container) {
+            const eyeletsFields = document.getElementById('eyeletsFields');
+            const pocketsFields = document.getElementById('pocketsFields');
+            eyeletsFields.style.display = value === 'eyelets' ? 'block' : 'none';
+            pocketsFields.style.display = value === 'pockets' ? 'block' : 'none';
+
+            if (value === 'pockets') {
+                document.getElementById('noodleColor').addEventListener('change', function handler() {
+                    const customNoodleColor = document.getElementById('customNoodleColor');
+                    customNoodleColor.style.display = this.value === 'custom' ? 'block' : 'none';
+                    if (this.value === 'custom') {
+                        customNoodleColor.addEventListener('blur', function subHandler() {
+                            if (this.value) {
+                                const pocketSize = document.getElementById('pocketSize').value;
+                                const text = `Кишені (Розмір: ${pocketSize || 'не вказано'} мм, Колір локшини: ${this.value})`;
+                                addItem(container, text, 'removePostPrint', text);
+                                this.value = '';
+                            }
+                            this.removeEventListener('blur', subHandler);
+                        });
+                    } else if (this.value) {
+                        const pocketSize = document.getElementById('pocketSize').value;
+                        const text = `Кишені (Розмір: ${pocketSize || 'не вказано'} мм, Колір локшини: ${this.options[this.selectedIndex].text})`;
+                        addItem(container, text, 'removePostPrint', text);
+                        this.value = '';
+                    }
+                    this.removeEventListener('change', handler);
+                });
+            } else {
+                const text = document.getElementById('postPrintSelect').options[document.getElementById('postPrintSelect').selectedIndex].text;
+                addItem(container, text, 'removePostPrint', text);
+            }
+        }
+
+        function addItem(container, text, removeFunctionName, identifier) {
+            const itemDiv = document.createElement('div');
+            itemDiv.className = 'selected-item';
+            itemDiv.innerHTML = `<span>${text}</span><button type="button" class="remove-button" onclick="${removeFunctionName}(this, '${identifier.replace(/'/g, "\\'")}')">Видалити</button>`;
+            container.appendChild(itemDiv);
+        }
+
+        window.removeProduct = function(button) { button.parentElement.remove(); };
+        window.removePrintSides = function(button) { button.parentElement.remove(); };
+        window.removeFormat = function(button) { button.parentElement.remove(); };
+        window.removePrintType = function(button) { button.parentElement.remove(); };
+        window.removeMaterial = function(button) { button.parentElement.remove(); };
+        window.removePaperWeight = function(button) { button.parentElement.remove(); };
+        window.removePostPrint = function(button) { button.parentElement.remove(); };
+
+        function generateOrderTable() {
+            const formData = {
+                orderNumber: document.getElementById('orderNumber').textContent,
+                orderDate: document.getElementById('orderDate').value,
+                customer: document.querySelector('input[name="customer"]').value,
+                contactPerson: document.querySelector('input[name="contact_person"]').value,
+                phone: document.querySelector('input[name="phone"]').value,
+                email: document.querySelector('input[name="email"]').value,
+                filename: selectedFiles.map(file => file.name).join(', ') || 'Не вказано',
+                product: getSelectedItems('selectedProducts'),
+                printSides: getSelectedItems('selectedPrintSides'),
+                quantity: document.querySelector('input[name="quantity"]').value,
+                format: getSelectedItems('selectedFormats'),
+                printType: getSelectedItems('selectedPrintTypes'),
+                material: getSelectedItems('selectedMaterials'),
+                paperWeight: getSelectedItems('selectedPaperWeights'),
+                deadline: document.querySelector('input[name="deadline"]').value,
+                postPrint: getSelectedItems('selectedPostPrint'),
+                eyeletsQuantity: document.getElementById('eyeletsQuantity').value,
+                eyeletsDistance: document.getElementById('eyeletsDistance').value,
+                pocketSize: document.getElementById('pocketSize').value,
+                notes: document.querySelector('textarea[name="notes"]').value || 'Відсутня'
+            };
+
+            return `
+                <div class="order-table" style="font-family: Arial, sans-serif; padding: 20px; background: white; width: 800px; position: relative;">
+                    <a href="index.html"><img src="https://printtmedia.github.io/printmediapro/Logo%20printmediapro.png" alt="Print Media Pro Logo" style="position: absolute; top: 20px; left: 20px; width: 150px; height: auto;"></a>
+                    <h2 style="text-align: center; color: #4F46E5; margin-top: 80px;">ЗАМОВЛЕННЯ-НАРЯД №${formData.orderNumber}</h2>
+                    <table style="width: 100%; border-collapse: collapse; margin-top: 20px;">
+                        <tr><th style="border: 1px solid #E5E7EB; padding: 8px; background-color: #F9FAFB;">Параметр</th><th style="border: 1px solid #E5E7EB; padding: 8px; background-color: #F9FAFB;">Значення</th></tr>
+                        <tr><td style="border: 1px solid #E5E7EB; padding: 8px;">Дата замовлення</td><td style="border: 1px solid #E5E7EB; padding: 8px;">${formData.orderDate}</td></tr>
+                        <tr><td style="border: 1px solid #E5E7EB; padding: 8px;">Замовник</td><td style="border: 1px solid #E5E7EB; padding: 8px;">${formData.customer}</td></tr>
+                        <tr><td style="border: 1px solid #E5E7EB; padding: 8px;">Контактна особа</td><td style="border: 1px solid #E5E7EB; padding: 8px;">${formData.contactPerson}</td></tr>
+                        <tr><td style="border: 1px solid #E5E7EB; padding: 8px;">Телефон</td><td style="border: 1px solid #E5E7EB; padding: 8px;">${formData.phone}</td></tr>
+                        <tr><td style="border: 1px solid #E5E7EB; padding: 8px;">Email</td><td style="border: 1px solid #E5E7EB; padding: 8px;">${formData.email}</td></tr>
+                        <tr><td style="border: 1px solid #E5E7EB; padding: 8px;">Назва файлу</td><td style="border: 1px solid #E5E7EB; padding: 8px;">${formData.filename}</td></tr>
+                        <tr><td style="border: 1px solid #E5E7EB; padding: 8px;">Найменування продукції</td><td style="border: 1px solid #E5E7EB; padding: 8px;">${formData.product}</td></tr>
+                        <tr><td style="border: 1px solid #E5E7EB; padding: 8px;">Тип друку (сторони)</td><td style="border: 1px solid #E5E7EB; padding: 8px;">${formData.printSides}</td></tr>
+                        <tr><td style="border: 1px solid #E5E7EB; padding: 8px;">Тираж</td><td style="border: 1px solid #E5E7EB; padding: 8px;">${formData.quantity}</td></tr>
+                        <tr><td style="border: 1px solid #E5E7EB; padding: 8px;">Формат</td><td style="border: 1px solid #E5E7EB; padding: 8px;">${formData.format}</td></tr>
+                        <tr><td style="border: 1px solid #E5E7EB; padding: 8px;">Тип друку</td><td style="border: 1px solid #E5E7EB; padding: 8px;">${formData.printType}</td></tr>
+                        <tr><td style="border: 1px solid #E5E7EB; padding: 8px;">Матеріал</td><td style="border: 1px solid #E5E7EB; padding: 8px;">${formData.material}</td></tr>
+                        <tr><td style="border: 1px solid #E5E7EB; padding: 8px;">Щільність паперу</td><td style="border: 1px solid #E5E7EB; padding: 8px;">${formData.paperWeight}</td></tr>
+                        <tr><td style="border: 1px solid #E5E7EB; padding: 8px;">Термін виконання</td><td style="border: 1px solid #E5E7EB; padding: 8px;">${formData.deadline}</td></tr>
+                        <tr><td style="border: 1px solid #E5E7EB; padding: 8px;">Післядрукарські роботи</td><td style="border: 1px solid #E5E7EB; padding: 8px;">${formData.postPrint}</td></tr>
+                        ${formData.eyeletsQuantity ? `<tr><td style="border: 1px solid #E5E7EB; padding: 8px;">Кількість люверсів</td><td style="border: 1px solid #E5E7EB; padding: 8px;">${formData.eyeletsQuantity}</td></tr>` : ''}
+                        ${formData.eyeletsDistance ? `<tr><td style="border: 1px solid #E5E7EB; padding: 8px;">Відстань між люверсами</td><td style="border: 1px solid #E5E7EB; padding: 8px;">${formData.eyeletsDistance} мм</td></tr>` : ''}
+                        ${formData.pocketSize ? `<tr><td style="border: 1px solid #E5E7EB; padding: 8px;">Розмір кишені</td><td style="border: 1px solid #E5E7EB; padding: 8px;">${formData.pocketSize} мм</td></tr>` : ''}
+                        <tr><td style="border: 1px solid #E5E7EB; padding: 8px;">Примітка</td><td style="border: 1px solid #E5E7EB; padding: 8px;">${formData.notes}</td></tr>
+                    </table>
+                </div>
+            `;
+        }
+
+        function getSelectedItems(containerId) {
+            const items = document.querySelectorAll(`#${containerId} .selected-item span`);
+            return Array.from(items).map(item => item.textContent).join(', ') || 'Не обрано';
+        }
+
+        function sendOrder() {
+            try {
+                const orderTable = generateOrderTable();
+                const printWindow = window.open('', '_blank');
+                if (!printWindow) throw new Error('Не вдалося відкрити вікно друку.');
+                printWindow.document.write(`
+                    <!DOCTYPE html>
+                    <html>
+                    <head><title>Друк замовлення</title><style>@media print { body { margin: 0; padding: 0; } .order-table { width: 100%; } table, th, td { border: 1px solid black; font-size: 12pt; font-weight: 600; } }</style></head>
+                    <body>${orderTable}</body>
+                    </html>
+                `);
+                printWindow.document.close();
+                printWindow.focus();
+                setTimeout(() => {
+                    printWindow.print();
+                    printWindow.close();
+                }, 500);
+            } catch (error) {
+                console.error('Помилка при друці:', error);
+                alert('Не вдалося надрукувати замовлення.');
+            }
+        }
+
+        function sendToGmail() {
+            try {
+                const formData = { orderNumber: document.getElementById('orderNumber').textContent };
+                const tempDiv = document.createElement('div');
+                tempDiv.style.position = 'absolute';
+                tempDiv.style.left = '-9999px';
+                tempDiv.innerHTML = generateOrderTable();
+                document.body.appendChild(tempDiv);
+
+                html2canvas(tempDiv.querySelector('.order-table'), {
+                    scale: 2,
+                    useCORS: true,
+                    logging: false
+                }).then(canvas => {
+                    const imgData = canvas.toDataURL('image/png', 1.0);
+                    const folderName = `Замовлення-наряд №${formData.orderNumber}`;
+                    const fileName = `${folderName}.png`;
+
+                    if (window.showDirectoryPicker) {
+                        saveWithFolder(imgData, folderName, fileName).then(() => proceedWithEmail(folderName));
+                    } else {
+                        fallbackDownload(imgData, folderName, fileName);
+                    }
+                    document.body.removeChild(tempDiv);
+                }).catch(error => {
+                    console.error('Помилка html2canvas:', error);
+                    document.body.removeChild(tempDiv);
+                    alert('Помилка при створенні зображення.');
+                });
+            } catch (error) {
+                console.error('Помилка при відправці:', error);
+                alert('Не вдалося відправити замовлення.');
+            }
+        }
+
+        async function saveWithFolder(imgData, folderName, fileName) {
+            const dirHandle = await window.showDirectoryPicker({ mode: 'readwrite' });
+            const subDirHandle = await dirHandle.getDirectoryHandle(folderName, { create: true });
+            const fileHandle = await subDirHandle.getFileHandle(fileName, { create: true });
+            const writable = await fileHandle.createWritable();
+            const response = await fetch(imgData);
+            const blob = await response.blob();
+            await writable.write(blob);
+            await writable.close();
+        }
+
+        function fallbackDownload(imgData, folderName, fileName) {
+            const link = document.createElement('a');
+            link.href = imgData;
+            link.download = `${folderName}/${fileName}`;
+            document.body.appendChild(link);
+            link.click();
+            document.body.removeChild(link);
+            proceedWithEmail(folderName);
+        }
+
+        function proceedWithEmail(folderName) {
+            const isMobile = /iPhone|iPad|iPod|Android/i.test(navigator.userAgent);
+            const subject = `Замовлення-наряд №${folderName.split('№')[1]}`;
+            if (isMobile) {
+                window.location.href = `mailto:printmediapro@gmail.com?subject=${encodeURIComponent(subject)}`;
+            } else {
+                window.open(`https://mail.google.com/mail/?view=cm&fs=1&to=printmediapro@gmail.com&su=${encodeURIComponent(subject)}`, '_blank');
+            }
+        }
+
+        function showInstructions() {
+            try {
+                const instructionWindow = window.open('', '_blank');
+                if (!instructionWindow) throw new Error('Не вдалося відкрити вікно інструкції.');
+                instructionWindow.document.write(`
+                    <!DOCTYPE html>
+                    <html lang="uk">
+                    <head>
+                        <meta charset="UTF-8">
+                        <title>Інструкція з використання форми</title>
+                        <style>
+                            body { font-family: Arial, sans-serif; margin: 20px; line-height: 1.6; background-color: #f4f4f4; color: #333; }
+                            h1 { color: #4F46E5; text-align: center; }
+                            h2 { color: #6B7280; margin-top: 20px; }
+                            p, li { font-size: 16px; }
+                            ul { margin-left: 20px; }
+                            .container { max-width: 800px; margin: 0 auto; background: white; padding: 20px; border-radius: 8px; box-shadow: 0 2px 4px rgba(0,0,0,0.1); }
+                        </style>
+                    </head>
+                    <body>
+                        <div class="container">
+                            <h1>Інструкція з використання форми "Замовлення-наряд на поліграфію"</h1>
+                            <p>Ця форма призначена для оформлення замовлень на друк поліграфічної продукції (візитки, банери, книги тощо). Ви можете заповнити поля, обрати кілька варіантів там, де це можливо, і або надрукувати замовлення, або відправити його на Gmail. Ось покрокове керівництво:</p>
+
+                            <h2>1. Основна інформація</h2>
+                            <ul>
+                                <li><b>Дата замовлення</b>: Автоматично проставляється поточна дата (наприклад, 09.04.2025). Змініть, якщо потрібно, обравши дату в календарі.</li>
+                                <li><b>Замовник</b>: Вкажіть назву компанії або ім’я замовника (наприклад, "ТОВ Ромашка" або "Іван Петров").</li>
+                                <li><b>Контактна особа</b>: Введіть ім’я та прізвище контактної особи (наприклад, "Анна Іванова").</li>
+                                <li><b>Телефон</b>: Введіть номер у форматі +380XXXXXXXXX (наприклад, +380501234567). Використовуйте лише цифри та "+".</li>
+                                <li><b>Email</b>: Вкажіть email для зв’язку (наприклад, "anna@example.com").</li>
+                                <li><b>Назва файлу</b>: Натисніть "Обрати файл", щоб завантажити макети (PDF, JPG, PNG, DOCX). Можна обрати кілька файлів (утримуйте Ctrl і клікайте на файли на Windows, або Command на Mac). Після вибору файли з’являться у списку нижче з кнопкою "Видалити". <b>Важливо:</b> це поле лише відображає назви обраних файлів у формі та в підсумковій таблиці замовлення. Самі файли не прикріплюються автоматично до листа. Вам потрібно буде прикріпити ці файли вручну під час відправлення листа на Gmail (див. розділ "Відправити на Gmail"). Щоб прибрати файл зі списку, натисніть "Видалити" поруч із його назвою.</li>
+                            </ul>
+
+                            <h2>2. Характеристики продукції</h2>
+                            <p>Усі поля дозволяють обрати кілька значень, якщо потрібно. Обрані елементи з’являються у списку нижче з кнопкою "Видалити".</p>
+                            <ul>
+                                <li><b>Найменування продукції</b>: Оберіть зі списку (наприклад, "Візитка", "Банер"). Після вибору елемент додасться до списку (наприклад, "Візитка [Видалити]"). Можна додати кілька. Для видалення натисніть "Видалити".
+                                    <ul>
+                                        <li>Якщо обрали "Журнал" або "Книга", з’явиться "Тип": оберіть "М’яка палітурка" або "Тверда палітурка" — додасться, наприклад, "Книга (М’яка палітурка) [Видалити]".</li>
+                                        <li>Якщо обрали "Календар", вкажіть "Тип календаря" ("Обкладинка" або "Внутрішній блок") та "Кількість сторінок" (наприклад, 12) — додасться "Календар (Обкладинка, 12 стор.) [Видалити]".</li>
+                                        <li>Якщо обрали "Інше", введіть назву (наприклад, "Наклейка") і натисніть Tab або клікніть поза полем — додасться "Наклейка [Видалити]".</li>
+                                    </ul>
+                                </li>
+                                <li><b>Тип друку (сторони)</b>: Оберіть "Односторонній (4+0)" або "Двосторонній (4+4)". Додасться до списку (наприклад, "4+0 [Видалити]"). Можна обрати обидва варіанти. Видаліть у разі помилки кнопкою "Видалити".</li>
+                                <li><b>Тираж</b>: Вкажіть кількість примірників (наприклад, 100).</li>
+                                <li><b>Формат</b>: Оберіть зі списку (наприклад, "A4") або "Інший формат" і вкажіть розміри (наприклад, "100x200 мм"). Додасться до списку (наприклад, "A4 [Видалити]"). Можна обрати кілька. Видаліть зайве кнопкою "Видалити".</li>
+                                <li><b>Тип друку</b>: Оберіть зі списку (наприклад, "Коніка", "Широкоформатний друк"). Додасться до списку (наприклад, "Коніка [Видалити]"). Можна обрати кілька. Видаліть непотрібне кнопкою "Видалити".</li>
+                                <li><b>Матеріал</b>: Оберіть матеріал (наприклад, "Офсет") або "Інший матеріал" і вкажіть свій (наприклад, "Картон"). Додасться до списку. Видаліть за потреби.</li>
+                                <li><b>Щільність паперу</b>: Оберіть зі списку (наприклад, "80 г/м²") або "Інше" і вкажіть значення (наприклад, "200"). Додасться до списку (наприклад, "80 г/м² [Видалити]"). Можна обрати кілька. Видаліть зайве.</li>
+                                <li><b>Термін виконання</b>: Оберіть дату в календарі (наприклад, 15.04.2025).</li>
+                            </ul>
+
+                            <h2>3. Післядрукарські роботи</h2>
+                            <ul>
+                                <li><b>Післядрукарські роботи</b>: Оберіть вид робіт (наприклад, "Ламінація глянець"). Додасться до списку. Можна обрати кілька.
+                                    <ul>
+                                        <li>Якщо обрали "Люверси", вкажіть "Кількість люверсів" (наприклад, 4) та "Відстань між люверсами" (наприклад, 100 мм) — ці дані потраплять до таблиці.</li>
+                                        <li>Якщо обрали "Кишені", вкажіть "Розмір кишені" (наприклад, "100x50") та "Колір локшини" (наприклад, "Червоний" або "Інший" і свій колір, наприклад, "Сріблястий") — додасться як "Кишені (Розмір: 100x50 мм, Колір локшини: Червоний) [Видалити]".</li>
+                                    </ul>
+                                    Видаліть непотрібне кнопкою "Видалити".
+                                </li>
+                            </ul>
+
+                            <h2>4. Примітка</h2>
+                            <ul>
+                                <li><b>Примітка</b>: Введіть додаткові побажання (наприклад, "Термінове замовлення"). Залиште порожнім, якщо нічого не потрібно.</li>
+                            </ul>
+
+                            <h2>5. Дії з замовленням</h2>
+                            <ul>
+                                <li><b>Надрукувати замовлення-наряд</b>: Натисніть, щоб відкрити вікно з таблицею замовлення. Натисніть "Друк" у браузері для виведення на принтер.</li>
+                                <li><b>Відправити на Gmail</b>: Натисніть, щоб зберегти PNG-файл з таблицею в папку "Замовлення-наряд №XXXXXX". Потім відкриється Gmail (на комп’ютері) або поштовий додаток (на телефоні) з попередньо заповненою адресою printmediapro@gmail.com і темою "Замовлення-наряд №XXXXXX". <b>Важливо:</b> вам потрібно вручну прикріпити файли, які ви обрали в полі "Назва файлу", а також сам PNG-файл замовлення ("Замовлення-наряд №XXXXXX.png"). Для цього:
+                                    <ul>
+                                        <li>У відкритому вікні Gmail натисніть на значок скріпки ("Прикріпити файли").</li>
+                                        <li>Оберіть файли, які ви вказали в полі "Назва файлу" (наприклад, макети у форматі PDF, JPG, PNG, DOCX).</li>
+                                        <li>Також знайдіть і оберіть збережений PNG-файл замовлення ("Замовлення-наряд №XXXXXX.png") з папки, куди він був збережений.</li>
+                                        <li>Після прикріплення всіх файлів натисніть "Відправити".</li>
+                                    </ul>
+                                    Якщо Gmail не відкривається, ви можете відправити лист вручну на printmediapro@gmail.com, прикріпивши всі необхідні файли.
+                                </li>
+                                <li><b>Інструкція</b>: Відкриває це вікно з керівництвом.</li>
+                            </ul>
+
+                            <h2>Поради</h2>
+                            <ul>
+                                <li>Перевіряйте дані перед друком або відправленням.</li>
+                                <li>Якщо помилилися з вибором, видаліть елемент кнопкою "Видалити" — перезавантаження сторінки не потрібне.</li>
+                                <li>На мобільних пристроях поля можуть розташовуватися вертикально.</li>
+                                <li>Переконайтеся, що ви прикріпили всі необхідні файли перед відправленням листа, інакше одержувач не зможе обробити замовлення.</li>
+                            </ul>
+
+                            <p>Тепер ви готові використовувати форму без помилок!</p>
+                        </div>
+                    </body>
+                    </html>
+                `);
+                instructionWindow.document.close();
+            } catch (error) {
+                console.error('Помилка інструкції:', error);
+                alert('Не вдалося відкрити інструкцію.');
+            }
+        }
+    </script>
+</body>
+</html>
