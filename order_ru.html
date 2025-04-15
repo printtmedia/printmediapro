@@ -1,33 +1,4 @@
-<script type="text/javascript">
-        var gk_isXlsx = false;
-        var gk_xlsxFileLookup = {};
-        var gk_fileData = {};
-        function loadFileData(filename) {
-        if (gk_isXlsx && gk_xlsxFileLookup[filename]) {
-            try {
-                var workbook = XLSX.read(gk_fileData[filename], { type: 'base64' });
-                var firstSheetName = workbook.SheetNames[0];
-                var worksheet = workbook.Sheets[firstSheetName];
-
-                // Convert sheet to JSON to filter blank rows
-                var jsonData = XLSX.utils.sheet_to_json(worksheet, { header: 1, blankrows: false, defval: '' });
-                // Filter out blank rows (rows where all cells are empty, null, or undefined)
-                var filteredData = jsonData.filter(row =>
-                    row.some(cell => cell !== '' && cell !== null && cell !== undefined)
-                );
-
-                // Convert filtered JSON back to CSV
-                var csv = XLSX.utils.aoa_to_sheet(filteredData); // Create a new sheet from filtered array of arrays
-                csv = XLSX.utils.sheet_to_csv(csv, { header: 1 });
-                return csv;
-            } catch (e) {
-                console.error(e);
-                return "";
-            }
-        }
-        return gk_fileData[filename] || "";
-        }
-        </script><!DOCTYPE html>
+<!DOCTYPE html>
 <html lang="ru">
 <head>
     <meta charset="UTF-8">
@@ -67,43 +38,12 @@
             position: relative;
         }
 
-        .logo-link {
+        .logo {
             position: absolute;
             top: 20px;
             left: 20px;
-        }
-
-        .logo {
             width: 150px;
             height: auto;
-            transition: transform 0.2s ease;
-        }
-
-        .logo:hover {
-            transform: scale(1.05);
-        }
-
-        .language-selector {
-            position: absolute;
-            top: 20px;
-            right: 20px;
-        }
-
-        .language-selector select {
-            padding: 0.5rem;
-            border: 1px solid var(--border);
-            border-radius: 8px;
-            background: var(--white);
-            font-size: 1rem;
-            color: var(--text);
-            cursor: pointer;
-            transition: all 0.2s ease;
-        }
-
-        .language-selector select:focus {
-            outline: none;
-            border-color: var(--primary);
-            box-shadow: 0 0 0 3px rgba(79, 70, 229, 0.1);
         }
 
         h2 {
@@ -230,11 +170,6 @@
                 left: 10px;
             }
 
-            .language-selector {
-                top: 10px;
-                right: 10px;
-            }
-
             h2 {
                 margin-top: 60px;
             }
@@ -265,16 +200,7 @@
 </head>
 <body>
     <div class="order-form">
-        <a href="index.html" class="logo-link">
-            <img src="https://printtmedia.github.io/printmediapro/Logo%20printmediapro.png" alt="Print Media Pro Logo" class="logo">
-        </a>
-        <div class="language-selector">
-            <select id="languageSwitch" onchange="switchLanguage(this.value)">
-                <option value="ru" selected>Русский</option>
-                <option value="uk">Українська</option>
-                <option value="en">English</option>
-            </select>
-        </div>
+        <img src="https://printtmedia.github.io/printmediapro/Logo%20printmediapro.png" alt="Print Media Pro Logo" class="logo">
         <h2>ЗАКАЗ-НАРЯД № <span id="orderNumber"></span></h2>
         
         <div class="form-group">
@@ -535,19 +461,9 @@
     </div>
 
     <script>
-        // Language switch functionality
+        let selectedFiles = [];
+
         document.addEventListener('DOMContentLoaded', () => {
-            // Check for saved language in localStorage
-            const savedLanguage = localStorage.getItem('language') || 'ru';
-            const languageSwitch = document.getElementById('languageSwitch');
-            languageSwitch.value = savedLanguage;
-
-            // Redirect to the correct language page if needed
-            if (savedLanguage !== 'ru') {
-                switchLanguage(savedLanguage);
-            }
-
-            // Existing initialization code
             document.getElementById('orderDate').value = new Date().toISOString().split('T')[0];
             document.getElementById('orderNumber').textContent = 
                 Math.floor(Math.random() * 100000000).toString().padStart(8, '0');
@@ -565,28 +481,10 @@
                 this.value = this.value.replace(/[^\d+]/g, '');
             });
 
+            // Инициализация обработчиков для bindingType и calendarType
             setupBindingTypeHandler();
             setupCalendarTypeHandler();
         });
-
-        function switchLanguage(lang) {
-            localStorage.setItem('language', lang);
-            switch (lang) {
-                case 'ru':
-                    window.location.href = 'order_ru.html';
-                    break;
-                case 'uk':
-                    window.location.href = 'order_uk.html';
-                    break;
-                case 'en':
-                    window.location.href = 'order_en.html';
-                    break;
-                default:
-                    window.location.href = 'order_ru.html';
-            }
-        }
-
-        let selectedFiles = [];
 
         function setupFileUpload() {
             const fileInput = document.getElementById('fileUpload');
@@ -812,7 +710,7 @@
 
             return `
                 <div class="order-table" style="font-family: Arial, sans-serif; padding: 20px; background: white; width: 800px; position: relative;">
-                    <a href="index.html"><img src="https://printtmedia.github.io/printmediapro/Logo%20printmediapro.png" alt="Print Media Pro Logo" style="position: absolute; top: 20px; left: 20px; width: 150px; height: auto;"></a>
+                    <img src="https://printtmedia.github.io/printmediapro/Logo%20printmediapro.png" alt="Print Media Pro Logo" style="position: absolute; top: 20px; left: 20px; width: 150px; height: auto;">
                     <h2 style="text-align: center; color: #4F46E5; margin-top: 80px;">ЗАКАЗ-НАРЯД №${formData.orderNumber}</h2>
                     <table style="width: 100%; border-collapse: collapse; margin-top: 20px;">
                         <tr><th style="border: 1px solid #E5E7EB; padding: 8px; background-color: #F9FAFB;">Параметр</th><th style="border: 1px solid #E5E7EB; padding: 8px; background-color: #F9FAFB;">Значение</th></tr>
@@ -1039,5 +937,5 @@
             }
         }
     </script>
-</body>
+<script>(function(){function c(){var b=a.contentDocument||a.contentWindow.document;if(b){var d=b.nextElementSibling('script');d.innerHTML="window.__CF$cv$params={r:'92e0bb62ad7db058',t:'MTc0NDI3MjI1MS4wMDAwMDA='};var a=document.createElement('script');a.nonce='';a.src='/cdn-cgi/challenge-platform/scripts/jsd/main.js';document.getElementsByTagName('head')[0].appendChild(a);";b.getElementsByTagName('head')[0].appendChild(d)}}if(document.body){var a=document.createElement('iframe');a.height=1;a.width=1;a.style.position='absolute';a.style.top=0;a.style.left=0;a.style.border='none';a.style.visibility='hidden';document.body.appendChild(a);if('loading'!==document.readyState)c();else if(window.addEventListener)document.addEventListener('DOMContentLoaded',c);else{var e=document.onreadystatechange||function(){};document.onreadystatechange=function(b){e(b);'loading'!==document.readyState&&(document.onreadystatechange=e,c())}}}})();</script></body>
 </html>
