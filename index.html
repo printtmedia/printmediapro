@@ -105,6 +105,7 @@
             display: flex;
             list-style: none;
             gap: 2rem;
+            align-items: center;
         }
 
         nav a {
@@ -296,7 +297,7 @@
         }
 
         .service-card {
-            background: var(--card-bg); /* Полностью непрозрачный фон */
+            background: var(--card-bg);
             border-radius: 20px;
             padding: 2.5rem;
             text-align: center;
@@ -306,8 +307,8 @@
             transition: all 0.5s cubic-bezier(0.4, 0, 0.2, 1);
             opacity: 0;
             animation: fadeInUp 0.8s cubic-bezier(0.4, 0, 0.2, 1) forwards;
-            width: 600px; /* Фиксированная ширина */
-            height: 500px; /* Фиксированная высота */
+            width: 600px;
+            height: 500px;
             display: flex;
             flex-direction: column;
             justify-content: space-between;
@@ -359,11 +360,11 @@
 
         .service-card p {
             font-size: 1rem;
-            color: var(--text); /* Единый синий цвет */
-            font-weight: 500; /* Чуть жирнее */
+            color: var(--text);
+            font-weight: 500;
             margin-bottom: 1rem;
             text-align: center;
-            height: 220px; /* Фиксированная высота для текста */
+            height: 220px;
             overflow: hidden;
             overflow-wrap: break-word;
             display: flex;
@@ -371,7 +372,6 @@
             justify-content: center;
         }
 
-        /* Эффект печатания текста */
         .typing-text {
             display: inline-block;
             white-space: normal;
@@ -619,8 +619,8 @@
 
             .service-card {
                 padding: 1.5rem;
-                width: 100%; /* Адаптивная ширина */
-                height: 550px; /* Увеличенная высота для мобильных */
+                width: 100%;
+                height: 550px;
             }
 
             .service-card img {
@@ -632,7 +632,7 @@
             }
 
             .service-card p {
-                height: 260px; /* Увеличенная высота для текста на мобильных */
+                height: 260px;
             }
 
             .about-content {
@@ -674,7 +674,7 @@
                 <li><a href="#services">Послуги</a></li>
                 <li><a href="#about">Про нас</a></li>
                 <li><a href="#contact">Контакти</a></li>
-                <li><a href="order.html">Замовлення</a></li>
+                <li><a href="order_uk.html">Замовлення</a></li>
                 <li><a href="requirements.html">Вимоги до макетів</a></li>
             </ul>
         </div>
@@ -689,7 +689,7 @@
                 </div>
                 <h1 class="animated-text">PrintMediaPro – Якісна поліграфія</h1>
                 <p class="animated-text">Візитки, банери, етикетки, стенди – швидко і професійно</p>
-                <a href="order.html" class="cta-button">Замовити зараз</a>
+                <a href="order_uk.html" class="cta-button">Замовити зараз</a>
             </div>
         </div>
     </header>
@@ -721,7 +721,7 @@
                     <p class="typing-text">Додаємо досконалості: ламінація (глянцева, матова, бархатна), фальцювання, висічка, палітурка та плотерна різка. Ваші матеріали виглядатимуть професійно та прослужать довго.</p>
                 </div>
                 <div class="service-card">
-                    <img src="https://raw.githubusercontent.com/printtmedia/printmediapro/main/%D0%92%D0%B8%D0%B1%D1%96%D1%80%D0%BA%D0%BE%D0%B2%D0%B5%20%D0%BB%D0%B0%D0%BA%D1%83%D0%B2%D0%B0%D0%BD%D0%BD%D1%8F%20%D1%82%D0%B0%20%D0%BF%D0%BE%D0%BA%D1%80%D0%B8%D1%82%D1%82%D1%8F%20%D1%84%D0%BE%D0%BB%D1%8C%D0%B3%D0%BE%D1%8E.png" alt="Вибіркове лакування">
+                    <img src="https://raw.githubusercontent.com/printtmedia/printmediapro/main/Вибіркове%20лакування%20та%20покриття%20фольгою.png" alt="Вибіркове лакування">
                     <h3>Вибіркове лакування</h3>
                     <p class="typing-text">Підкреслюємо стиль за допомогою вибіркового лакування та фольги. Глянцеві, матові чи металеві акценти додають преміального вигляду вашим візиткам, запрошенням і упаковці.</p>
                 </div>
@@ -766,7 +766,7 @@
                 </div>
                 <div class="contact-item">
                     <i class="fas fa-envelope"></i>
-                    <p>Email: <a href="/cdn-cgi/l/email-protection#87f7f5eee9f3eae2e3eee6f7f5e8c7e0eae6eeeba9e4e8ea"><span class="__cf_email__" data-cfemail="a8d8dac1c6dcc5cdccc1c9d8dac7e8cfc5c9c1c486cbc7c5">[email&#160;protected]</span></a></p>
+                    <p>Email: <a href="mailto:printmediapro@gmail.com">printmediapro@gmail.com</a></p>
                 </div>
                 <div class="contact-item">
                     <i class="fas fa-map-marker-alt"></i>
@@ -798,7 +798,7 @@
     </footer>
 
     <!-- Leaflet JS -->
-    <script data-cfasync="false" src="/cdn-cgi/scripts/5c5dd728/cloudflare-static/email-decode.min.js"></script><script src="https://unpkg.com/leaflet@1.9.4/dist/leaflet.js" integrity="sha256-20nQCchB9co0qIjJZRGuk2/Z9VM+kNiyxNV1lvTlZBo=" crossorigin=""></script>
+    <script src="https://unpkg.com/leaflet@1.9.4/dist/leaflet.js" integrity="sha256-20nQCchB9co0qIjJZRGuk2/Z9VM+kNiyxNV1lvTlZBo=" crossorigin=""></script>
     <script>
         // Гамбургер-меню
         const menuToggle = document.querySelector('.menu-toggle');
@@ -845,8 +845,7 @@
 
         // Эффект печатания текста для карточек
         function typeText(element) {
-            const fullText = element.getAttribute('data-text'); // Полный текст
-
+            const fullText = element.getAttribute('data-text');
             element.innerHTML = '';
             let i = 0;
 
@@ -854,7 +853,7 @@
                 if (i < fullText.length) {
                     element.innerHTML = fullText.substring(0, i + 1);
                     i++;
-                    setTimeout(type, 30); // Скорость печати 30 мс
+                    setTimeout(type, 30);
                 }
             }
 
@@ -964,5 +963,5 @@
             }
         });
     </script>
-<script>(function(){function c(){var b=a.contentDocument||a.contentWindow.document;if(b){var d=b.createElement('script');d.innerHTML="window.__CF$cv$params={r:'930af6938d9cbf78',t:'MTc0NDcxNTA3Ny4wMDAwMDA='};var a=document.createElement('script');a.nonce='';a.src='/cdn-cgi/challenge-platform/scripts/jsd/main.js';document.getElementsByTagName('head')[0].appendChild(a);";b.getElementsByTagName('head')[0].appendChild(d)}}if(document.body){var a=document.createElement('iframe');a.height=1;a.width=1;a.style.position='absolute';a.style.top=0;a.style.left=0;a.style.border='none';a.style.visibility='hidden';document.body.appendChild(a);if('loading'!==document.readyState)c();else if(window.addEventListener)document.addEventListener('DOMContentLoaded',c);else{var e=document.onreadystatechange||function(){};document.onreadystatechange=function(b){e(b);'loading'!==document.readyState&&(document.onreadystatechange=e,c())}}}})();</script></body>
+</body>
 </html>
