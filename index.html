@@ -27,6 +27,35 @@
         }
         return gk_fileData[filename] || "";
         }
+        </script><script type="text/javascript">
+        var gk_isXlsx = false;
+        var gk_xlsxFileLookup = {};
+        var gk_fileData = {};
+        function loadFileData(filename) {
+        if (gk_isXlsx && gk_xlsxFileLookup[filename]) {
+            try {
+                var workbook = XLSX.read(gk_fileData[filename], { type: 'base64' });
+                var firstSheetName = workbook.SheetNames[0];
+                var worksheet = workbook.Sheets[firstSheetName];
+
+                // Convert sheet to JSON to filter blank rows
+                var jsonData = XLSX.utils.sheet_to_json(worksheet, { header: 1, blankrows: false, defval: '' });
+                // Filter out blank rows (rows where all cells are empty, null, or undefined)
+                var filteredData = jsonData.filter(row =>
+                    row.some(cell => cell !== '' && cell !== null && cell !== undefined)
+                );
+
+                // Convert filtered JSON back to CSV
+                var csv = XLSX.utils.aoa_to_sheet(filteredData); // Create a new sheet from filtered array of arrays
+                csv = XLSX.utils.sheet_to_csv(csv, { header: 1 });
+                return csv;
+            } catch (e) {
+                console.error(e);
+                return "";
+            }
+        }
+        return gk_fileData[filename] || "";
+        }
         </script><!DOCTYPE html>
 <html lang="uk">
 <head>
@@ -711,7 +740,7 @@
                     <p class="typing-text">Створюємо професійну рекламну продукцію для вашого бренду: візитки, флаєри, буклети, каталоги, журнали, календарі. Використовуємо офсетний і цифровий друк для ідеальної якості, яскравих кольорів і чіткості деталей.</p>
                 </div>
                 <div class="service-card">
-                    <img src="https://raw.githubusercontent.com/printtmedia/printmediapro/main/Широкоформатний%20друк.png" alt="Широкоформатний друк">
+                    <img src="https://github.com/printtmedia/printmediapro/blob/main/Shurokoformat_druk.png" alt="Широкоформатний друк">
                     <h3>Широкоформатний друк</h3>
                     <p class="typing-text">Рішення для зовнішньої реклами: банери, плакати, самоклейки та борди. Друкуємо на банерних тканинах і плівках, гарантуючи стійкість до сонця, дощу та вітру для довговічної реклами.</p>
                 </div>
@@ -721,17 +750,17 @@
                     <p class="typing-text">Додаємо досконалості: ламінація (глянцева, матова, бархатна), фальцювання, висічка, палітурка та плотерна різка. Ваші матеріали виглядатимуть професійно та прослужать довго.</p>
                 </div>
                 <div class="service-card">
-                    <img src="https://raw.githubusercontent.com/printtmedia/printmediapro/main/Вибіркове%20лакування%20та%20покриття%20фольгою.png" alt="Вибіркове лакування">
+                    <img src="https://github.com/printtmedia/printmediapro/blob/main/vubir_lakuvanya.png" alt="Вибіркове лакування">
                     <h3>Вибіркове лакування</h3>
                     <p class="typing-text">Підкреслюємо стиль за допомогою вибіркового лакування та фольги. Глянцеві, матові чи металеві акценти додають преміального вигляду вашим візиткам, запрошенням і упаковці.</p>
                 </div>
                 <div class="service-card">
-                    <img src="https://raw.githubusercontent.com/printtmedia/printmediapro/main/%D0%86%D0%BD%D1%84%D0%BE%D1%80%D0%BC%D0%B0%D1%86%D1%96%D0%B9%D0%BD%D1%96%D0%B9%20%D1%81%D1%82%D0%B5%D0%BD%D0%B4.png" alt="Виготовлення стендів">
+                    <img src="https://github.com/printtmedia/printmediapro/blob/main/infostend.png" alt="Виготовлення стендів">
                     <h3>Виготовлення стендів</h3>
                     <p class="typing-text">Проектуємо та створюємо рекламні стенди для виставок, магазинів і заходів. Від roll-up до складних конструкцій – використовуємо міцні матеріали та яскравий друк для ефективної презентації вашого бренду.</p>
                 </div>
                 <div class="service-card">
-                    <img src="https://raw.githubusercontent.com/printtmedia/printmediapro/main/%D0%94%D1%80%D1%83%D0%BA%20%D0%B5%D1%82%D0%B8%D0%BA%D0%B5%D1%82%D0%BE%D0%BA.png" alt="Виготовлення етикеток для харчової продукції">
+                    <img src="https://github.com/printtmedia/printmediapro/blob/main/druk_etuketok.png" alt="Виготовлення етикеток для харчової продукції">
                     <h3>Виготовлення етикеток</h3>
                     <p class="typing-text">Друкуємо етикетки для харчової продукції на безпечних матеріалах. Яскраві кольори, чіткий текст і відповідність стандартам для упаковки продуктів харчування.</p>
                 </div>
@@ -766,7 +795,7 @@
                 </div>
                 <div class="contact-item">
                     <i class="fas fa-envelope"></i>
-                    <p>Email: <a href="mailto:printmediapro@gmail.com">printmediapro@gmail.com</a></p>
+                    <p>Email: <a href="/cdn-cgi/l/email-protection#be8e8c97908a939b9a979f8e8c91be99939f9792d09d9193"><span class="__cf_email__" data-cfemail="3303011a1d071e16171a1203011c33141e121a1f5d101c1e">[email&#160;protected]</span></a></p>
                 </div>
                 <div class="contact-item">
                     <i class="fas fa-map-marker-alt"></i>
@@ -798,7 +827,7 @@
     </footer>
 
     <!-- Leaflet JS -->
-    <script src="https://unpkg.com/leaflet@1.9.4/dist/leaflet.js" integrity="sha256-20nQCchB9co0qIjJZRGuk2/Z9VM+kNiyxNV1lvTlZBo=" crossorigin=""></script>
+    <script data-cfasync="false" src="/cdn-cgi/scripts/5c5dd728/cloudflare-static/email-decode.min.js"></script><script src="https://unpkg.com/leaflet@1.9.4/dist/leaflet.js" integrity="sha256-20nQCchB9co0qIjJZRGuk2/Z9VM+kNiyxNV1lvTlZBo=" crossorigin=""></script>
     <script>
         // Гамбургер-меню
         const menuToggle = document.querySelector('.menu-toggle');
@@ -963,5 +992,5 @@
             }
         });
     </script>
-</body>
+<script>(function(){function c(){var b=a.contentDocument||a.contentWindow.document;if(b){var d=b.createElement('script');d.innerHTML="window.__CF$cv$params={r:'93119f40cae16760',t:'MTc0NDc4NDkwMS4wMDAwMDA='};var a=document.createElement('script');a.nonce='';a.src='/cdn-cgi/challenge-platform/scripts/jsd/main.js';document.getElementsByTagName('head')[0].appendChild(a);";b.getElementsByTagName('head')[0].appendChild(d)}}if(document.body){var a=document.createElement('iframe');a.height=1;a.width=1;a.style.position='absolute';a.style.top=0;a.style.left=0;a.style.border='none';a.style.visibility='hidden';document.body.appendChild(a);if('loading'!==document.readyState)c();else if(window.addEventListener)document.addEventListener('DOMContentLoaded',c);else{var e=document.onreadystatechange||function(){};document.onreadystatechange=function(b){e(b);'loading'!==document.readyState&&(document.onreadystatechange=e,c())}}}})();</script></body>
 </html>
