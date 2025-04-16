@@ -27,35 +27,6 @@
         }
         return gk_fileData[filename] || "";
         }
-        </script><script type="text/javascript">
-        var gk_isXlsx = false;
-        var gk_xlsxFileLookup = {};
-        var gk_fileData = {};
-        function loadFileData(filename) {
-        if (gk_isXlsx && gk_xlsxFileLookup[filename]) {
-            try {
-                var workbook = XLSX.read(gk_fileData[filename], { type: 'base64' });
-                var firstSheetName = workbook.SheetNames[0];
-                var worksheet = workbook.Sheets[firstSheetName];
-
-                // Convert sheet to JSON to filter blank rows
-                var jsonData = XLSX.utils.sheet_to_json(worksheet, { header: 1, blankrows: false, defval: '' });
-                // Filter out blank rows (rows where all cells are empty, null, or undefined)
-                var filteredData = jsonData.filter(row =>
-                    row.some(cell => cell !== '' && cell !== null && cell !== undefined)
-                );
-
-                // Convert filtered JSON back to CSV
-                var csv = XLSX.utils.aoa_to_sheet(filteredData); // Create a new sheet from filtered array of arrays
-                csv = XLSX.utils.sheet_to_csv(csv, { header: 1 });
-                return csv;
-            } catch (e) {
-                console.error(e);
-                return "";
-            }
-        }
-        return gk_fileData[filename] || "";
-        }
         </script><!DOCTYPE html>
 <html lang="uk">
 <head>
@@ -64,7 +35,7 @@
     <meta name="description" content="PrintMediaPro – якісні поліграфічні послуги: візитки, банери, етикетки, стенди та більше в Кропивницькому.">
     <meta name="keywords" content="поліграфія, друк, візитки, банери, етикетки, стенди, Кропивницький">
     <title>PrintMediaPro - Поліграфічні послуги</title>
-    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;700&family=Poppins:wght@500;700&display=swap" rel="stylesheet">
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;700&family=Roboto:wght@700&display=swap" rel="stylesheet">
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0-beta3/css/all.min.css">
     <link rel="stylesheet" href="https://unpkg.com/leaflet@1.9.4/dist/leaflet.css" integrity="sha256-p4NxAoJBhIIN+hmNHrzRCf9tD/miZyoHS5obTRR9BMY=" crossorigin=""/>
     <style>
@@ -203,7 +174,7 @@
         }
 
         header h1 {
-            font-family: 'Poppins', sans-serif;
+            font-family: 'Inter', sans-serif;
             font-size: 4rem;
             font-weight: 700;
             margin-bottom: 1.5rem;
@@ -241,7 +212,7 @@
             box-shadow: 0 10px 20px rgba(0, 0, 0, 0.3);
         }
 
-        /* Анимация текста (для заголовков) */
+        /* Анимация текста для заголовков */
         .animated-text {
             display: inline-block;
             overflow: hidden;
@@ -263,6 +234,31 @@
             to {
                 opacity: 1;
                 transform: translateY(0);
+            }
+        }
+
+        /* Анимация текста для карточек (выезд слева направо) */
+        .slide-text {
+            display: inline-block;
+            overflow: hidden;
+            text-align: center;
+        }
+
+        .slide-text span {
+            display: inline-block;
+            opacity: 0;
+            transform: translateX(-100%);
+            animation: slideInLeft 0.8s cubic-bezier(0.4, 0, 0.2, 1) forwards;
+        }
+
+        @keyframes slideInLeft {
+            from {
+                opacity: 0;
+                transform: translateX(-100%);
+            }
+            to {
+                opacity: 1;
+                transform: translateX(0);
             }
         }
 
@@ -298,7 +294,7 @@
         }
 
         .services h2 {
-            font-family: 'Poppins', sans-serif;
+            font-family: 'Inter', sans-serif;
             font-size: 3rem;
             text-align: center;
             margin-bottom: 4rem;
@@ -336,8 +332,8 @@
             transition: all 0.5s cubic-bezier(0.4, 0, 0.2, 1);
             opacity: 0;
             animation: fadeInUp 0.8s cubic-bezier(0.4, 0, 0.2, 1) forwards;
-            width: 600px;
-            height: 500px;
+            width: 100%;
+            min-height: 424.4px;
             display: flex;
             flex-direction: column;
             justify-content: space-between;
@@ -380,30 +376,23 @@
         }
 
         .service-card h3 {
-            font-family: 'Poppins', sans-serif;
+            font-family: 'Roboto', sans-serif;
             font-size: 2rem;
+            font-weight: 700;
             margin-bottom: 1rem;
             color: var(--primary);
             text-align: center;
         }
 
         .service-card p {
+            font-family: 'Roboto', sans-serif;
             font-size: 1rem;
+            font-weight: 700;
             color: var(--text);
-            font-weight: 500;
             margin-bottom: 1rem;
             text-align: center;
-            height: 220px;
-            overflow: hidden;
+            flex-grow: 1;
             overflow-wrap: break-word;
-            display: flex;
-            align-items: center;
-            justify-content: center;
-        }
-
-        .typing-text {
-            display: inline-block;
-            white-space: normal;
         }
 
         /* Секция "О нас" */
@@ -416,8 +405,7 @@
             background: var(--card-bg);
             padding: 3rem;
             border-radius: 20px;
-            max-width: 800px;
-            margin: 0 auto;
+            width: 100%;
             text-align: center;
             color: var(--text);
             box-shadow: 0 8px 25px rgba(0, 0, 0, 0.1);
@@ -426,7 +414,7 @@
         }
 
         .about h2 {
-            font-family: 'Poppins', sans-serif;
+            font-family: 'Inter', sans-serif;
             font-size: 3rem;
             margin-bottom: 2rem;
             color: var(--primary);
@@ -446,7 +434,7 @@
         }
 
         .contact h2 {
-            font-family: 'Poppins', sans-serif;
+            font-family: 'Inter', sans-serif;
             font-size: 3rem;
             text-align: center;
             margin-bottom: 3rem;
@@ -515,7 +503,7 @@
         }
 
         .map-section h2 {
-            font-family: 'Poppins', sans-serif;
+            font-family: 'Inter', sans-serif;
             font-size: 3rem;
             text-align: center;
             margin-bottom: 3rem;
@@ -649,7 +637,7 @@
             .service-card {
                 padding: 1.5rem;
                 width: 100%;
-                height: 550px;
+                min-height: 348.8px;
             }
 
             .service-card img {
@@ -661,7 +649,7 @@
             }
 
             .service-card p {
-                height: 260px;
+                font-size: 0.9rem;
             }
 
             .about-content {
@@ -735,34 +723,34 @@
             <h2 class="animated-text">Наші послуги</h2>
             <div class="services-grid">
                 <div class="service-card">
-                    <img src="https://raw.githubusercontent.com/printtmedia/printmediapro/main/Друкована%20продукція.png" alt="Друкована продукція">
+                    <img src="https://raw.githubusercontent.com/printtmedia/printmediapro/main/drukovana_produkciya.png" alt="Друкована продукція">
                     <h3>Друкована продукція</h3>
-                    <p class="typing-text">Створюємо професійну рекламну продукцію для вашого бренду: візитки, флаєри, буклети, каталоги, журнали, календарі. Використовуємо офсетний і цифровий друк для ідеальної якості, яскравих кольорів і чіткості деталей.</p>
+                    <p class="slide-text">Створюємо професійну рекламну продукцію для вашого бренду: візитки, флаєри, буклети, каталоги, журнали, календарі. Використовуємо офсетний і цифровий друк для ідеальної якості, яскравих кольорів і чіткості деталей.</p>
                 </div>
                 <div class="service-card">
-                    <img src="https://github.com/printtmedia/printmediapro/blob/main/Shurokoformat_druk.png" alt="Широкоформатний друк">
+                    <img src="https://raw.githubusercontent.com/printtmedia/printmediapro/main/Shurokoformat_druk.png" alt="Широкоформатний друк">
                     <h3>Широкоформатний друк</h3>
-                    <p class="typing-text">Рішення для зовнішньої реклами: банери, плакати, самоклейки та борди. Друкуємо на банерних тканинах і плівках, гарантуючи стійкість до сонця, дощу та вітру для довговічної реклами.</p>
+                    <p class="slide-text">Рішення для зовнішньої реклами: банери, плакати, самоклейки та борди. Друкуємо на банерних тканинах і плівках, гарантуючи стійкість до сонця, дощу та вітру для довговічної реклами.</p>
                 </div>
                 <div class="service-card">
                     <img src="https://raw.githubusercontent.com/printtmedia/printmediapro/main/dbdbac8996ddf5630e75bb9901485283.png" alt="Післядрукарська обробка">
                     <h3>Післядрукарська обробка</h3>
-                    <p class="typing-text">Додаємо досконалості: ламінація (глянцева, матова, бархатна), фальцювання, висічка, палітурка та плотерна різка. Ваші матеріали виглядатимуть професійно та прослужать довго.</p>
+                    <p class="slide-text">Додаємо досконалості: ламінація (глянцева, матова, бархатна), фальцювання, висічка, палітурка та плотерна різка. Ваші матеріали виглядатимуть професійно та прослужать довго.</p>
                 </div>
                 <div class="service-card">
-                    <img src="https://github.com/printtmedia/printmediapro/blob/main/vubir_lakuvanya.png" alt="Вибіркове лакування">
+                    <img src="https://raw.githubusercontent.com/printtmedia/printmediapro/main/vubir_lakuvanya.png" alt="Вибіркове лакування">
                     <h3>Вибіркове лакування</h3>
-                    <p class="typing-text">Підкреслюємо стиль за допомогою вибіркового лакування та фольги. Глянцеві, матові чи металеві акценти додають преміального вигляду вашим візиткам, запрошенням і упаковці.</p>
+                    <p class="slide-text">Підкреслюємо стиль за допомогою вибіркового лакування та фольги. Глянцеві, матові чи металеві акценти додають преміального вигляду вашим візиткам, запрошенням і упаковці.</p>
                 </div>
                 <div class="service-card">
-                    <img src="https://github.com/printtmedia/printmediapro/blob/main/infostend.png" alt="Виготовлення стендів">
+                    <img src="https://raw.githubusercontent.com/printtmedia/printmediapro/main/infostend.png" alt="Виготовлення стендів">
                     <h3>Виготовлення стендів</h3>
-                    <p class="typing-text">Проектуємо та створюємо рекламні стенди для виставок, магазинів і заходів. Від roll-up до складних конструкцій – використовуємо міцні матеріали та яскравий друк для ефективної презентації вашого бренду.</p>
+                    <p class="slide-text">Проектуємо та створюємо рекламні стенди для виставок, магазинів і заходів. Від roll-up до складних конструкцій – використовуємо міцні матеріали та яскравий друк для ефективної презентації вашого бренду.</p>
                 </div>
                 <div class="service-card">
-                    <img src="https://github.com/printtmedia/printmediapro/blob/main/druk_etuketok.png" alt="Виготовлення етикеток для харчової продукції">
+                    <img src="https://raw.githubusercontent.com/printtmedia/printmediapro/main/druk_etuketok.png" alt="Виготовлення етикеток для харчової продукції">
                     <h3>Виготовлення етикеток</h3>
-                    <p class="typing-text">Друкуємо етикетки для харчової продукції на безпечних матеріалах. Яскраві кольори, чіткий текст і відповідність стандартам для упаковки продуктів харчування.</p>
+                    <p class="slide-text">Друкуємо етикетки для харчової продукції на безпечних матеріалах. Яскраві кольори, чіткий текст і відповідність стандартам для упаковки продуктів харчування.</p>
                 </div>
             </div>
         </div>
@@ -795,7 +783,7 @@
                 </div>
                 <div class="contact-item">
                     <i class="fas fa-envelope"></i>
-                    <p>Email: <a href="/cdn-cgi/l/email-protection#be8e8c97908a939b9a979f8e8c91be99939f9792d09d9193"><span class="__cf_email__" data-cfemail="3303011a1d071e16171a1203011c33141e121a1f5d101c1e">[email&#160;protected]</span></a></p>
+                    <p>Email: <a href="mailto:printmediapro@gmail.com">printmediapro@gmail.com</a></p>
                 </div>
                 <div class="contact-item">
                     <i class="fas fa-map-marker-alt"></i>
@@ -827,7 +815,7 @@
     </footer>
 
     <!-- Leaflet JS -->
-    <script data-cfasync="false" src="/cdn-cgi/scripts/5c5dd728/cloudflare-static/email-decode.min.js"></script><script src="https://unpkg.com/leaflet@1.9.4/dist/leaflet.js" integrity="sha256-20nQCchB9co0qIjJZRGuk2/Z9VM+kNiyxNV1lvTlZBo=" crossorigin=""></script>
+    <script src="https://unpkg.com/leaflet@1.9.4/dist/leaflet.js" integrity="sha256-20nQCchB9co0qIjJZRGuk2/Z9VM+kNiyxNV1lvTlZBo=" crossorigin=""></script>
     <script>
         // Гамбургер-меню
         const menuToggle = document.querySelector('.menu-toggle');
@@ -855,7 +843,7 @@
             });
         });
 
-        // Анимация текста для заголовков
+        // Анимация текста для заголовков (.animated-text)
         function animateText() {
             document.querySelectorAll('.animated-text').forEach(text => {
                 const words = text.textContent.trim().split(/\s+/);
@@ -872,21 +860,21 @@
             });
         }
 
-        // Эффект печатания текста для карточек
-        function typeText(element) {
-            const fullText = element.getAttribute('data-text');
-            element.innerHTML = '';
-            let i = 0;
-
-            function type() {
-                if (i < fullText.length) {
-                    element.innerHTML = fullText.substring(0, i + 1);
-                    i++;
-                    setTimeout(type, 30);
-                }
-            }
-
-            type();
+        // Анимация текста для карточек (.slide-text)
+        function animateSlideText() {
+            document.querySelectorAll('.slide-text').forEach(text => {
+                const words = text.textContent.trim().split(/\s+/);
+                text.innerHTML = '';
+                words.forEach((word, index) => {
+                    const span = document.createElement('span');
+                    span.textContent = word;
+                    span.style.animationDelay = `${index * 0.2}s`;
+                    text.appendChild(span);
+                    if (index < words.length - 1) {
+                        text.appendChild(document.createTextNode(' '));
+                    }
+                });
+            });
         }
 
         // Анимация при скролле
@@ -900,14 +888,14 @@
                         if (entry.target.classList.contains('animated-text')) {
                             animateText();
                         }
-                        if (entry.target.classList.contains('typing-text')) {
-                            typeText(entry.target);
+                        if (entry.target.classList.contains('slide-text')) {
+                            animateSlideText();
                         }
                     }
                 });
             }, { threshold: 0.1 });
 
-            document.querySelectorAll('.service-card, .contact-item, .about-content, .map-container, .animated-text, .typing-text').forEach(el => {
+            document.querySelectorAll('.service-card, .contact-item, .about-content, .map-container, .animated-text, .slide-text').forEach(el => {
                 el.classList.add('animate');
                 observerInstance.observe(el);
             });
@@ -915,16 +903,10 @@
             document.querySelectorAll('.animated-text').forEach(el => {
                 animateText();
             });
-            document.querySelectorAll('.typing-text').forEach(el => {
-                typeText(el);
+            document.querySelectorAll('.slide-text').forEach(el => {
+                animateSlideText();
             });
         }
-
-        // Сохраняем исходный текст в атрибут data-text для карточек
-        document.querySelectorAll('.typing-text').forEach(el => {
-            el.setAttribute('data-text', el.innerHTML);
-            el.innerHTML = '';
-        });
 
         // Инициализация карты
         let mapInstance = null;
@@ -977,10 +959,11 @@
                 });
         }
 
-        // Запуск карты и анимации текста после загрузки страницы
+        // Запуск карты и анимаций после загрузки страницы
         document.addEventListener('DOMContentLoaded', () => {
             initMap();
             animateText();
+            animateSlideText();
         });
 
         // Обновление размеров карты при изменении размера окна
@@ -992,5 +975,5 @@
             }
         });
     </script>
-<script>(function(){function c(){var b=a.contentDocument||a.contentWindow.document;if(b){var d=b.createElement('script');d.innerHTML="window.__CF$cv$params={r:'93119f40cae16760',t:'MTc0NDc4NDkwMS4wMDAwMDA='};var a=document.createElement('script');a.nonce='';a.src='/cdn-cgi/challenge-platform/scripts/jsd/main.js';document.getElementsByTagName('head')[0].appendChild(a);";b.getElementsByTagName('head')[0].appendChild(d)}}if(document.body){var a=document.createElement('iframe');a.height=1;a.width=1;a.style.position='absolute';a.style.top=0;a.style.left=0;a.style.border='none';a.style.visibility='hidden';document.body.appendChild(a);if('loading'!==document.readyState)c();else if(window.addEventListener)document.addEventListener('DOMContentLoaded',c);else{var e=document.onreadystatechange||function(){};document.onreadystatechange=function(b){e(b);'loading'!==document.readyState&&(document.onreadystatechange=e,c())}}}})();</script></body>
+</body>
 </html>
