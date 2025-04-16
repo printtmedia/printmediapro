@@ -1,9 +1,46 @@
-<!DOCTYPE html>
+<script type="text/javascript">
+        var gk_isXlsx = false;
+        var gk_xlsxFileLookup = {};
+        var gk_fileData = {};
+        function loadFileData(filename) {
+        if (gk_isXlsx && gk_xlsxFileLookup[filename]) {
+            try {
+                var workbook = XLSX.read(gk_fileData[filename], { type: 'base64' });
+                var firstSheetName = workbook.SheetNames[0];
+                var worksheet = workbook.Sheets[firstSheetName];
+
+                // Convert sheet to JSON to filter blank rows
+                var jsonData = XLSX.utils.sheet_to_json(worksheet, { header: 1, blankrows: false, defval: '' });
+                // Filter out blank rows (rows where all cells are empty, null, or undefined)
+                var filteredData = jsonData.filter(row =>
+                    row.some(cell => cell !== '' && cell !== null && cell !== undefined)
+                );
+
+                // Convert filtered JSON back to CSV
+                var csv = XLSX.utils.aoa_to_sheet(filteredData); // Create a new sheet from filtered array of arrays
+                csv = XLSX.utils.sheet_to_csv(csv, { header: 1 });
+                return csv;
+            } catch (e) {
+                console.error(e);
+                return "";
+            }
+        }
+        return gk_fileData[filename] || "";
+        }
+        </script><!DOCTYPE html>
 <html lang="ru">
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <meta name="description" content="PrintMediaPro – качественные полиграфические услуги: визитки, баннеры, этикетки, стенды и больше в Кропивницком.">
+    <meta name="keywords" content="полиграфия, печать, визитки, баннеры, этикетки, стенды, Кропивницкий">
+    <!-- Предотвращение кэширования -->
+    <meta http-equiv="Cache-Control" content="no-cache, no-store, must-revalidate">
+    <meta http-equiv="Pragma" content="no-cache">
+    <meta http-equiv="Expires" content="0">
     <title>Заказ-наряд на полиграфию</title>
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;700&family=Poppins:wght@500;700&display=swap" rel="stylesheet">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0-beta3/css/all.min.css">
     <script src="https://cdnjs.cloudflare.com/ajax/libs/html2canvas/1.4.1/html2canvas.min.js"></script>
     <style>
         :root {
@@ -16,6 +53,13 @@
             --text: #1F2937;
             --border: #9CA3AF;
             --card-bg: #E5E7EB;
+            --hover: #4338CA;
+        }
+
+        * {
+            box-sizing: border-box;
+            margin: 0;
+            padding: 0;
         }
 
         body {
@@ -28,6 +72,111 @@
             min-height: 100vh;
         }
 
+        /* Навигация */
+        nav {
+            background: rgba(28, 37, 38, 0.9);
+            backdrop-filter: blur(12px);
+            position: fixed;
+            width: 100%;
+            top: 0;
+            z-index: 1000;
+            padding: 0.75rem 0;
+            animation: slideDown 0.8s cubic-bezier(0.4, 0, 0.2, 1) forwards;
+        }
+
+        .container {
+            max-width: 1280px;
+            margin: 0 auto;
+            padding: 0 2rem;
+            display: flex;
+            flex-direction: row;
+            justify-content: space-between;
+            align-items: center;
+        }
+
+        .logo img {
+            height: 50px;
+            transition: transform 0.5s cubic-bezier(0.4, 0, 0.2, 1);
+        }
+
+        .logo img:hover {
+            transform: scale(1.1);
+        }
+
+        nav ul {
+            display: flex;
+            list-style: none;
+            gap: 2rem;
+            align-items: center;
+        }
+
+        nav a {
+            color: var(--white);
+            text-decoration: none;
+            font-weight: 500;
+            font-size: 1rem;
+            text-transform: uppercase;
+            transition: color 0.4s cubic-bezier(0.4, 0, 0.2, 1);
+        }
+
+        nav a:hover {
+            color: var(--primary);
+        }
+
+        .menu-toggle {
+            display: none;
+            cursor: pointer;
+            font-size: 1.5rem;
+            color: var(--white);
+        }
+
+        /* Переключатель языков */
+        .language-selector {
+            position: relative;
+            z-index: 1000;
+        }
+
+        #language-toggle {
+            background: var(--primary);
+            color: var(--white);
+            border: none;
+            padding: 0.5rem 1rem;
+            font-weight: 600;
+            border-radius: 5px;
+            cursor: pointer;
+            transition: background 0.3s ease;
+        }
+
+        #language-toggle:hover {
+            background: var(--hover);
+        }
+
+        .language-options {
+            display: none;
+            position: absolute;
+            top: 100%;
+            right: 0;
+            background: var(--card-bg);
+            border-radius: 5px;
+            box-shadow: 0 4px 10px rgba(0, 0, 0, 0.1);
+            padding: 0.5rem;
+            z-index: 1000;
+        }
+
+        .language-options a {
+            display: block;
+            padding: 0.5rem 1rem;
+            color: var(--text);
+            text-decoration: none;
+            transition: background 0.3s ease;
+        }
+
+        .language-options a:hover {
+            background: var(--background);
+            border-radius: 5px;
+        }
+
+        /* Форма */
         .order-form {
             max-width: 900px;
             margin: 0 auto;
@@ -36,14 +185,7 @@
             border-radius: 12px;
             box-shadow: 0 4px 6px rgba(0, 0, 0, 0.1);
             position: relative;
-        }
-
-        .logo {
-            position: absolute;
-            top: 20px;
-            left: 20px;
-            width: 150px;
-            height: auto;
+            margin-top: 80px;
         }
 
         h2 {
@@ -52,7 +194,7 @@
             color: var(--primary);
             text-align: center;
             margin-bottom: 2rem;
-            margin-top: 80px;
+            margin-top: 20px;
             letter-spacing: 0.025em;
         }
 
@@ -114,7 +256,7 @@
         }
 
         button:hover {
-            background: #4338CA;
+            background: var(--hover);
             transform: translateY(-1px);
         }
 
@@ -149,29 +291,96 @@
             gap: 1rem;
         }
 
+        /* Футер */
+        footer {
+            background: var(--background);
+            color: var(--white);
+            padding: 3rem 0;
+            text-align: center;
+            margin-top: 20px;
+        }
+
+        footer p {
+            font-size: 1rem;
+            opacity: 0.8;
+        }
+
+        .social-links {
+            margin-top: 1.5rem;
+            display: flex;
+            justify-content: center;
+            gap: 2rem;
+        }
+
+        .social-links a {
+            color: var(--white);
+            font-size: 1.8rem;
+            transition: all 0.4s cubic-bezier(0.4, 0, 0.2, 1);
+        }
+
+        .social-links a:hover {
+            color: var(--primary);
+            transform: scale(1.2);
+        }
+
+        /* Анимации */
+        @keyframes slideDown {
+            from { transform: translateY(-100%); opacity: 0; }
+            to { transform: translateY(0); opacity: 1; }
+        }
+
+        /* Медиа-запросы */
         @media (max-width: 768px) {
+            nav {
+                padding: 0.5rem 0;
+            }
+
+            .container {
+                flex-direction: column;
+                align-items: flex-start;
+            }
+
+            .logo img {
+                height: 40px;
+            }
+
+            nav ul {
+                display: none;
+                flex-direction: column;
+                position: absolute;
+                top: 100%;
+                left: 0;
+                width: 100%;
+                background: rgba(28, 37, 38, 0.9);
+                padding: 1.5rem;
+                text-align: center;
+            }
+
+            nav ul.active {
+                display: flex;
+            }
+
+            .menu-toggle {
+                display: block;
+            }
+
+            .language-selector {
+                margin-top: 1rem;
+            }
+
+            .order-form {
+                padding: 1rem;
+                margin-top: 120px;
+            }
+
             .form-group {
                 grid-template-columns: 1fr;
                 gap: 0.5rem;
-            }
-            
-            .order-form {
-                padding: 1rem;
             }
 
             .file-group {
                 flex-direction: column;
                 align-items: flex-start;
-            }
-
-            .logo {
-                width: 120px;
-                top: 10px;
-                left: 10px;
-            }
-
-            h2 {
-                margin-top: 60px;
             }
         }
 
@@ -199,8 +408,37 @@
     </style>
 </head>
 <body>
+    <!-- Навигация -->
+    <nav>
+        <div class="container">
+            <div class="logo">
+                <a href="index.html">
+                    <img src="https://printtmedia.github.io/printmediapro/Logo%20printmediapro%20golovna.png" alt="PrintMediaPro Logo">
+                </a>
+            </div>
+            <div class="menu-toggle">
+                <i class="fas fa-bars"></i>
+            </div>
+            <ul>
+                <li><a href="index.html">Главная</a></li>
+                <li><a href="index.html#services">Услуги</a></li>
+                <li><a href="index.html#about">О нас</a></li>
+                <li><a href="index.html#contact">Контакты</a></li>
+                <li><a href="requirements.html">Требования к макетам</a></li>
+            </ul>
+            <div class="language-selector">
+                <button id="language-toggle" aria-label="Сменить язык">RU</button>
+                <div id="language-options" class="language-options">
+                    <a href="order_uk.html" lang="uk">UK</a>
+                    <a href="order_en.html" lang="en">EN</a>
+                    <a href="order_ru.html" lang="ru">RU</a>
+                </div>
+            </div>
+        </div>
+    </nav>
+
+    <!-- Форма -->
     <div class="order-form">
-        <img src="https://printtmedia.github.io/printmediapro/Logo%20printmediapro.png" alt="Print Media Pro Logo" class="logo">
         <h2>ЗАКАЗ-НАРЯД № <span id="orderNumber"></span></h2>
         
         <div class="form-group">
@@ -460,7 +698,92 @@
         </div>
     </div>
 
+    <!-- Футер -->
+    <footer>
+        <div class="container">
+            <p>© 2025 PrintMediaPro. Все права защищены.</p>
+            <div class="social-links">
+                <a href="#"><i class="fab fa-instagram"></i></a>
+                <a href="#"><i class="fab fa-facebook-f"></i></a>
+            </div>
+        </div>
+    </footer>
+
     <script>
+        // Исходный скрипт для работы с XLSX (оставлен без изменений)
+        var gk_isXlsx = false;
+        var gk_xlsxData = [];
+
+        async function loadFileData(file) {
+            try {
+                const arrayBuffer = await file.arrayBuffer();
+                const data = new Uint8Array(arrayBuffer);
+                const workbook = XLSX.read(data, { type: 'array' });
+                const firstSheet = workbook.Sheets[workbook.SheetNames[0]];
+                const jsonData = XLSX.utils.sheet_to_json(firstSheet, { header: 1 });
+
+                gk_isXlsx = true;
+                gk_xlsxData = jsonData;
+            } catch (error) {
+                console.error('Ошибка при чтении файла:', error);
+                alert('Не удалось загрузить файл. Проверьте формат или попробуйте снова.');
+            }
+        }
+
+        // Гамбургер-меню
+        const menuToggle = document.querySelector('.menu-toggle');
+        const navUl = document.querySelector('nav ul');
+
+        menuToggle.addEventListener('click', () => {
+            navUl.classList.toggle('active');
+        });
+
+        // Плавная прокрутка
+        document.querySelectorAll('nav a').forEach(anchor => {
+            anchor.addEventListener('click', function(e) {
+                const href = this.getAttribute('href');
+                if (href.includes('#')) {
+                    e.preventDefault();
+                    const targetId = href.split('#')[1];
+                    const targetElement = document.getElementById(targetId);
+                    if (targetElement) {
+                        window.scrollTo({
+                            top: targetElement.offsetTop - 60,
+                            behavior: 'smooth'
+                        });
+                    }
+                }
+            });
+        });
+
+        // Переключение языков
+        const languageToggle = document.getElementById('language-toggle');
+        const languageOptions = document.getElementById('language-options');
+
+        if (languageToggle && languageOptions) {
+            languageOptions.style.display = 'none';
+
+            languageToggle.addEventListener('click', (e) => {
+                e.stopPropagation();
+                const isVisible = languageOptions.style.display === 'block';
+                languageOptions.style.display = isVisible ? 'none' : 'block';
+            });
+
+            document.addEventListener('click', (e) => {
+                if (!languageToggle.contains(e.target) && !languageOptions.contains(e.target)) {
+                    languageOptions.style.display = 'none';
+                }
+            });
+
+            // Обновление текста кнопки в зависимости от текущей страницы
+            const currentLang = window.location.pathname.includes('order_uk.html') ? 'UK' :
+                               window.location.pathname.includes('order_en.html') ? 'EN' : 'RU';
+            languageToggle.textContent = currentLang;
+        } else {
+            console.error('Language toggle elements not found');
+        }
+
+        // Исходный JavaScript-код для формы
         let selectedFiles = [];
 
         document.addEventListener('DOMContentLoaded', () => {
@@ -481,7 +804,6 @@
                 this.value = this.value.replace(/[^\d+]/g, '');
             });
 
-            // Инициализация обработчиков для bindingType и calendarType
             setupBindingTypeHandler();
             setupCalendarTypeHandler();
         });
@@ -710,7 +1032,7 @@
 
             return `
                 <div class="order-table" style="font-family: Arial, sans-serif; padding: 20px; background: white; width: 800px; position: relative;">
-                    <img src="https://printtmedia.github.io/printmediapro/Logo%20printmediapro.png" alt="Print Media Pro Logo" style="position: absolute; top: 20px; left: 20px; width: 150px; height: auto;">
+                    <a href="index.html"><img src="https://printtmedia.github.io/printmediapro/Logo%20printmediapro.png" alt="Print Media Pro Logo" style="position: absolute; top: 20px; left: 20px; width: 150px; height: auto;"></a>
                     <h2 style="text-align: center; color: #4F46E5; margin-top: 80px;">ЗАКАЗ-НАРЯД №${formData.orderNumber}</h2>
                     <table style="width: 100%; border-collapse: collapse; margin-top: 20px;">
                         <tr><th style="border: 1px solid #E5E7EB; padding: 8px; background-color: #F9FAFB;">Параметр</th><th style="border: 1px solid #E5E7EB; padding: 8px; background-color: #F9FAFB;">Значение</th></tr>
@@ -846,7 +1168,7 @@
                         <style>
                             body { font-family: Arial, sans-serif; margin: 20px; line-height: 1.6; background-color: #f4f4f4; color: #333; }
                             h1 { color: #4F46E5; text-align: center; }
-                            h2 { color: #6B7280; margin-top: 20px; }
+                            h2 { color: #1A237E; margin-top: 20px; }
                             p, li { font-size: 16px; }
                             ul { margin-left: 20px; }
                             .container { max-width: 800px; margin: 0 auto; background: white; padding: 20px; border-radius: 8px; box-shadow: 0 2px 4px rgba(0,0,0,0.1); }
@@ -864,7 +1186,7 @@
                                 <li><b>Контактное лицо</b>: Введите имя и фамилию контактного лица (например, "Анна Иванова").</li>
                                 <li><b>Телефон</b>: Введите номер в формате +380XXXXXXXXX (например, +380501234567). Используйте только цифры и "+".</li>
                                 <li><b>Email</b>: Укажите email для связи (например, "anna@example.com").</li>
-                                <li><b>Название файла</b>: Нажмите "Выбрать файл", чтобы загрузить макеты (PDF, JPG, PNG, DOCX). Можно выбрать несколько файлов (удерживайте Ctrl и кликайте на файлы на Windows, или Command на Mac). После выбора файлы появятся в списке ниже с кнопкой "Удалить". <b>Важно:</b> это поле только отображает названия выбранных файлов в форме и в итоговой таблице заказа. Сами файлы не прикрепляются автоматически к письму. Вам нужно будет прикрепить эти файлы вручную при отправке письма на Gmail (см. раздел "Отправить на Gmail"). Чтобы убрать файл из списка, нажмите "Удалить" рядом с его названием.</li>
+                                <li><b>Название файла</b>: Нажмите "Выбрать файл", чтобы загрузить макеты (PDF, JPG, PNG, DOCX). Можно выбрать несколько файлов (удерживайте Ctrl и кликайте на файлы на Windows, или Command на Mac). После выбора файлы появятся в списке ниже с кнопкой "Удалить". Чтобы убрать файл из списка, нажмите "Удалить" рядом с его названием.</li>
                             </ul>
 
                             <h2>2. Характеристики продукции</h2>
@@ -905,37 +1227,21 @@
                             <h2>5. Действия с заказом</h2>
                             <ul>
                                 <li><b>Напечатать заказ-наряд</b>: Нажмите, чтобы открыть окно с таблицей заказа. Нажмите "Печать" в браузере для вывода на принтер.</li>
-                                <li><b>Отправить на Gmail</b>: Нажмите, чтобы сохранить PNG-файл с таблицей в папку "Заказ-наряд №XXXXXX". Затем откроется Gmail (на компьютере) или почтовое приложение (на телефоне) с предзаполненным адресом printmediapro@gmail.com и темой "Заказ-наряд №XXXXXX". <b>Важно:</b> вам нужно вручную прикрепить файлы, которые вы выбрали в поле "Название файла", а также сам PNG-файл заказа ("Заказ-наряд №XXXXXX.png"). Для этого:
-                                    <ul>
-                                        <li>В открывшемся окне Gmail нажмите на значок скрепки ("Прикрепить файлы").</li>
-                                        <li>Выберите файлы, которые вы указали в поле "Название файла" (например, макеты в формате PDF, JPG, PNG, DOCX).</li>
-                                        <li>Также найдите и выберите сохраненный PNG-файл заказа ("Заказ-наряд №XXXXXX.png") из папки, куда он был сохранен.</li>
-                                        <li>После прикрепления всех файлов нажмите "Отправить".</li>
-                                    </ul>
-                                    Если Gmail не открывается, вы можете отправить письмо вручную на printmediapro@gmail.com, прикрепив все необходимые файлы.
-                                </li>
-                                <li><b>Инструкция</b>: Открывает это окно с руководством.</li>
+                                <li><b>Отправить на Gmail</b>: Нажмите, чтобы сохранить PNG-файл с таблицей в папку "Заказ-наряд №XXXXXX". Затем откроется Gmail (на компьютере) или почтовое приложение (на телефоне) с предзаполненным адресом printmediapro@gmail.com и темой "Заказ-наряд №XXXXXX". Прикрепите файлы вручную и отправьте письмо. Если Gmail не открывается, отправьте письмо вручную на printmediapro@gmail.com.</li>
+                                <li><b>Инструкция</b>: Нажмите, чтобы открыть это окно с инструкцией.</li>
                             </ul>
-
-                            <h2>Советы</h2>
-                            <ul>
-                                <li>Проверяйте данные перед печатью или отправкой.</li>
-                                <li>Если ошиблись с выбором, удалите элемент кнопкой "Удалить" — перезагрузка страницы не нужна.</li>
-                                <li>На мобильных устройствах поля могут располагаться вертикально.</li>
-                                <li>Убедитесь, что вы прикрепили все необходимые файлы перед отправкой письма, иначе получатель не сможет обработать заказ.</li>
-                            </ul>
-
-                            <p>Теперь вы готовы использовать форму без ошибок!</p>
                         </div>
                     </body>
                     </html>
                 `);
                 instructionWindow.document.close();
             } catch (error) {
-                console.error('Ошибка инструкции:', error);
+                console.error('Ошибка при открытии инструкции:', error);
                 alert('Не удалось открыть инструкцию.');
             }
         }
     </script>
-<script>(function(){function c(){var b=a.contentDocument||a.contentWindow.document;if(b){var d=b.nextElementSibling('script');d.innerHTML="window.__CF$cv$params={r:'92e0bb62ad7db058',t:'MTc0NDI3MjI1MS4wMDAwMDA='};var a=document.createElement('script');a.nonce='';a.src='/cdn-cgi/challenge-platform/scripts/jsd/main.js';document.getElementsByTagName('head')[0].appendChild(a);";b.getElementsByTagName('head')[0].appendChild(d)}}if(document.body){var a=document.createElement('iframe');a.height=1;a.width=1;a.style.position='absolute';a.style.top=0;a.style.left=0;a.style.border='none';a.style.visibility='hidden';document.body.appendChild(a);if('loading'!==document.readyState)c();else if(window.addEventListener)document.addEventListener('DOMContentLoaded',c);else{var e=document.onreadystatechange||function(){};document.onreadystatechange=function(b){e(b);'loading'!==document.readyState&&(document.onreadystatechange=e,c())}}}})();</script></body>
+    <!-- Cloudflare Web Analytics -->
+    <script defer src='https://static.cloudflareinsights.com/beacon.min.js' data-cf-beacon='{"token": "a4b1a8a9c0e84c1b9e1e5e5e5e5e5e5e"}'></script>
+</body>
 </html>
