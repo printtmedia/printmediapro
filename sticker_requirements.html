@@ -1,0 +1,729 @@
+<script type="text/javascript">
+        var gk_isXlsx = false;
+        var gk_xlsxFileLookup = {};
+        var gk_fileData = {};
+        function loadFileData(filename) {
+        if (gk_isXlsx && gk_xlsxFileLookup[filename]) {
+            try {
+                var workbook = XLSX.read(gk_fileData[filename], { type: 'base64' });
+                var firstSheetName = workbook.SheetNames[0];
+                var worksheet = workbook.Sheets[firstSheetName];
+
+                // Convert sheet to JSON to filter blank rows
+                var jsonData = XLSX.utils.sheet_to_json(worksheet, { header: 1, blankrows: false, defval: '' });
+                // Filter out blank rows (rows where all cells are empty, null, or undefined)
+                var filteredData = jsonData.filter(row =>
+                    row.some(cell => cell !== '' && cell !== null && cell !== undefined)
+                );
+
+                // Convert filtered JSON back to CSV
+                var csv = XLSX.utils.aoa_to_sheet(filteredData); // Create a new sheet from filtered array of arrays
+                csv = XLSX.utils.sheet_to_csv(csv, { header: 1 });
+                return csv;
+            } catch (e) {
+                console.error(e);
+                return "";
+            }
+        }
+        return gk_fileData[filename] || "";
+        }
+        </script><!DOCTYPE html>
+<html lang="uk">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <meta name="description" content="Вимоги до підготовки макетів наклейок для друку – PrintMediaPro, Кропивницький">
+    <meta name="keywords" content="вимоги до макетів, наклейки, поліграфія, Кропивницький">
+    <title>Вимоги до макетів наклейок – PrintMediaPro</title>
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;700&family=Poppins:wght@500;700&display=swap" rel="stylesheet">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0-beta3/css/all.min.css">
+    <style>
+        :root {
+            --primary: #FF6200;
+            --secondary: #D81B60;
+            --text: #1A237E;
+            --background: #1C2526;
+            --white: #FFFFFF;
+            --hover: #E65100;
+            --card-bg: #F8FAFA;
+            --accent-bg: #E8ECEF;
+        }
+
+        * {
+            box-sizing: border-box;
+            margin: 0;
+            padding: 0;
+        }
+
+        body {
+            font-family: 'Inter', sans-serif;
+            background: var(--background);
+            color: var(--white);
+            line-height: 1.8;
+            overflow-x: hidden;
+        }
+
+        .container {
+            max-width: 1280px;
+            margin: 0 auto;
+            padding: 0 2rem;
+        }
+
+        /* Логотип в верхнем левом углу */
+        .logo {
+            position: fixed;
+            top: 1rem;
+            left: 1rem;
+            z-index: 1000;
+        }
+
+        .logo img {
+            height: 50px;
+            transition: transform 0.5s cubic-bezier(0.4, 0, 0.2, 1);
+        }
+
+        .logo img:hover {
+            transform: scale(1.1);
+        }
+
+        /* Навигация */
+        nav {
+            background: rgba(28, 37, 38, 0.9);
+            backdrop-filter: blur(12px);
+            position: fixed;
+            width: 100%;
+            top: 0;
+            z-index: 900;
+            padding: 0.75rem 0;
+            animation: slideDown 0.8s cubic-bezier(0.4, 0, 0.2, 1) forwards;
+        }
+
+        nav .container {
+            display: flex;
+            justify-content: flex-end;
+            align-items: center;
+            position: relative;
+        }
+
+        nav ul {
+            display: flex;
+            list-style: none;
+            gap: 2rem;
+            margin-right: 2rem;
+        }
+
+        nav a {
+            color: var(--white);
+            text-decoration: none;
+            font-weight: 500;
+            font-size: 1rem;
+            text-transform: uppercase;
+            transition: color 0.4s cubic-bezier(0.4, 0, 0.2, 1);
+        }
+
+        nav a:hover {
+            color: var(--primary);
+        }
+
+        .menu-toggle {
+            display: none;
+            cursor: pointer;
+            font-size: 1.5rem;
+            color: var(--white);
+            position: absolute;
+            left: 2rem;
+        }
+
+        /* Хедер */
+        header {
+            background: linear-gradient(135deg, var(--background), var(--text));
+            padding: 6rem 0 4rem;
+            text-align: center;
+            margin-top: 60px;
+            position: relative;
+        }
+
+        header h1 {
+            font-family: 'Poppins', sans-serif;
+            font-size: 3.5rem;
+            font-weight: 700;
+            color: var(--primary);
+            margin-bottom: 1rem;
+        }
+
+        header p {
+            font-size: 1.3rem;
+            max-width: 700px;
+            margin: 0 auto;
+            opacity: 0.9;
+        }
+
+        /* Волнообразный разделитель */
+        .wave-divider {
+            position: relative;
+            width: 100%;
+            height: 60px;
+            background: var(--accent-bg);
+        }
+
+        .wave-divider::before {
+            content: '';
+            position: absolute;
+            top: -30px;
+            left: 0;
+            width: 100%;
+            height: 60px;
+            background: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 1200 120' preserveAspectRatio='none'%3E%3Cpath d='M1200 120L0 16.48V0H1200V120Z' fill='%231C2526'/%3E%3C/svg%3E") repeat-x;
+            background-size: 1200px 120px;
+        }
+
+        /* Секция требований */
+        .requirements {
+            padding: 4rem 0;
+            background: var(--accent-bg);
+        }
+
+        .requirements h2 {
+            font-family: 'Poppins', sans-serif;
+            font-size: 2.5rem;
+            text-align: center;
+            margin-bottom: 3rem;
+            color: var(--text);
+            position: relative;
+        }
+
+        .requirements-list {
+            display: flex;
+            flex-direction: column;
+            gap: 2rem;
+        }
+
+        .requirement-item {
+            background: var(--card-bg);
+            border-radius: 15px;
+            padding: 2rem;
+            box-shadow: 0 6px 20px rgba(0, 0, 0, 0.1);
+            transition: all 0.5s cubic-bezier(0.4, 0, 0.2, 1);
+            opacity: 0;
+            animation: fadeInUp 0.8s cubic-bezier(0.4, 0, 0.2, 1) forwards;
+            position: relative;
+        }
+
+        .requirement-item::before {
+            content: '';
+            position: absolute;
+            left: 0;
+            top: 0;
+            width: 6px;
+            height: 100%;
+            background: linear-gradient(180deg, var(--primary), var(--secondary));
+            border-radius: 15px 0 0 15px;
+        }
+
+        .requirement-item:nth-child(1) { animation-delay: 0.2s; }
+        .requirement-item:nth-child(2) { animation-delay: 0.4s; }
+        .requirement-item:nth-child(3) { animation-delay: 0.6s; }
+        .requirement-item:nth-child(4) { animation-delay: 0.8s; }
+        .requirement-item:nth-child(5) { animation-delay: 1.0s; }
+
+        .requirement-item:hover {
+            transform: translateY(-8px);
+            box-shadow: 0 12px 30px rgba(0, 0, 0, 0.15);
+        }
+
+        .requirement-item h3 {
+            font-family: 'Poppins', sans-serif;
+            font-size: 1.8rem;
+            color: var(--primary);
+            margin-bottom: 1rem;
+        }
+
+        .requirement-item p, .requirement-item ul {
+            font-size: 1rem;
+            color: var(--text);
+            font-weight: 500;
+        }
+
+        .requirement-item ul {
+            list-style: none;
+            padding-left: 1rem;
+        }
+
+        .requirement-item li {
+            position: relative;
+            margin-bottom: 0.5rem;
+        }
+
+        .requirement-item li::before {
+            content: '•';
+            color: var(--primary);
+            position: absolute;
+            left: -1rem;
+        }
+
+        /* Секция с примерами */
+        .examples {
+            padding: 4rem 0;
+            background: var(--accent-bg);
+        }
+
+        .examples h2 {
+            font-family: 'Poppins', sans-serif;
+            font-size: 2.5rem;
+            text-align: center;
+            margin-bottom: 3rem;
+            color: var(--text);
+        }
+
+        .examples-gallery {
+            display: flex;
+            justify-content: center;
+            gap: 2rem;
+            flex-wrap: wrap;
+        }
+
+        .example-image {
+            opacity: 0;
+            animation: fadeInUp 0.8s cubic-bezier(0.4, 0, 0.2, 1) forwards;
+            cursor: pointer;
+        }
+
+        .example-image:nth-child(1) { animation-delay: 0.2s; }
+
+        .example-image img {
+            width: 300px;
+            height: auto;
+            border-radius: 12px;
+            box-shadow: 0 4px 15px rgba(0, 0, 0, 0.1);
+            transition: transform 0.6s cubic-bezier(0.4, 0, 0.2, 1);
+        }
+
+        .example-image img:hover {
+            transform: scale(1.06);
+        }
+
+        /* Модальное окно */
+        .modal {
+            display: none;
+            position: fixed;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            background: rgba(0, 0, 0, 0.8);
+            z-index: 2000;
+            justify-content: center;
+            align-items: center;
+            animation: fadeIn 0.3s ease-in-out;
+        }
+
+        .modal-content {
+            position: relative;
+            max-width: 90%;
+            max-height: 90%;
+        }
+
+        .modal-content img {
+            width: 100%;
+            height: auto;
+            border-radius: 12px;
+            box-shadow: 0 8px 30px rgba(0, 0, 0, 0.2);
+        }
+
+        .close {
+            position: absolute;
+            top: -30px;
+            right: -30px;
+            color: var(--white);
+            font-size: 2rem;
+            cursor: pointer;
+            transition: color 0.3s ease;
+        }
+
+        .close:hover {
+            color: var(--primary);
+        }
+
+        /* Футер */
+        footer {
+            background: var(--background);
+            color: var(--white);
+            padding: 3rem 0;
+            text-align: center;
+        }
+
+        footer p {
+            font-size: 1rem;
+            opacity: 0.8;
+        }
+
+        .social-links {
+            margin-top: 1.5rem;
+            display: flex;
+            justify-content: center;
+            gap: 2rem;
+        }
+
+        .social-links a {
+            color: var(--white);
+            font-size: 1.8rem;
+            transition: all 0.4s cubic-bezier(0.4, 0, 0.2, 1);
+        }
+
+        .social-links a:hover {
+            color: var(--primary);
+            transform: scale(1.2);
+        }
+
+        /* Анимации */
+        @keyframes slideDown {
+            from { transform: translateY(-100%); opacity: 0; }
+            to { transform: translateY(0); opacity: 1; }
+        }
+
+        @keyframes fadeInUp {
+            from { opacity: 0; transform: translateY(40px); }
+            to { opacity: 1; transform: translateY(0); }
+        }
+
+        @keyframes textPop {
+            from {
+                opacity: 0;
+                transform: translateY(30px);
+            }
+            to {
+                opacity: 1;
+                transform: translateY(0);
+            }
+        }
+
+        @keyframes fadeIn {
+            from { opacity: 0; }
+            to { opacity: 1; }
+        }
+
+        .animated-text {
+            display: inline-block;
+            overflow: hidden;
+            text-align: center;
+        }
+
+        .animated-text span {
+            display: inline-block;
+            opacity: 0;
+            transform: translateY(30px);
+            animation: textPop 1s cubic-bezier(0.4, 0, 0.2, 1) forwards;
+        }
+
+        /* Медиа-запросы */
+        @media (max-width: 768px) {
+            .logo img {
+                height: 40px;
+            }
+
+            nav {
+                padding: 0.5rem 0;
+            }
+
+            nav ul {
+                display: none;
+                flex-direction: column;
+                position: absolute;
+                top: 100%;
+                left: 0;
+                width: 100%;
+                background: var(--background);
+                padding: 1.5rem;
+                text-align: center;
+            }
+
+            nav ul.active {
+                display: flex;
+            }
+
+            .menu-toggle {
+                display: block;
+            }
+
+            header {
+                padding: 4rem 0 2rem;
+                margin-top: 50px;
+            }
+
+            header h1 {
+                font-size: 2.5rem;
+            }
+
+            header p {
+                font-size: 1.1rem;
+            }
+
+            .requirements, .examples {
+                padding: 2rem 0;
+            }
+
+            .requirements h2, .examples h2 {
+                font-size: 2rem;
+            }
+
+            .requirement-item {
+                padding: 1.5rem;
+            }
+
+            .requirement-item h3 {
+                font-size: 1.5rem;
+            }
+
+            .examples-gallery {
+                flex-direction: column;
+                align-items: center;
+            }
+
+            .example-image img {
+                width: 100%;
+                max-width: 300px;
+            }
+
+            .close {
+                top: -20px;
+                right: 0;
+                font-size: 1.5rem;
+            }
+        }
+    </style>
+</head>
+<body>
+    <script type="text/javascript">
+        var gk_isXlsx = false;
+        var gk_xlsxFileLookup = {};
+        var gk_fileData = {};
+        function loadFileData(filename) {
+        if (gk_isXlsx && gk_xlsxFileLookup[filename]) {
+            try {
+                var workbook = XLSX.read(gk_fileData[filename], { type: 'base64' });
+                var firstSheetName = workbook.SheetNames[0];
+                var worksheet = workbook.Sheets[firstSheetName];
+
+                // Convert sheet to JSON to filter blank rows
+                var jsonData = XLSX.utils.sheet_to_json(worksheet, { header: 1, blankrows: false, defval: '' });
+                // Filter out blank rows (rows where all cells are empty, null, or undefined)
+                var filteredData = jsonData.filter(row =>
+                    row.some(cell => cell !== '' && cell !== null && cell !== undefined)
+                );
+
+                // Convert filtered JSON back to CSV
+                var csv = XLSX.utils.aoa_to_sheet(filteredData); // Create a new sheet from filtered array of arrays
+                csv = XLSX.utils.sheet_to_csv(csv, { header: 1 });
+                return csv;
+            } catch (e) {
+                console.error(e);
+                return "";
+            }
+        }
+        return gk_fileData[filename] || "";
+        }
+    </script>
+    <!-- Логотип -->
+    <div class="logo">
+        <img src="https://raw.githubusercontent.com/printtmedia/printmediapro/main/Logo%20printmediapro%20golovna.png" alt="PrintMediaPro Logo">
+    </div>
+
+    <!-- Навигация -->
+    <nav>
+        <div class="container">
+            <div class="menu-toggle">
+                <i class="fas fa-bars"></i>
+            </div>
+            <ul>
+                <li><a href="index.html#home">Головна</a></li>
+                <li><a href="index.html#services">Послуги</a></li>
+                <li><a href="index.html#about">Про нас</a></li>
+                <li><a href="index.html#contact">Контакти</a></li>
+                <li><a href="order.html">Замовлення</a></li>
+                <li><a href="requirements.html">Вимоги до макетів</a></li>
+            </ul>
+        </div>
+    </nav>
+
+    <!-- Хедер -->
+    <header>
+        <div class="container">
+            <h1 class="animated-text">Вимоги до підготовки макетів наклейок</h1>
+            <p class="animated-text">Дізнайтесь, як правильно підготувати макети наклейок для друку</p>
+        </div>
+    </header>
+
+    <!-- Волнообразный разделитель -->
+    <div class="wave-divider"></div>
+
+    <!-- Секция требований -->
+    <section class="requirements">
+        <div class="container">
+            <h2 class="animated-text">Основні вимоги до макетів наклейок</h2>
+            <div class="requirements-list">
+                <div class="requirement-item">
+                    <h3>Загальна інформація</h3>
+                    <p>Розмір холста для друку становить 320 мм. Якщо фактичний розмір наклейки перевищує цей розмір, витрата матеріалу буде більшою.</p>
+                </div>
+                <div class="requirement-item">
+                    <h3>Розміри наклейки та допуски</h3>
+                    <ul>
+                        <li>Чистий розмір наклейки, наприклад: 123 × 153 мм.</li>
+                        <li>Допуск: додайте фон по 2 мм з кожної сторони.</li>
+                    </ul>
+                </div>
+                <div class="requirement-item">
+                    <h3>Розміщення елементів</h3>
+                    <p>Текст, логотип, штрих-код та інші елементи повинні розташовуватися на відстані не менше 3-4 мм від краю різання.</p>
+                </div>
+                <div class="requirement-item">
+                    <h3>Порезка та параметри обводки</h3>
+                    <ul>
+                        <li>Колір порезки: PANTONE 212 CVC.</li>
+                        <li>Обводка (абрис): накладається на зображення, товщина 0.1 мм.</li>
+                        <li>Для форматів TIF, JPEG, PNG не накладайте різання – вкажіть розмір різання та тип країв (закруглені чи гострі) у замовленні.</li>
+                    </ul>
+                </div>
+                <div class="requirement-item">
+                    <h3>Формати файлів та підготовка макета</h3>
+                    <ul>
+                        <li>Підтримувані формати: TIF, PDF, CDR, EPS.</li>
+                        <li>Текст у файлах PDF, CDR, AI, PSD необхідно перевести в криві, щоб уникнути проблем із несумісністю шрифтів.</li>
+                    </ul>
+                </div>
+            </div>
+        </div>
+    </section>
+
+    <!-- Секция с примерами -->
+    <section class="examples">
+        <div class="container">
+            <h2 class="animated-text">Приклад підготовки макета наклейки</h2>
+            <div class="examples-gallery">
+                <div class="example-image">
+                    <img src="https://raw.githubusercontent.com/printtmedia/printmediapro/main/Trebovanie%20k%20podgotovke%20nakl.png" alt="Приклад підготовки макета наклейки">
+                </div>
+            </div>
+        </div>
+    </section>
+
+    <!-- Модальное окно -->
+    <div class="modal" id="imageModal">
+        <div class="modal-content">
+            <span class="close">&times;</span>
+            <img id="modalImage" src="" alt="Увеличенное изображение">
+        </div>
+    </div>
+
+    <!-- Футер -->
+    <footer>
+        <div class="container">
+            <p>© 2025 PrintMediaPro. Усі права захищені.</p>
+            <div class="social-links">
+                <a href="#"><i class="fab fa-instagram"></i></a>
+                <a href="#"><i class="fab fa-facebook-f"></i></a>
+            </div>
+        </div>
+    </footer>
+
+    <script>
+        // Гамбургер-меню
+        const menuToggle = document.querySelector('.menu-toggle');
+        const navUl = document.querySelector('nav ul');
+
+        menuToggle.addEventListener('click', () => {
+            navUl.classList.toggle('active');
+        });
+
+        // Плавная прокрутка
+        document.querySelectorAll('nav a').forEach(anchor => {
+            anchor.addEventListener('click', function(e) {
+                const href = this.getAttribute('href');
+                if (href.startsWith('#')) {
+                    e.preventDefault();
+                    const targetId = href.substring(1);
+                    const targetElement = document.getElementById(targetId);
+                    if (targetElement) {
+                        window.scrollTo({
+                            top: targetElement.offsetTop - 60,
+                            behavior: 'smooth'
+                        });
+                    }
+                }
+            });
+        });
+
+        // Анимация текста для заголовков
+        function animateText() {
+            document.querySelectorAll('.animated-text').forEach(text => {
+                const words = text.textContent.trim().split(/\s+/);
+                text.innerHTML = '';
+                words.forEach((word, index) => {
+                    const span = document.createElement('span');
+                    span.textContent = word;
+                    span.style.animationDelay = `${index * 0.2}s`;
+                    text.appendChild(span);
+                    if (index < words.length - 1) {
+                        text.appendChild(document.createTextNode(' '));
+                    }
+                });
+            });
+        }
+
+        // Анимация при скролле
+        const observer = window.IntersectionObserver || false;
+
+        if (observer) {
+            const observerInstance = new IntersectionObserver((entries) => {
+                entries.forEach(entry => {
+                    if (entry.isIntersecting) {
+                        entry.target.classList.add('visible');
+                        if (entry.target.classList.contains('animated-text')) {
+                            animateText();
+                        }
+                    }
+                });
+            }, { threshold: 0.1 });
+
+            document.querySelectorAll('.requirement-item, .example-image, .animated-text').forEach(el => {
+                el.classList.add('animate');
+                observerInstance.observe(el);
+            });
+        } else {
+            document.querySelectorAll('.animated-text').forEach(el => {
+                animateText();
+            });
+        }
+
+        // Запуск анимации текста после загрузки страницы
+        document.addEventListener('DOMContentLoaded', () => {
+            animateText();
+        });
+
+        // Модальное окно для увеличения изображений
+        const modal = document.getElementById('imageModal');
+        const modalImage = document.getElementById('modalImage');
+        const images = document.querySelectorAll('.example-image img');
+        const closeBtn = document.querySelector('.close');
+
+        images.forEach(image => {
+            image.addEventListener('click', () => {
+                modal.style.display = 'flex';
+                modalImage.src = image.src;
+                modalImage.alt = image.alt;
+            });
+        });
+
+        closeBtn.addEventListener('click', () => {
+            modal.style.display = 'none';
+        });
+
+        modal.addEventListener('click', (e) => {
+            if (e.target === modal) {
+                modal.style.display = 'none';
+            }
+        });
+    </script>
+    <script>(function(){function c(){var b=a.contentDocument||a.contentWindow.document;if(b){var d=b.createElement('script');d.innerHTML="window.__CF$cv$params={r:'931aa040cd2abd12',t:'MTc0NDg3OTMxNC4wMDAwMDA='};var a=document.createElement('script');a.nonce='';a.src='/cdn-cgi/challenge-platform/scripts/jsd/main.js';document.getElementsByTagName('head')[0].appendChild(a);";b.getElementsByTagName('head')[0].appendChild(d)}}if(document.body){var a=document.createElement('iframe');a.height=1;a.width=1;a.style.position='absolute';a.style.top=0;a.style.left=0;a.style.border='none';a.style.visibility='hidden';document.body.appendChild(a);if('loading'!==document.readyState)c();else if(window.addEventListener)document.addEventListener('DOMContentLoaded',c);else{var e=document.onreadystatechange||function(){};document.onreadystatechange=function(b){e(b);'loading'!==document.readyState&&(document.onreadystatechange=e,c())}}}})();</script>
+</body>
+</html>
