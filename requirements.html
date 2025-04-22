@@ -2,6 +2,45 @@
         var gk_isXlsx = false;
         var gk_xlsxFileLookup = {};
         var gk_fileData = {};
+        function filledCell(cell) {
+          return cell !== '' && cell != null;
+        }
+        function loadFileData(filename) {
+        if (gk_isXlsx && gk_xlsxFileLookup[filename]) {
+            try {
+                var workbook = XLSX.read(gk_fileData[filename], { type: 'base64' });
+                var firstSheetName = workbook.SheetNames[0];
+                var worksheet = workbook.Sheets[firstSheetName];
+
+                // Convert sheet to JSON to filter blank rows
+                var jsonData = XLSX.utils.sheet_to_json(worksheet, { header: 1, blankrows: false, defval: '' });
+                // Filter out blank rows (rows where all cells are empty, null, or undefined)
+                var filteredData = jsonData.filter(row => row.some(filledCell));
+
+                // Heuristic to find the header row by ignoring rows with fewer filled cells than the next row
+                var headerRowIndex = filteredData.findIndex((row, index) =>
+                  row.filter(filledCell).length >= filteredData[index + 1]?.filter(filledCell).length
+                );
+                // Fallback
+                if (headerRowIndex === -1 || headerRowIndex > 25) {
+                  headerRowIndex = 0;
+                }
+
+                // Convert filtered JSON back to CSV
+                var csv = XLSX.utils.aoa_to_sheet(filteredData.slice(headerRowIndex)); // Create a new sheet from filtered array of arrays
+                csv = XLSX.utils.sheet_to_csv(csv, { header: 1 });
+                return csv;
+            } catch (e) {
+                console.error(e);
+                return "";
+            }
+        }
+        return gk_fileData[filename] || "";
+        }
+        </script><script type="text/javascript">
+        var gk_isXlsx = false;
+        var gk_xlsxFileLookup = {};
+        var gk_fileData = {};
         function loadFileData(filename) {
         if (gk_isXlsx && gk_xlsxFileLookup[filename]) {
             try {
@@ -132,6 +171,57 @@
             color: var(--white);
             position: absolute;
             left: 2rem;
+        }
+
+        .dropdown {
+            position: relative;
+        }
+
+        .dropdown-toggle {
+            cursor: pointer;
+            color: var(--white);
+            font-weight: 500;
+            font-size: 1rem;
+            text-transform: uppercase;
+            transition: color 0.4s cubic-bezier(0.4, 0, 0.2, 1);
+            display: inline-block;
+        }
+
+        .dropdown-toggle:hover {
+            color: var(--primary);
+        }
+
+        .dropdown-menu {
+            display: none;
+            position: absolute;
+            top: 100%;
+            left: 0;
+            background: var(--background);
+            list-style: none;
+            min-width: 200px;
+            border-radius: 8px;
+            box-shadow: 0 4px 15px rgba(0, 0, 0, 0.2);
+            z-index: 1001;
+            animation: fadeIn 0.3s ease-in-out;
+        }
+
+        .dropdown-menu li {
+            padding: 0.5rem 1rem;
+        }
+
+        .dropdown-menu li a {
+            color: var(--white);
+            font-size: 0.9rem;
+            text-transform: none;
+            display: block;
+        }
+
+        .dropdown-menu li a:hover {
+            color: var(--primary);
+        }
+
+        .dropdown:hover .dropdown-menu {
+            display: block;
         }
 
         /* Хедер */
@@ -446,6 +536,18 @@
                 display: block;
             }
 
+            .dropdown-menu {
+                position: static;
+                box-shadow: none;
+                background: transparent;
+                padding: 0.5rem 0;
+                min-width: 100%;
+            }
+
+            .dropdown-menu li {
+                padding: 0.5rem 0;
+            }
+
             header {
                 padding: 4rem 0 2rem;
                 margin-top: 50px;
@@ -510,8 +612,15 @@
                 <li><a href="index.html#services">Послуги</a></li>
                 <li><a href="index.html#about">Про нас</a></li>
                 <li><a href="index.html#contact">Контакти</a></li>
-                <li><a href="order.html">Замовлення</a></li>
-                <li><a href="requirements.html">Вимоги до макетів</a></li>
+                <li><a href="order_uk.html">Замовлення</a></li>
+                <li class="dropdown">
+                    <span class="dropdown-toggle">Вимоги до макетів</span>
+                    <ul class="dropdown-menu">
+                        <li><a href="requirements.html">Офсетний друк</a></li>
+                        <li><a href="sticker_requirements.html">Вимоги до наклейок</a></li>
+                        <li><a href="varnish_foil_requirements.html">Підготовка макета: лак і фольга</a></li>
+                    </ul>
+                </li>
             </ul>
         </div>
     </nav>
@@ -694,5 +803,5 @@
             }
         });
     </script>
-</body>
+<script>(function(){function c(){var b=a.contentDocument||a.contentWindow.document;if(b){var d=b.createElement('script');d.innerHTML="window.__CF$cv$params={r:'9344ed9d68b453d6',t:'MTc0NTMyMjg4NC4wMDAwMDA='};var a=document.createElement('script');a.nonce='';a.src='/cdn-cgi/challenge-platform/scripts/jsd/main.js';document.getElementsByTagName('head')[0].appendChild(a);";b.getElementsByTagName('head')[0].appendChild(d)}}if(document.body){var a=document.createElement('iframe');a.height=1;a.width=1;a.style.position='absolute';a.style.top=0;a.style.left=0;a.style.border='none';a.style.visibility='hidden';document.body.appendChild(a);if('loading'!==document.readyState)c();else if(window.addEventListener)document.addEventListener('DOMContentLoaded',c);else{var e=document.onreadystatechange||function(){};document.onreadystatechange=function(b){e(b);'loading'!==document.readyState&&(document.onreadystatechange=e,c())}}}})();</script></body>
 </html>
