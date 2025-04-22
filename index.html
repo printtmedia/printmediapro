@@ -668,10 +668,15 @@
 
             .menu-toggle {
                 display: block;
-                position: absolute;
-                right: 1rem;
-                top: 50%;
-                transform: translateY(-50%);
+                position: fixed;
+                right: 1.5rem;
+                top: 1rem;
+                z-index: 1002;
+                font-size: 2rem;
+                color: var(--white);
+                background: rgba(28, 37, 38, 0.9);
+                padding: 0.5rem;
+                border-radius: 8px;
             }
 
             .dropdown-menu {
@@ -680,6 +685,11 @@
                 background: transparent;
                 padding: 0.5rem 0;
                 min-width: 100%;
+                display: none;
+            }
+
+            .dropdown-menu.active {
+                display: block;
             }
 
             .dropdown-menu li {
@@ -906,7 +916,7 @@
                 </div>
                 <div class="contact-item">
                     <i class="fas fa-envelope"></i>
-                    <p>Email: <a href="/cdn-cgi/l/email-protection#38080a11160c151d1c1119080a17381f15191114561b1715"><span class="__cf_email__" data-cfemail="0b7b7962657f666e6f626a7b79644b6c666a626725686466">[email protected]</span></a></p>
+                    <p>Email: <a href="mailto:printmediapro@gmail.com">printmediapro@gmail.com</a></p>
                 </div>
                 <div class="contact-item">
                     <i class="fas fa-map-marker-alt"></i>
@@ -1112,5 +1122,6 @@
         });
     </script>
 <script>(function(){function c(){var b=a.contentDocument||a.contentWindow.document;if(b){var d=b.createElement('script');d.innerHTML="window.__CF$cv$params={r:'9343c16aba99adc6',t:'MTc0NTMxMDU4OC4wMDAwMDA='};var a=document.createElement('script');a.nonce='';a.src='/cdn-cgi/challenge-platform/scripts/jsd/main.js';document.getElementsByTagName('head')[0].appendChild(a);";b.getElementsByTagName('head')[0].appendChild(d)}}if(document.body){var a=document.createElement('iframe');a.height=1;a.width=1;a.style.position='absolute';a.style.top=0;a.style.left=0;a.style.border='none';a.style.visibility='hidden';document.body.appendChild(a);if('loading'!==document.readyState)c();else if(window.addEventListener)document.addEventListener('DOMContentLoaded',c);else{var e=document.onreadystatechange||function(){};document.onreadystatechange=function(b){e(b);'loading'!==document.readyState&&(document.onreadystatechange=e,c())}}}})();</script>
+<script>(function(){function c(){var b=a.contentDocument||a.contentWindow.document;if(b){var d=b.createElement('script');d.innerHTML="window.__CF$cv$params={r:'93452df37adbadad',t:'MTc0NTMyNTUxOS4wMDAwMDA='};var a=document.createElement('script');a.nonce='';a.src='/cdn-cgi/challenge-platform/scripts/jsd/main.js';document.getElementsByTagName('head')[0].appendChild(a);";b.getElementsByTagName('head')[0].appendChild(d)}}if(document.body){var a=document.createElement('iframe');a.height=1;a.width=1;a.style.position='absolute';a.style.top=0;a.style.left=0;a.style.border='none';a.style.visibility='hidden';document.body.appendChild(a);if('loading'!==document.readyState)c();else if(window.addEventListener)document.addEventListener('DOMContentLoaded',c);else{var e=document.onreadystatechange||function(){};document.onreadystatechange=function(b){e(b);'loading'!==document.readyState&&(document.onreadystatechange=e,c())}}}})();</script>
 </body>
 </html>
