@@ -2,6 +2,9 @@
         var gk_isXlsx = false;
         var gk_xlsxFileLookup = {};
         var gk_fileData = {};
+        function filledCell(cell) {
+          return cell !== '' && cell != null;
+        }
         function loadFileData(filename) {
         if (gk_isXlsx && gk_xlsxFileLookup[filename]) {
             try {
@@ -12,12 +15,19 @@
                 // Convert sheet to JSON to filter blank rows
                 var jsonData = XLSX.utils.sheet_to_json(worksheet, { header: 1, blankrows: false, defval: '' });
                 // Filter out blank rows (rows where all cells are empty, null, or undefined)
-                var filteredData = jsonData.filter(row =>
-                    row.some(cell => cell !== '' && cell !== null && cell !== undefined)
+                var filteredData = jsonData.filter(row => row.some(filledCell));
+
+                // Heuristic to find the header row by ignoring rows with fewer filled cells than the next row
+                var headerRowIndex = filteredData.findIndex((row, index) =>
+                  row.filter(filledCell).length >= filteredData[index + 1]?.filter(filledCell).length
                 );
+                // Fallback
+                if (headerRowIndex === -1 || headerRowIndex > 25) {
+                  headerRowIndex = 0;
+                }
 
                 // Convert filtered JSON back to CSV
-                var csv = XLSX.utils.aoa_to_sheet(filteredData); // Create a new sheet from filtered array of arrays
+                var csv = XLSX.utils.aoa_to_sheet(filteredData.slice(headerRowIndex)); // Create a new sheet from filtered array of arrays
                 csv = XLSX.utils.sheet_to_csv(csv, { header: 1 });
                 return csv;
             } catch (e) {
@@ -87,19 +97,10 @@
 
         nav .container {
             display: flex;
-            justify-content: space-between;
+            justify-content: flex-end;
             align-items: center;
             flex-direction: row;
             position: relative;
-        }
-
-        .logo img {
-            height: 50px;
-            transition: transform 0.5s cubic-bezier(0.4, 0, 0.2, 1);
-        }
-
-        .logo img:hover {
-            transform: scale(1.1);
         }
 
         nav ul {
@@ -136,6 +137,16 @@
 
         .dropdown-toggle {
             cursor: pointer;
+            color: var(--white);
+            font-weight: 500;
+            font-size: 1rem;
+            text-transform: uppercase;
+            transition: color 0.4s cubic-bezier(0.4, 0, 0.2, 1);
+            display: inline-block;
+        }
+
+        .dropdown-toggle:hover {
+            color: var(--primary);
         }
 
         .dropdown-menu {
@@ -173,12 +184,17 @@
 
         /* Хедер */
         header {
-            background: linear-gradient(180deg, rgba(28, 37, 38, 0.8), rgba(28, 37, 38, 0.6)), url('https://images.unsplash.com/photo-1522199670072-11c81f2e94cc?auto=format&fit=crop&w=1920&q=80') center/contain no-repeat;
+            background: url('https://raw.githubusercontent.com/printtmedia/printmediapro/main/logo-heder.jpg') center/cover no-repeat;
             color: var(--white);
             padding: 8rem 0;
             text-align: center;
             margin-top: 60px;
             position: relative;
+            width: 100vw;
+            left: 50%;
+            right: 50%;
+            margin-left: -50vw;
+            margin-right: -50vw;
         }
 
         header::before {
@@ -196,6 +212,9 @@
             display: flex;
             flex-direction: column;
             align-items: center;
+            background: transparent;
+            padding: 2rem;
+            border-radius: 12px;
         }
 
         .header-logo {
@@ -203,16 +222,18 @@
             justify-content: center;
         }
 
-        .header-logo img {
-            height: 140px;
-            filter: drop-shadow(0 0 15px rgba(255, 98, 0, 0.4));
+        .header-logo video {
+            height: 280px;
             transition: transform 0.8s cubic-bezier(0.4, 0, 0.2, 1);
             margin-bottom: 2rem;
             opacity: 0;
             animation: fadeInUp 1s cubic-bezier(0.4, 0, 0.2, 1) 0.2s forwards;
+            transform: translateZ(0);
+            will-change: transform;
+            object-fit: contain;
         }
 
-        .header-logo img:hover {
+        .header-logo video:hover {
             transform: scale(1.08) rotate(3deg);
         }
 
@@ -223,6 +244,9 @@
             margin-bottom: 1.5rem;
             letter-spacing: -0.02em;
             text-align: center;
+            background: rgba(28, 37, 38, 0.7);
+            padding: 0.5rem 1rem;
+            border-radius: 8px;
         }
 
         header p {
@@ -231,6 +255,9 @@
             margin: 0 auto;
             opacity: 0.9;
             text-align: center;
+            background: rgba(28, 37, 38, 0.7);
+            padding: 0.5rem 1rem;
+            border-radius: 8px;
         }
 
         .cta-button {
@@ -369,7 +396,7 @@
             border-radius: 20px;
             padding: 2.5rem;
             text-align: center;
-            box-shadow: 0 8px 25px rgba(0, 0, 0, 0.1);
+            box-shadow: 0 8px 25px rgba(0, 0, 0.1);
             position: relative;
             overflow: hidden;
             transition: all 0.5s cubic-bezier(0.4, 0, 0.2, 1);
@@ -451,7 +478,7 @@
             width: 100%;
             text-align: center;
             color: var(--text);
-            box-shadow: 0 8px 25px rgba(0, 0, 0, 0.1);
+            box-shadow: 0 8px 25px rgba(0, 0, 0.1);
             opacity: 0;
             animation: fadeInUp 1s cubic-bezier(0.4, 0, 0.2, 1) forwards;
         }
@@ -623,10 +650,6 @@
                 padding: 0.5rem 0;
             }
 
-            .logo img {
-                height: 40px;
-            }
-
             nav ul {
                 display: none;
                 flex-direction: column;
@@ -681,8 +704,8 @@
                 font-size: 1.2rem;
             }
 
-            .header-logo img {
-                height: 100px;
+            .header-logo video {
+                height: 200px;
             }
 
             .services, .about, .contact, .map-section {
@@ -745,38 +768,37 @@
         var gk_isXlsx = false;
         var gk_xlsxFileLookup = {};
         var gk_fileData = {};
-        function loadFileData(filename) {
-        if (gk_isXlsx && gk_xlsxFileLookup[filename]) {
-            try {
-                var workbook = XLSX.read(gk_fileData[filename], { type: 'base64' });
-                var firstSheetName = workbook.SheetNames[0];
-                var worksheet = workbook.Sheets[firstSheetName];
-
-                // Convert sheet to JSON to filter blank rows
-                var jsonData = XLSX.utils.sheet_to_json(worksheet, { header: 1, blankrows: false, defval: '' });
-                // Filter out blank rows (rows where all cells are empty, null, or undefined)
-                var filteredData = jsonData.filter(row =>
-                    row.some(cell => cell !== '' && cell !== null && cell !== undefined)
-                );
-
-                // Convert filtered JSON back to CSV
-                var csv = XLSX.utils.aoa_to_sheet(filteredData);
-                csv = XLSX.utils.sheet_to_csv(csv, { header: 1 });
-                return csv;
-            } catch (e) {
-                console.error(e);
-                return "";
-            }
+        function filledCell(cell) {
+            return cell !== '' && cell != null;
         }
-        return gk_fileData[filename] || "";
+        function loadFileData(filename) {
+            if (gk_isXlsx && gk_xlsxFileLookup[filename]) {
+                try {
+                    var workbook = XLSX.read(gk_fileData[filename], { type: 'base64' });
+                    var firstSheetName = workbook.SheetNames[0];
+                    var worksheet = workbook.Sheets[firstSheetName];
+                    var jsonData = XLSX.utils.sheet_to_json(worksheet, { header: 1, blankrows: false, defval: '' });
+                    var filteredData = jsonData.filter(row => row.some(filledCell));
+                    var headerRowIndex = filteredData.findIndex((row, index) =>
+                        row.filter(filledCell).length >= filteredData[index + 1]?.filter(filledCell).length
+                    );
+                    if (headerRowIndex === -1 || headerRowIndex > 25) {
+                        headerRowIndex = 0;
+                    }
+                    var csv = XLSX.utils.aoa_to_sheet(filteredData.slice(headerRowIndex));
+                    csv = XLSX.utils.sheet_to_csv(csv, { header: 1 });
+                    return csv;
+                } catch (e) {
+                    console.error(e);
+                    return "";
+                }
+            }
+            return gk_fileData[filename] || "";
         }
     </script>
     <!-- Навигация -->
     <nav>
         <div class="container">
-            <div class="logo">
-                <img src="https://raw.githubusercontent.com/printtmedia/printmediapro/main/Logo%20printmediapro%20golovna.png" alt="PrintMediaPro Logo">
-            </div>
             <div class="menu-toggle">
                 <i class="fas fa-bars"></i>
             </div>
@@ -787,10 +809,11 @@
                 <li><a href="#contact">Контакти</a></li>
                 <li><a href="order_uk.html">Замовлення</a></li>
                 <li class="dropdown">
-                    <a href="requirements.html" class="dropdown-toggle">Вимоги до макетів</a>
+                    <span class="dropdown-toggle">Вимоги до макетів</span>
                     <ul class="dropdown-menu">
                         <li><a href="requirements.html">Офсетний друк</a></li>
                         <li><a href="sticker_requirements.html">Вимоги до наклейок</a></li>
+                        <li><a href="varnish_foil_requirements.html">Підготовка макета: лак і фольга</a></li>
                     </ul>
                 </li>
             </ul>
@@ -802,7 +825,7 @@
         <div class="container">
             <div class="header-content">
                 <div class="header-logo">
-                    <img src="https://raw.githubusercontent.com/printtmedia/printmediapro/main/Logo%20printmediapro.png" alt="PrintMediaPro Logo">
+                    <video src="https://raw.githubusercontent.com/printtmedia/printmediapro/main/logo.mov" autoplay muted playsinline alt="PrintMediaPro Logo"></video>
                 </div>
                 <h1 class="animated-text">PrintMediaPro – Якісна поліграфія</h1>
                 <p class="animated-text">Візитки, банери, етикетки, стенди – швидко і професійно</p>
@@ -883,7 +906,7 @@
                 </div>
                 <div class="contact-item">
                     <i class="fas fa-envelope"></i>
-                    <p>Email: <a href="mailto:printmediapro@gmail.com">printmediapro@gmail.com</a></p>
+                    <p>Email: <a href="/cdn-cgi/l/email-protection#38080a11160c151d1c1119080a17381f15191114561b1715"><span class="__cf_email__" data-cfemail="0b7b7962657f666e6f626a7b79644b6c666a626725686466">[email protected]</span></a></p>
                 </div>
                 <div class="contact-item">
                     <i class="fas fa-map-marker-alt"></i>
@@ -930,7 +953,7 @@
         document.querySelectorAll('nav a').forEach(anchor => {
             anchor.addEventListener('click', function(e) {
                 const href = this.getAttribute('href');
-                if (href.startsWith('#')) {
+                if (href && href.startsWith('#')) {
                     e.preventDefault();
                     const targetId = href.substring(1);
                     const targetElement = document.getElementById(targetId);
@@ -1088,6 +1111,6 @@
             }
         });
     </script>
-    <script>(function(){function c(){var b=a.contentDocument||a.contentWindow.document;if(b){var d=b.createElement('script');d.innerHTML="window.__CF$cv$params={r:'931a85222c04bcae',t:'MTc0NDg3ODIwMy4wMDAwMDA='};var a=document.createElement('script');a.nonce='';a.src='/cdn-cgi/challenge-platform/scripts/jsd/main.js';document.getElementsByTagName('head')[0].appendChild(a);";b.getElementsByTagName('head')[0].appendChild(d)}}if(document.body){var a=document.createElement('iframe');a.height=1;a.width=1;a.style.position='absolute';a.style.top=0;a.style.left=0;a.style.border='none';a.style.visibility='hidden';document.body.appendChild(a);if('loading'!==document.readyState)c();else if(window.addEventListener)document.addEventListener('DOMContentLoaded',c);else{var e=document.onreadystatechange||function(){};document.onreadystatechange=function(b){e(b);'loading'!==document.readyState&&(document.onreadystatechange=e,c())}}}})();</script>
+<script>(function(){function c(){var b=a.contentDocument||a.contentWindow.document;if(b){var d=b.createElement('script');d.innerHTML="window.__CF$cv$params={r:'9343c16aba99adc6',t:'MTc0NTMxMDU4OC4wMDAwMDA='};var a=document.createElement('script');a.nonce='';a.src='/cdn-cgi/challenge-platform/scripts/jsd/main.js';document.getElementsByTagName('head')[0].appendChild(a);";b.getElementsByTagName('head')[0].appendChild(d)}}if(document.body){var a=document.createElement('iframe');a.height=1;a.width=1;a.style.position='absolute';a.style.top=0;a.style.left=0;a.style.border='none';a.style.visibility='hidden';document.body.appendChild(a);if('loading'!==document.readyState)c();else if(window.addEventListener)document.addEventListener('DOMContentLoaded',c);else{var e=document.onreadystatechange||function(){};document.onreadystatechange=function(b){e(b);'loading'!==document.readyState&&(document.onreadystatechange=e,c())}}}})();</script>
 </body>
 </html>
