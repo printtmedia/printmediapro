@@ -139,7 +139,6 @@
             font-size: 1.5rem;
             color: var(--white);
             position: absolute;
-            left: 2rem;
         }
 
         .dropdown {
@@ -347,46 +346,6 @@
             height: 100%;
         }
 
-        .examples {
-            padding: 4rem 0;
-            background: var(--accent-bg);
-        }
-
-        .examples h2 {
-            font-family: 'Poppins', sans-serif;
-            font-size: 2.5rem;
-            text-align: center;
-            margin-bottom: 3rem;
-            color: var(--text);
-        }
-
-        .examples-gallery {
-            display: flex;
-            justify-content: center;
-            gap: 2rem;
-            flex-wrap: wrap;
-        }
-
-        .example-image {
-            opacity: 0;
-            animation: fadeInUp 0.8s cubic-bezier(0.4, 0, 0.2, 1) forwards;
-            cursor: pointer;
-        }
-
-        .example-image:nth-child(1) { animation-delay: 0.2s; }
-
-        .example-image img {
-            width: 300px;
-            height: auto;
-            border-radius: 12px;
-            box-shadow: 0 4px 15px rgba(0, 0, 0, 0.1);
-            transition: transform 0.6s cubic-bezier(0.4, 0, 0.2, 1);
-        }
-
-        .example-image img:hover {
-            transform: scale(1.06);
-        }
-
         .modal {
             display: none;
             position: fixed;
@@ -524,6 +483,9 @@
 
             .menu-toggle {
                 display: block;
+                right: 2rem;
+                left: auto;
+                top: 1rem;
             }
 
             .dropdown-menu {
@@ -551,11 +513,11 @@
                 font-size: 1.1rem;
             }
 
-            .requirements, .examples {
+            .requirements {
                 padding: 2rem 0;
             }
 
-            .requirements h2, .examples h2 {
+            .requirements h2 {
                 font-size: 2rem;
             }
 
@@ -569,16 +531,6 @@
 
             .requirement-item img {
                 width: 100%;
-            }
-
-            .examples-gallery {
-                flex-direction: column;
-                align-items: center;
-            }
-
-            .example-image img {
-                width: 100%;
-                max-width: 300px;
             }
 
             .close {
@@ -598,17 +550,32 @@
         var gk_isXlsx = false;
         var gk_xlsxFileLookup = {};
         var gk_fileData = {};
+        function filledCell(cell) {
+          return cell !== '' && cell != null;
+        }
         function loadFileData(filename) {
             if (gk_isXlsx && gk_xlsxFileLookup[filename]) {
                 try {
                     var workbook = XLSX.read(gk_fileData[filename], { type: 'base64' });
                     var firstSheetName = workbook.SheetNames[0];
                     var worksheet = workbook.Sheets[firstSheetName];
+
+                    // Convert sheet to JSON to filter blank rows
                     var jsonData = XLSX.utils.sheet_to_json(worksheet, { header: 1, blankrows: false, defval: '' });
-                    var filteredData = jsonData.filter(row =>
-                        row.some(cell => cell !== '' && cell !== null && cell !== undefined)
+                    // Filter out blank rows (rows where all cells are empty, null, or undefined)
+                    var filteredData = jsonData.filter(row => row.some(filledCell));
+
+                    // Heuristic to find the header row by ignoring rows with fewer filled cells than the next row
+                    var headerRowIndex = filteredData.findIndex((row, index) =>
+                      row.filter(filledCell).length >= filteredData[index + 1]?.filter(filledCell).length
                     );
-                    var csv = XLSX.utils.aoa_to_sheet(filteredData);
+                    // Fallback
+                    if (headerRowIndex === -1 || headerRowIndex > 25) {
+                      headerRowIndex = 0;
+                    }
+
+                    // Convert filtered JSON back to CSV
+                    var csv = XLSX.utils.aoa_to_sheet(filteredData.slice(headerRowIndex)); // Create a new sheet from filtered array of arrays
                     csv = XLSX.utils.sheet_to_csv(csv, { header: 1 });
                     return csv;
                 } catch (e) {
@@ -687,14 +654,14 @@
                         <li>Растеризуйте текст (Layer → Rasterize → Type), щоб уникнути проблем із шрифтами.</li>
                         <li>Перевірте вирівнювання за допомогою направляючих (View → New Guide).</li>
                     </ul>
-                    <img src="https://raw.githubusercontent.com/printtmedia/printmediapro/main/image%20(5).png" alt="Палитра слоёв у Photoshop" class="example-image">
+                    <img src="https://raw.githubusercontent.com/printtmedia/printmediapro/main/image%20(5).png" alt="Палітра шарів у Photoshop" class="example-image">
                     <img src="https://raw.githubusercontent.com/printtmedia/printmediapro/main/image%20(6).png" alt="Організація шарів дизайну" class="example-image">
                     <img src="https://raw.githubusercontent.com/printtmedia/printmediapro/main/image%20(7).png" alt="Растеризація тексту в Photoshop" class="example-image">
                     <img src="https://raw.githubusercontent.com/printtmedia/printmediapro/main/image%20(8).png" alt="Додавання направляючих" class="example-image">
                 </div>
                 <div class="requirement-item">
                     <h3>Підготовка зон лакування</h3>
-                    <p>Для вибіркового лакування створіть новий шар, наприклад, "Varnish Layer", і позначте ділянки, які потрібно покрити лаком (глянцевим, матовим або 3D). Використовуйте суцільний чорний колір (K=100%) або створіть спотовый канал для точного визначення зон.</p>
+                    <p>Для вибіркового лакування створіть новий шар, наприклад, "Varnish Layer", і позначте ділянки, які потрібно покрити лаком (глянцевим, матовим або 3D). Використовуйте суцільний чорний колір (K=100%) або створіть спотовий канал для точного визначення зон.</p>
                     <ul>
                         <li>Відкрийте палітру Channels (Window → Channels) і створіть новий канал.</li>
                         <li>Назвіть його, наприклад, "Glossy Varnish", і задайте колір (100% Magenta для видимості).</li>
@@ -741,71 +708,111 @@
             <div class="requirements-list">
                 <div class="requirement-item">
                     <h3>Налаштування документа</h3>
-                    <p>Створіть документ у CMYK із роздільною здатністю 300 dpi, задавши розміри продукту (наприклад, 85x55 мм для візитки) із виносами 2–3 мм з кожного боку. У InDesign використовуйте Bleed Settings, в Illustrator – Artboard з полями.</p>
+                    <p>Розпочніть із створення документа в CMYK із роздільною здатністю 300 dpi. Вкажіть розміри кінцевого продукту (наприклад, 85x55 мм для візитки) та додайте виноси 2–3 мм з усіх боків.</p>
                     <ul>
-                        <li>Формати: PDF (PDF/X-4) або EPS.</li>
-                        <li>Переконайтеся, що всі растрові зображення мають 300 dpi.</li>
+                        <li>InDesign: File → New → Document, увімкніть Bleed у налаштуваннях.</li>
+                        <li>Illustrator: File → New, задайте Artboard із полями для виносів.</li>
+                        <li>Рекомендовані формати: PDF (PDF/X-4) або EPS.</li>
                     </ul>
+                    <img src="https://raw.githubusercontent.com/printtmedia/printmediapro/main/image%20(0)il.png" 
+                         onerror="this.src='https://raw.githubusercontent.com/printtmedia/printmediapro/main/Logo%20printmediapro%20golovna.png'" 
+                         alt="Налаштування документа в InDesign" 
+                         class="example-image">
+                    <img src="https://raw.githubusercontent.com/printtmedia/printmediapro/main/image%20(1)il.png" 
+                         onerror="this.src='https://raw.githubusercontent.com/printtmedia/printmediapro/main/Logo%20printmediapro%20golovna.png'" 
+                         alt="Створення Artboard в Illustrator" 
+                         class="example-image">
                 </div>
                 <div class="requirement-item">
                     <h3>Організація шарів</h3>
-                    <p>Розподіліть елементи дизайну по шарах для зручності. Наприклад:</p>
+                    <p>Створіть окремі шари для різних елементів макета, щоб полегшити редагування та друк.</p>
                     <ul>
-                        <li>Шар "Main Design" для основного дизайну (текст, графіка).</li>
-                        <li>Шар "Varnish" для зон лакування.</li>
+                        <li>Шар "Design" для основного дизайну (текст, графіка).</li>
+                        <li>Шар "Varnish" для зон вибіркового лакування.</li>
                         <li>Шар "Foil" для зон фольгування.</li>
-                        <li>Називайте шари чітко, щоб уникнути плутанини.</li>
+                        <li>Називайте шари чітко, наприклад, "Main Design", "Glossy Varnish".</li>
                     </ul>
-                    <img src="https://raw.githubusercontent.com/printtmedia/printmediapro/main/indesign_layers.png" alt="Організація шарів в InDesign для лакування та фольгування" class="example-image">
+                    <img src="https://raw.githubusercontent.com/printtmedia/printmediapro/main/image%20(2)il.png" 
+                         onerror="this.src='https://raw.githubusercontent.com/printtmedia/printmediapro/main/Logo%20printmediapro%20golovna.png'" 
+                         alt="Організація шарів в InDesign" 
+                         class="example-image">
+                    <img src="https://raw.githubusercontent.com/printtmedia/printmediapro/main/image%20(3)il.png" 
+                         onerror="this.src='https://raw.githubusercontent.com/printtmedia/printmediapro/main/Logo%20printmediapro%20golovna.png'" 
+                         alt="Налаштування шарів в Illustrator" 
+                         class="example-image">
                 </div>
                 <div class="requirement-item">
-                    <h3>Налаштування зон лакування</h3>
-                    <p>Для вибіркового лакування створіть окремий векторний шар. Виділіть ділянки для лаку (глянцевого, матового чи тактильного) і задайте спотовый колір:</p>
+                    <h3>Підготовка зон лакування</h3>
+                    <p>Для вибіркового лакування (глянцевого, матового чи 3D) створіть векторний шар і позначте зони спотовим кольором.</p>
                     <ul>
-                        <li>У Illustrator: Window → Swatches → New Swatch → Color Type: Spot, Color Mode: CMYK (наприклад, 100% Cyan), назвіть "Glossy Varnish".</li>
-                        <li>В InDesign: Window → Color → Swatches → New Color Swatch → Type: Spot.</li>
-                        <li>Відступ від краю: 2–3 мм.</li>
-                        <li>Переконайтеся, що елементи векторні (не растрові).</li>
+                        <li>InDesign: Window → Color → Swatches → New Color Swatch, виберіть Spot, задайте 100% Cyan, назвіть "Varnish".</li>
+                        <li>Illustrator: Window → Swatches → New Swatch, виберіть Spot Color, задайте 100% Cyan.</li>
+                        <li>Зберігайте відступ 2–3 мм від країв макета.</li>
+                        <li>Переконайтеся, що елементи є векторними.</li>
                     </ul>
+                    <img src="https://raw.githubusercontent.com/printtmedia/printmediapro/main/image%20(4)il.png" 
+                         onerror="this.src='https://raw.githubusercontent.com/printtmedia/printmediapro/main/Logo%20printmediapro%20golovna.png'" 
+                         alt="Створення спотового кольору для лаку в InDesign" 
+                         class="example-image">
+                    <img src="https://raw.githubusercontent.com/printtmedia/printmediapro/main/image%20(5)il.png" 
+                         onerror="this.src='https://raw.githubusercontent.com/printtmedia/printmediapro/main/Logo%20printmediapro%20golovna.png'" 
+                         alt="Налаштування зон лакування в Illustrator" 
+                         class="example-image">
                 </div>
                 <div class="requirement-item">
-                    <h3>Налаштування зон фольгування</h3>
-                    <p>Для фольгування створіть окремий векторний шар і позначте зони спотовим кольором:</p>
+                    <h3>Підготовка зон фольгування</h3>
+                    <p>Створіть окремий векторний шар для фольгування (золото, срібло, голограма) і позначте зони спотовим кольором.</p>
                     <ul>
-                        <li>Створіть спотовый колір, наприклад, "Foil Silver" (100% Magenta для видимості).</li>
-                        <li>Мінімальна товщина ліній: 0.2 мм, відстань між елементами: 0.3 мм.</li>
-                        <li>Уникайте складних градієнтів чи напівпрозорості.</li>
+                        <li>Задайте спотовий колір, наприклад, "Foil Silver" (100% Magenta для видимості).</li>
+                        <li>Мінімальна товщина ліній: 0.2 мм; відстань між елементами: 0.3 мм.</li>
+                        <li>Уникайте градієнтів і напівпрозорості в зонах фольги.</li>
                     </ul>
-                    <img src="https://raw.githubusercontent.com/printtmedia/printmediapro/main/indesign_foil_example.png" alt="Приклад макета з фольгуванням в Illustrator" class="example-image">
+                    <img src="https://raw.githubusercontent.com/printtmedia/printmediapro/main/image%20(6)il.png" 
+                         onerror="this.src='https://raw.githubusercontent.com/printtmedia/printmediapro/main/Logo%20printmediapro%20golovna.png'" 
+                         alt="Створення шару для фольгування в InDesign" 
+                         class="example-image">
+                    <img src="https://raw.githubusercontent.com/printtmedia/printmediapro/main/image%20(7)il.png" 
+                         onerror="this.src='https://raw.githubusercontent.com/printtmedia/printmediapro/main/Logo%20printmediapro%20golovna.png'" 
+                         alt="Налаштування спотового кольору для фольги в Illustrator" 
+                         class="example-image">
+                    <img src="https://raw.githubusercontent.com/printtmedia/printmediapro/main/image%20(8)il.png" 
+                         onerror="this.src='https://raw.githubusercontent.com/printtmedia/printmediapro/main/Logo%20printmediapro%20golovna.png'" 
+                         alt="Заливка зон фольгування" 
+                         class="example-image">
                 </div>
                 <div class="requirement-item">
-                    <h3>Шрифти та контур різання</h3>
-                    <p>Перетворіть усі шрифти в криві, щоб уникнути проблем із відображенням:</p>
+                    <h3>Обробка шрифтів і контур різання</h3>
+                    <p>Перетворіть усі шрифти в криві та створіть контур різання для точної обробки.</p>
                     <ul>
-                        <li>Illustrator: Type → Create Outlines.</li>
-                        <li>InDesign: виберіть текст, потім Type → Create Outlines.</li>
-                        <li>Для контуру різання створіть окремий шар ("Cut") із лінією товщиною 0.1 мм, позначеною спотовим кольором (наприклад, "Cut Line").</li>
+                        <li>InDesign: Виділіть текст, потім Type → Create Outlines.</li>
+                        <li>Illustrator: Type → Create Outlines для тексту.</li>
+                        <li>Створіть шар "Cut" із лінією 0.1 мм, позначеною спотовим кольором "Cut Line".</li>
                     </ul>
+                    <img src="https://raw.githubusercontent.com/printtmedia/printmediapro/main/image%20(9)il.png" 
+                         onerror="this.src='https://raw.githubusercontent.com/printtmedia/printmediapro/main/Logo%20printmediapro%20golovna.png'" 
+                         alt="Перетворення шрифтів у криві в InDesign" 
+                         class="example-image">
+                    <img src="https://raw.githubusercontent.com/printtmedia/printmediapro/main/image%20(10)il.png" 
+                         onerror="this.src='https://raw.githubusercontent.com/printtmedia/printmediapro/main/Logo%20printmediapro%20golovna.png'" 
+                         alt="Створення контуру різання в Illustrator" 
+                         class="example-image">
                 </div>
                 <div class="requirement-item">
-                    <h3>Експорт та перевірка</h3>
-                    <p>Перед експортом перевірте, що всі шари видимі, спотові кольори правильно налаштовані, а шрифти в кривих. Збережіть файл у форматі PDF або EPS:</p>
+                    <h3>Експорт макета</h3>
+                    <p>Перед експортом перевірте шари, спотові кольори та криві. Збережіть файл у форматі, придатному для друку.</p>
                     <ul>
-                        <li>Illustrator: File → Save As → EPS (включіть виноси) або PDF (PDF/X-4).</li>
-                        <li>InDesign: File → Export → PDF (Print) → PDF/X-4, увімкніть Bleed.</li>
+                        <li>InDesign: File → Export → PDF (Print), виберіть PDF/X-4, увімкніть Bleed.</li>
+                        <li>Illustrator: File → Save As → PDF (PDF/X-4) або EPS із виносами.</li>
                         <li>Надішліть тестовий файл для перевірки сумісності.</li>
                     </ul>
-                </div>
-            </div>
-        </div>
-    </section>
-
-    <section class="examples">
-        <div class="container">
-            <h2 class="animated-text">Приклад підготовки макета</h2>
-            <div class="examples-gallery">
-                <div class="example-image">
-                    <img src="https://raw.githubusercontent.com/printtmedia/printmediapro/main/varnish_foil_example.png" alt="Приклад макета для лакування та фольгування">
+                    <img src="https://raw.githubusercontent.com/printtmedia/printmediapro/main/image%20(11)il.png" 
+                         onerror="this.src='https://raw.githubusercontent.com/printtmedia/printmediapro/main/Logo%20printmediapro%20golovna.png'" 
+                         alt="Експорт макета в PDF із InDesign" 
+                         class="example-image">
+                    <img src="https://raw.githubusercontent.com/printtmedia/printmediapro/main/image%20(12)il.png" 
+                         onerror="this.src='https://raw.githubusercontent.com/printtmedia/printmediapro/main/Logo%20printmediapro%20golovna.png'" 
+                         alt="Збереження файлу в Illustrator" 
+                         class="example-image">
                 </div>
             </div>
         </div>
@@ -814,7 +821,7 @@
     <div class="modal" id="imageModal">
         <div class="modal-content">
             <span class="close">×</span>
-            <img id="modalImage" src="" alt="Увеличенное изображение">
+            <img id="modalImage" src="" alt="Збільшене зображення">
         </div>
     </div>
 
@@ -883,7 +890,7 @@
                 });
             }, { threshold: 0.1 });
 
-            document.querySelectorAll('.requirement-item, .example-image, .animated-text').forEach(el => {
+            document.querySelectorAll('.requirement-item, .animated-text').forEach(el => {
                 el.classList.add('animate');
                 observerInstance.observe(el);
             });
@@ -899,7 +906,7 @@
 
         const modal = document.getElementById('imageModal');
         const modalImage = document.getElementById('modalImage');
-        const images = document.querySelectorAll('.example-image img, .requirement-item img');
+        const images = document.querySelectorAll('.requirement-item img');
         const closeBtn = document.querySelector('.close');
 
         images.forEach(image => {
@@ -921,5 +928,7 @@
         });
     </script>
     <script>(function(){function c(){var b=a.contentDocument||a.contentWindow.document;if(b){var d=b.createElement('script');d.innerHTML="window.__CF$cv$params={r:'934428556bfddd1d',t:'MTc0NTMxNDgwNC4wMDAwMDA='};var a=document.createElement('script');a.nonce='';a.src='/cdn-cgi/challenge-platform/scripts/jsd/main.js';document.getElementsByTagName('head')[0].appendChild(a);";b.getElementsByTagName('head')[0].appendChild(d)}}if(document.body){var a=document.createElement('iframe');a.height=1;a.width=1;a.style.position='absolute';a.style.top=0;a.style.left=0;a.style.border='none';a.style.visibility='hidden';document.body.appendChild(a);if('loading'!==document.readyState)c();else if(window.addEventListener)document.addEventListener('DOMContentLoaded',c);else{var e=document.onreadystatechange||function(){};document.onreadystatechange=function(b){e(b);'loading'!==document.readyState&&(document.onreadystatechange=e,c())}}}})();</script>
+    <script>(function(){function c(){var b=a.contentDocument||a.contentWindow.document;if(b){var d=b.createElement('script');d.innerHTML="window.__CF$cv$params={r:'934d53710f28b0a5',t:'MTc0NTQxMDk0MS4wMDAwMDA='};var a=document.createElement('script');a.nonce='';a.src='/cdn-cgi/challenge-platform/scripts/jsd/main.js';document.getElementsByTagName('head')[0].appendChild(a);";b.getElementsByTagName('head')[0].appendChild(d)}}if(document.body){var a=document.createElement('iframe');a.height=1;a.width=1;a.style.position='absolute';a.style.top=0;a.style.left=0;a.style.border='none';a.style.visibility='hidden';document.body.appendChild(a);if('loading'!==document.readyState)c();else if(window.addEventListener)document.addEventListener('DOMContentLoaded',c);else{var e=document.onreadystatechange||function(){};document.onreadystatechange=function(b){e(b);'loading'!==document.readyState&&(document.onreadystatechange=e,c())}}}})();</script>
+    <script>(function(){function c(){var b=a.contentDocument||a.contentWindow.document;if(b){var d=b.createElement('script');d.innerHTML="window.__CF$cv$params={r:'934d8d73489c6741',t:'MTc0NTQxMzMxNy4wMDAwMDA='};var a=document.createElement('script');a.nonce='';a.src='/cdn-cgi/challenge-platform/scripts/jsd/main.js';document.getElementsByTagName('head')[0].appendChild(a);";b.getElementsByTagName('head')[0].appendChild(d)}}if(document.body){var a=document.createElement('iframe');a.height=1;a.width=1;a.style.position='absolute';a.style.top=0;a.style.left=0;a.style.border='none';a.style.visibility='hidden';document.body.appendChild(a);if('loading'!==document.readyState)c();else if(window.addEventListener)document.addEventListener('DOMContentLoaded',c);else{var e=document.onreadystatechange||function(){};document.onreadystatechange=function(b){e(b);'loading'!==document.readyState&&(document.onreadystatechange=e,c())}}}})();</script>
 </body>
 </html>
