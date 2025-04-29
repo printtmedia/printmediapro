@@ -291,7 +291,6 @@
             color: var(--nav-white);
         }
 
-        /* Language Switcher */
         .language-toggle {
             background: transparent;
             border: 1px solid var(--nav-white);
@@ -313,7 +312,6 @@
             color: var(--nav-white);
         }
 
-        /* Dropdown Menu */
         .dropdown {
             position: relative;
         }
@@ -365,7 +363,6 @@
             display: block;
         }
 
-        /* Animations */
         @keyframes slideDown {
             from { transform: translateY(-100%); opacity: 0; }
             to { transform: translateY(0); opacity: 1; }
@@ -845,15 +842,17 @@
 
         <div class="order-form-buttons">
             <button type="button" onclick="sendOrder()">Друкувати форму замовлення</button>
-            <button type="button" onclick="sendToGmail()">Надіслати на Gmail</button>
+            <button type="button" onclick="sendToServer()">Надіслати на сервер</button>
             <button type="button" onclick="showInstructions()">Інструкції</button>
         </div>
     </div>
     <div class="content-spacer"></div>
 
     <script>
+        // Переменные для обработки файлов (xlsx-функционал удалён, так как не используется)
         let selectedFiles = [];
 
+        // Инициализация формы при загрузке страницы
         document.addEventListener('DOMContentLoaded', () => {
             console.log('DOM fully loaded');
             document.getElementById('orderDate').value = new Date().toISOString().split('T')[0];
@@ -877,7 +876,6 @@
             setupBindingTypeHandler();
             setupCalendarTypeHandler();
 
-            // Hamburger Menu
             const menuToggle = document.querySelector('.menu-toggle');
             const navUl = document.querySelector('nav ul');
 
@@ -886,7 +884,6 @@
                 navUl.classList.toggle('active');
             });
 
-            // Dropdown Menu for Mobile
             const dropdownToggles = document.querySelectorAll('.dropdown-toggle');
             dropdownToggles.forEach(toggle => {
                 toggle.addEventListener('click', (e) => {
@@ -900,6 +897,7 @@
             });
         });
 
+        // Настройка загрузки файлов
         function setupFileUpload() {
             const fileInput = document.getElementById('fileUpload');
             const fileList = document.getElementById('fileList');
@@ -923,9 +921,15 @@
             };
         }
 
+        // Универсальная функция для настройки множественного выбора
         function setupMultipleSelect(selectId, containerId, customHandler) {
             const select = document.getElementById(selectId);
             const container = document.getElementById(containerId);
+
+            if (!select || !container) {
+                console.error(`Element not found: selectId=${selectId}, containerId=${containerId}`);
+                return;
+            }
 
             select.addEventListener('change', function() {
                 const value = this.value;
@@ -942,6 +946,7 @@
             });
         }
 
+        // Обработчик выбора продукта
         function handleProductChange(value, container) {
             console.log('Handling product change:', value);
             const bindingOptions = document.getElementById('bindingOptions');
@@ -967,6 +972,7 @@
             }
         }
 
+        // Обработчик выбора типа палітурки
         function setupBindingTypeHandler() {
             const bindingType = document.getElementById('bindingType');
             const container = document.getElementById('selectedProducts');
@@ -981,6 +987,7 @@
             });
         }
 
+        // Обработчик выбора типа календаря
         function setupCalendarTypeHandler() {
             const calendarType = document.getElementById('calendarType');
             const pageCount = document.getElementById('pageCount');
@@ -997,6 +1004,7 @@
             });
         }
 
+        // Обработчик выбора формата
         function handleFormatChange(value, container) {
             console.log('Handling format change:', value);
             const customFormat = document.getElementById('customFormat');
@@ -1017,12 +1025,14 @@
             }
         }
 
+        // Обработчик выбора типа печати
         function handlePrintTypeChange(value, container) {
             console.log('Handling print type change:', value);
             const text = document.getElementById('printType').options[document.getElementById('printType').selectedIndex].text;
             addItem(container, text, 'removePrintType', text);
         }
 
+        // Обработчик выбора материала
         function handleMaterialChange(value, container) {
             console.log('Handling material change:', value);
             const customMaterial = document.getElementById('customMaterial');
@@ -1043,6 +1053,7 @@
             }
         }
 
+        // Обработчик выбора плотности бумаги
         function handlePaperWeightChange(value, container) {
             console.log('Handling paper weight change:', value);
             const customPaperWeight = document.getElementById('customPaperWeight');
@@ -1063,6 +1074,7 @@
             }
         }
 
+        // Обработчик выбора послепечатной обработки
         function handlePostPrintChange(value, container) {
             console.log('Handling post-print change:', value);
             const eyeletsFields = document.getElementById('eyeletsFields');
@@ -1111,6 +1123,7 @@
             }
         }
 
+        // Добавление элемента в список выбранных
         function addItem(container, text, removeFunctionName, identifier) {
             console.log('Adding item:', text);
             const itemDiv = document.createElement('div');
@@ -1119,6 +1132,7 @@
             container.appendChild(itemDiv);
         }
 
+        // Функции удаления элементов
         window.removeProduct = function(button) { console.log('Removing product'); button.parentElement.remove(); };
         window.removePrintSides = function(button) { console.log('Removing print sides'); button.parentElement.remove(); };
         window.removeFormat = function(button) { console.log('Removing format'); button.parentElement.remove(); };
@@ -1127,6 +1141,7 @@
         window.removePaperWeight = function(button) { console.log('Removing paper weight'); button.parentElement.remove(); };
         window.removePostPrint = function(button) { console.log('Removing post-print'); button.parentElement.remove(); };
 
+        // Генерация таблицы заказа
         function generateOrderTable() {
             console.log('Generating order table');
             const formData = {
@@ -1152,53 +1167,58 @@
                 notes: document.querySelector('textarea[name="notes"]').value || 'Немає'
             };
 
-            return `
-                <div class="order-table" style="font-family: Arial, sans-serif; padding: 20px; background: white; width: 800px; position: relative;">
-                    <img src="https://printtmedia.github.io/printmediapro/Logo%20printmediapro.png" alt="Логотип PrintMediaPro" style="position: absolute; top: 20px; left: 20px; width: 150px; height: auto;">
-                    <h2 style="text-align: center; color: #4F46E5; margin-top: 80px;">ФОРМА ЗАМОВЛЕННЯ №${formData.orderNumber}</h2>
-                    <table style="width: 100%; border-collapse: collapse; margin-top: 20px;">
-                        <tr><th style="border: 1px solid #E5E7EB; padding: 8px; background-color: #F9FAFB;">Параметр</th><th style="border: 1px solid #E5E7EB; padding: 8px; background-color: #F9FAFB;">Значення</th></tr>
-                        <tr><td style="border: 1px solid #E5E7EB; padding: 8px;">Дата замовлення</td><td style="border: 1px solid #E5E7EB; padding: 8px;">${formData.orderDate}</td></tr>
-                        <tr><td style="border: 1px solid #E5E7EB; padding: 8px;">Замовник</td><td style="border: 1px solid #E5E7EB; padding: 8px;">${formData.customer}</td></tr>
-                        <tr><td style="border: 1px solid #E5E7EB; padding: 8px;">Контактна особа</td><td style="border: 1px solid #E5E7EB; padding: 8px;">${formData.contactPerson}</td></tr>
-                        <tr><td style="border: 1px solid #E5E7EB; padding: 8px;">Телефон</td><td style="border: 1px solid #E5E7EB; padding: 8px;">${formData.phone}</td></tr>
-                        <tr><td style="border: 1px solid #E5E7EB; padding: 8px;">Email</td><td style="border: 1px solid #E5E7EB; padding: 8px;">${formData.email}</td></tr>
-                        <tr><td style="border: 1px solid #E5E7EB; padding: 8px;">Назва файлу</td><td style="border: 1px solid #E5E7EB; padding: 8px;">${formData.filename}</td></tr>
-                        <tr><td style="border: 1px solid #E5E7EB; padding: 8px;">Назва продукту</td><td style="border: 1px solid #E5E7EB; padding: 8px;">${formData.product}</td></tr>
-                        <tr><td style="border: 1px solid #E5E7EB; padding: 8px;">Сторони друку</td><td style="border: 1px solid #E5E7EB; padding: 8px;">${formData.printSides}</td></tr>
-                        <tr><td style="border: 1px solid #E5E7EB; padding: 8px;">Кількість</td><td style="border: 1px solid #E5E7EB; padding: 8px;">${formData.quantity}</td></tr>
-                        <tr><td style="border: 1px solid #E5E7EB; padding: 8px;">Формат</td><td style="border: 1px solid #E5E7EB; padding: 8px;">${formData.format}</td></tr>
-                        <tr><td style="border: 1px solid #E5E7EB; padding: 8px;">Тип друку</td><td style="border: 1px solid #E5E7EB; padding: 8px;">${formData.printType}</td></tr>
-                        <tr><td style="border: 1px solid #E5E7EB; padding: 8px;">Матеріал</td><td style="border: 1px solid #E5E7EB; padding: 8px;">${formData.material}</td></tr>
-                        <tr><td style="border: 1px solid #E5E7EB; padding: 8px;">Щільність паперу</td><td style="border: 1px solid #E5E7EB; padding: 8px;">${formData.paperWeight}</td></tr>
-                        <tr><td style="border: 1px solid #E5E7EB; padding: 8px;">Термін виконання</td><td style="border: 1px solid #E5E7EB; padding: 8px;">${formData.deadline}</td></tr>
-                        <tr><td style="border: 1px solid #E5E7EB; padding: 8px;">Післядрукарська обробка</td><td style="border: 1px solid #E5E7EB; padding: 8px;">${formData.postPrint}</td></tr>
-                        ${formData.eyeletsQuantity ? `<tr><td style="border: 1px solid #E5E7EB; padding: 8px;">Кількість люверсів</td><td style="border: 1px solid #E5E7EB; padding: 8px;">${formData.eyeletsQuantity}</td></tr>` : ''}
-                        ${formData.eyeletsDistance ? `<tr><td style="border: 1px solid #E5E7EB; padding: 8px;">Відстань між люверсами</td><td style="border: 1px solid #E5E7EB; padding: 8px;">${formData.eyeletsDistance} мм</td></tr>` : ''}
-                        ${formData.pocketSize ? `<tr><td style="border: 1px solid #E5E7EB; padding: 8px;">Розмір кишені</td><td style="border: 1px solid #E5E7EB; padding: 8px;">${formData.pocketSize} мм</td></tr>` : ''}
-                        <tr><td style="border: 1px solid #E5E7EB; padding: 8px;">Примітки</td><td style="border: 1px solid #E5E7EB; padding: 8px;">${formData.notes}</td></tr>
-                    </table>
-                </div>
-            `;
+            return {
+                formData: formData,
+                html: `
+                    <div class="order-table" style="font-family: Arial, sans-serif; padding: 20px; background: white; width: 800px; position: relative;">
+                        <img src="https://printtmedia.github.io/printmediapro/Logo%20printmediapro.png" alt="Логотип PrintMediaPro" style="position: absolute; top: 20px; left: 20px; width: 150px; height: auto;">
+                        <h2 style="text-align: center; color: #4F46E5; margin-top: 80px;">ФОРМА ЗАМОВЛЕННЯ №${formData.orderNumber}</h2>
+                        <table style="width: 100%; border-collapse: collapse; margin-top: 20px;">
+                            <tr><th style="border: 1px solid #E5E7EB; padding: 8px; background-color: #F9FAFB;">Параметр</th><th style="border: 1px solid #E5E7EB; padding: 8px; background-color: #F9FAFB;">Значення</th></tr>
+                            <tr><td style="border: 1px solid #E5E7EB; padding: 8px;">Дата замовлення</td><td style="border: 1px solid #E5E7EB; padding: 8px;">${formData.orderDate}</td></tr>
+                            <tr><td style="border: 1px solid #E5E7EB; padding: 8px;">Замовник</td><td style="border: 1px solid #E5E7EB; padding: 8px;">${formData.customer}</td></tr>
+                            <tr><td style="border: 1px solid #E5E7EB; padding: 8px;">Контактна особа</td><td style="border: 1px solid #E5E7EB; padding: 8px;">${formData.contactPerson}</td></tr>
+                            <tr><td style="border: 1px solid #E5E7EB; padding: 8px;">Телефон</td><td style="border: 1px solid #E5E7EB; padding: 8px;">${formData.phone}</td></tr>
+                            <tr><td style="border: 1px solid #E5E7EB; padding: 8px;">Email</td><td style="border: 1px solid #E5E7EB; padding: 8px;">${formData.email}</td></tr>
+                            <tr><td style="border: 1px solid #E5E7EB; padding: 8px;">Назва файлу</td><td style="border: 1px solid #E5E7EB; padding: 8px;">${formData.filename}</td></tr>
+                            <tr><td style="border: 1px solid #E5E7EB; padding: 8px;">Назва продукту</td><td style="border: 1px solid #E5E7EB; padding: 8px;">${formData.product}</td></tr>
+                            <tr><td style="border: 1px solid #E5E7EB; padding: 8px;">Сторони друку</td><td style="border: 1px solid #E5E7EB; padding: 8px;">${formData.printSides}</td></tr>
+                            <tr><td style="border: 1px solid #E5E7EB; padding: 8px;">Кількість</td><td style="border: 1px solid #E5E7EB; padding: 8px;">${formData.quantity}</td></tr>
+                            <tr><td style="border: 1px solid #E5E7EB; padding: 8px;">Формат</td><td style="border: 1px solid #E5E7EB; padding: 8px;">${formData.format}</td></tr>
+                            <tr><td style="border: 1px solid #E5E7EB; padding: 8px;">Тип друку</td><td style="border: 1px solid #E5E7EB; padding: 8px;">${formData.printType}</td></tr>
+                            <tr><td style="border: 1px solid #E5E7EB; padding: 8px;">Матеріал</td><td style="border: 1px solid #E5E7EB; padding: 8px;">${formData.material}</td></tr>
+                            <tr><td style="border: 1px solid #E5E7EB; padding: 8px;">Щільність паперу</td><td style="border: 1px solid #E5E7EB; padding: 8px;">${formData.paperWeight}</td></tr>
+                            <tr><td style="border: 1px solid #E5E7EB; padding: 8px;">Термін виконання</td><td style="border: 1px solid #E5E7EB; padding: 8px;">${formData.deadline}</td></tr>
+                            <tr><td style="border: 1px solid #E5E7EB; padding: 8px;">Післядрукарська обробка</td><td style="border: 1px solid #E5E7EB; padding: 8px;">${formData.postPrint}</td></tr>
+                            ${formData.eyeletsQuantity ? `<tr><td style="border: 1px solid #E5E7EB; padding: 8px;">Кількість люверсів</td><td style="border: 1px solid #E5E7EB; padding: 8px;">${formData.eyeletsQuantity}</td></tr>` : ''}
+                            ${formData.eyeletsDistance ? `<tr><td style="border: 1px solid #E5E7EB; padding: 8px;">Відстань між люверсами</td><td style="border: 1px solid #E5E7EB; padding: 8px;">${formData.eyeletsDistance} мм</td></tr>` : ''}
+                            ${formData.pocketSize ? `<tr><td style="border: 1px solid #E5E7EB; padding: 8px;">Розмір кишені</td><td style="border: 1px solid #E5E7EB; padding: 8px;">${formData.pocketSize} мм</td></tr>` : ''}
+                            <tr><td style="border: 1px solid #E5E7EB; padding: 8px;">Примітки</td><td style="border: 1px solid #E5E7EB; padding: 8px;">${formData.notes}</td></tr>
+                        </table>
+                    </div>
+                `
+            };
         }
 
+        // Получение выбранных элементов
         function getSelectedItems(containerId) {
             console.log('Getting selected items for:', containerId);
             const items = document.querySelectorAll(`#${containerId} .selected-item span`);
             return Array.from(items).map(item => item.textContent).join(', ') || 'Не вибрано';
         }
 
+        // Печать заказа
         function sendOrder() {
             console.log('Send Order clicked');
             try {
-                const orderTable = generateOrderTable();
+                const { html } = generateOrderTable();
                 const printWindow = window.open('', '_blank');
-                if (!printWindow) throw new Error('Failed to open print window.');
+                if (!printWindow) throw new Error('Не вдалося відкрити вікно для друку.');
                 printWindow.document.write(`
                     <!DOCTYPE html>
                     <html>
                     <head><title>Друкувати замовлення</title><style>@media print { body { margin: 0; padding: 0; } .order-table { width: 100%; } table, th, td { border: 1px solid black; font-size: 12pt; font-weight: 600; } .logo { display: block !important; position: absolute; top: 20px; left: 20px; width: 150px; height: auto; } }</style></head>
-                    <body>${orderTable}</body>
+                    <body>${html}</body>
                     </html>
                 `);
                 printWindow.document.close();
@@ -1209,93 +1229,98 @@
                 }, 500);
             } catch (error) {
                 console.error('Error during printing:', error);
-                alert('Не вдалося надрукувати замовлення.');
+                alert('Не вдалося надрукувати замовлення: ' + error.message);
             }
         }
 
-        function sendToGmail() {
-            console.log('Send to Gmail clicked');
+        // Отправка заказа на сервер
+        async function sendToServer() {
+            console.log('Send to Server clicked');
             try {
+                // Проверка, загружен ли html2canvas
                 if (typeof html2canvas === 'undefined') {
-                    throw new Error('html2canvas is not loaded.');
+                    throw new Error('html2canvas не завантажено.');
                 }
-                const formData = { orderNumber: document.getElementById('orderNumber').textContent };
+
+                // Собираем данные формы и генерируем таблицу
+                const { formData, html } = generateOrderTable();
+
+                // Проверяем, что обязательные поля заполнены
+                if (!formData.customer || !formData.contactPerson || !formData.phone || !formData.email) {
+                    throw new Error('Будь ласка, заповніть усі обов’язкові поля.');
+                }
+
+                // Создаём временный элемент для рендеринга таблицы
                 const tempDiv = document.createElement('div');
                 tempDiv.style.position = 'absolute';
                 tempDiv.style.left = '-9999px';
-                tempDiv.innerHTML = generateOrderTable();
+                tempDiv.innerHTML = html;
                 document.body.appendChild(tempDiv);
 
-                html2canvas(tempDiv.querySelector('.order-table'), {
+                // Преобразуем таблицу в PNG с помощью html2canvas
+                const canvas = await html2canvas(tempDiv.querySelector('.order-table'), {
                     scale: 2,
                     useCORS: true,
                     logging: false
-                }).then(canvas => {
-                    const imgData = canvas.toDataURL('image/png', 1.0);
-                    const folderName = `Форма замовлення №${formData.orderNumber}`;
-                    const fileName = `${folderName}.png`;
-
-                    if (window.showDirectoryPicker) {
-                        saveWithFolder(imgData, folderName, fileName).then(() => proceedWithEmail(folderName));
-                    } else {
-                        fallbackDownload(imgData, folderName, fileName);
-                    }
-                    document.body.removeChild(tempDiv);
-                }).catch(error => {
-                    console.error('html2canvas error:', error);
-                    document.body.removeChild(tempDiv);
-                    alert('Помилка створення зображення. Переконайтеся, що html2canvas завантажено правильно.');
                 });
+                const imgData = canvas.toDataURL('image/png', 1.0);
+
+                // Преобразуем base64-строку в Blob
+                const imgResponse = await fetch(imgData);
+                const imgBlob = await imgResponse.blob();
+                const imgFile = new File([imgBlob], `order_${formData.orderNumber}.png`, { type: 'image/png' });
+
+                // Удаляем временный элемент
+                document.body.removeChild(tempDiv);
+
+                // Подготавливаем FormData для отправки на сервер
+                const formDataToSend = new FormData();
+
+                // Добавляем текстовые данные формы
+                Object.keys(formData).forEach(key => {
+                    formDataToSend.append(key, formData[key]);
+                });
+
+                // Добавляем PNG-изображение как файл
+                formDataToSend.append('orderImage', imgFile);
+
+                // Добавляем файлы, выбранные пользователем
+                selectedFiles.forEach((file, index) => {
+                    formDataToSend.append(`files`, file, file.name);
+                });
+
+                // Логируем содержимое FormData для отладки
+                for (let pair of formDataToSend.entries()) {
+                    console.log(`${pair[0]}:`, pair[1]);
+                }
+
+                // Отправляем данные на сервер Vercel
+                const response = await fetch('https://printmedia-server.vercel.app/send-order', {
+                    method: 'POST',
+                    body: formDataToSend,
+                });
+
+                // Проверяем ответ от сервера
+                if (!response.ok) {
+                    const errorText = await response.text();
+                    throw new Error(`Помилка надсилання замовлення: ${response.status} ${errorText}`);
+                }
+
+                const result = await response.json();
+                console.log('Server response:', result);
+                alert('Замовлення успішно надіслано на сервер!');
             } catch (error) {
-                console.error('Error during sending:', error);
-                alert('Не вдалося надіслати замовлення.');
+                console.error('Error during sending to server:', error);
+                alert('Не вдалося надіслати замовлення на сервер: ' + error.message);
             }
         }
 
-        async function saveWithFolder(imgData, folderName, fileName) {
-            console.log('Saving with folder:', folderName, fileName);
-            try {
-                const dirHandle = await window.showDirectoryPicker({ mode: 'readwrite' });
-                const subDirHandle = await dirHandle.getDirectoryHandle(folderName, { create: true });
-                const fileHandle = await subDirHandle.getFileHandle(fileName, { create: true });
-                const writable = await fileHandle.createWritable();
-                const response = await fetch(imgData);
-                const blob = await response.blob();
-                await writable.write(blob);
-                await writable.close();
-            } catch (error) {
-                console.error('Error saving with folder:', error);
-                fallbackDownload(imgData, folderName, fileName);
-            }
-        }
-
-        function fallbackDownload(imgData, folderName, fileName) {
-            console.log('Fallback download:', fileName);
-            const link = document.createElement('a');
-            link.href = imgData;
-            link.download = fileName;
-            document.body.appendChild(link);
-            link.click();
-            document.body.removeChild(link);
-            proceedWithEmail(folderName);
-        }
-
-        function proceedWithEmail(folderName) {
-            console.log('Proceeding with email for:', folderName);
-            const isMobile = /iPhone|iPad|iPod|Android/i.test(navigator.userAgent);
-            const subject = `Форма замовлення №${folderName.split('№')[1]}`;
-            if (isMobile) {
-                window.location.href = `mailto:printmediapro@gmail.com?subject=${encodeURIComponent(subject)}`;
-            } else {
-                window.open(`https://mail.google.com/mail/?view=cm&fs=1&to=printmediapro@gmail.com&su=${encodeURIComponent(subject)}`, '_blank');
-            }
-        }
-
+        // Отображение инструкций
         function showInstructions() {
             console.log('Show Instructions clicked');
             try {
                 const instructionWindow = window.open('', '_blank');
-                if (!instructionWindow) throw new Error('Failed to open instruction window.');
+                if (!instructionWindow) throw new Error('Не вдалося відкрити вікно з інструкціями.');
                 instructionWindow.document.write(`
                     <!DOCTYPE html>
                     <html lang="uk">
@@ -1314,7 +1339,7 @@
                     <body>
                         <div class="container">
                             <h1>Інструкції з використання "Форми замовлення друкарських послуг"</h1>
-                            <p>Ця форма призначена для оформлення замовлень на друкарські послуги (візитки, банери, книги тощо). Ви можете заповнити поля, вибрати кілька варіантів там, де це можливо, і надрукувати замовлення або надіслати його на Gmail. Ось покрокова інструкція:</p>
+                            <p>Ця форма призначена для оформлення замовлень на друкарські послуги (візитки, банери, книги тощо). Ви можете заповнити поля, вибрати кілька варіантів там, де це можливо, надрукувати замовлення або надіслати його автоматично на сервер. Ось покрокова інструкція:</p>
 
                             <h2>1. Основна інформація</h2>
                             <ul>
@@ -1323,7 +1348,7 @@
                                 <li><b>Контактна особа</b>: Введіть ім’я контактної особи (наприклад, "Марія Петренко").</li>
                                 <li><b>Телефон</b>: Введіть номер телефону у форматі +380XXXXXXXXX (наприклад, +380501234567). Використовуйте лише цифри та "+".</li>
                                 <li><b>Email</b>: Введіть електронну пошту для зв’язку (наприклад, "maria@example.com").</li>
-                                <li><b>Назва файлу</b>: Натисніть "Вибрати файл", щоб завантажити макети (PDF, JPG, PNG, DOCX). Ви можете вибрати кілька файлів (утримуйте Ctrl і клацайте файли у Windows або Command на Mac). Після вибору файли з’являться у списку нижче з кнопкою "Видалити". <b>Важливо</b>: Це поле лише відображає назви вибраних файлів у формі та у фінальній таблиці замовлення. Самі файли не додаються автоматично до електронного листа. Вам потрібно буде вручну прикріпити ці файли під час надсилання листа на Gmail (див. розділ "Надіслати на Gmail"). Щоб видалити файл зі списку, натисніть "Видалити" біля його назви.</li>
+                                <li><b>Назва файлу</b>: Натисніть "Вибрати файл", щоб завантажити макети (PDF, JPG, PNG, DOCX). Ви можете вибрати кілька файлів (утримуйте Ctrl і клацайте файли у Windows або Command на Mac). Після вибору файли з’являться у списку нижче з кнопкою "Видалити". Ці файли будуть автоматично прикріплені до листа, який надсилається на сервер. Щоб видалити файл зі списку, натисніть "Видалити" біля його назви.</li>
                             </ul>
 
                             <h2>2. Специфікація продукту</h2>
@@ -1365,15 +1390,7 @@
                             <h2>5. Дії з замовленням</h2>
                             <ul>
                                 <li><b>Друкувати форму замовлення</b>: Натисніть, щоб відкрити вікно з таблицею замовлення. Натисніть "Друк" у браузері, щоб надіслати на принтер.</li>
-                                <li><b>Надіслати на Gmail</b>: Натисніть, щоб зберегти PNG-файл таблиці в папці з назвою "Форма замовлення №XXXXXX". Потім відкриється Gmail (на комп’ютері) або поштовий додаток (на мобільному пристрої) із заповненою адресою printmediapro@gmail.com і темою "Форма замовлення №XXXXXX". <b>Важливо</b>: Вам потрібно вручну прикріпити файли, які ви вибрали в полі "Назва файлу", а також PNG-файл замовлення ("Форма замовлення №XXXXXX.png"). Для цього:
-                                    <ul>
-                                        <li>У відкритому вікні Gmail натисніть на значок скріпки ("Прикріпити файли").</li>
-                                        <li>Виберіть файли, які ви вказали в полі "Назва файлу" (наприклад, макети у форматі PDF, JPG, PNG або DOCX).</li>
-                                        <li>Також знайдіть і виберіть збережений PNG-файл замовлення ("Форма замовлення №XXXXXX.png") з папки, де він був збережений.</li>
-                                        <li>Після прикріплення всіх файлів натисніть "Надіслати".</li>
-                                    </ul>
-                                    Якщо Gmail не відкривається, вручну надішліть лист на printmediapro@gmail.com, прикріпивши всі необхідні файли.
-                                </li>
+                                <li><b>Надіслати на сервер</b>: Натисніть, щоб автоматично надіслати замовлення на сервер. Форма буде згенерована у вигляді PNG-зображення і відправлена разом із файлами, які ви вибрали в полі "Назва файлу". Ви отримаєте сповіщення "Замовлення успішно надіслано на сервер!" після успішної відправки.</li>
                                 <li><b>Інструкції</b>: Натисніть, щоб відкрити це вікно з інструкціями.</li>
                             </ul>
 
@@ -1382,7 +1399,6 @@
                                 <li>Перевірте дані перед друком або надсиланням.</li>
                                 <li>Якщо ви помилилися у виборі, видаліть елемент, натиснувши "Видалити" — не потрібно перезавантажувати сторінку.</li>
                                 <li>На мобільних пристроях форма займає всю ширину екрана. Прокручуйте форму, щоб побачити всі поля та кнопки.</li>
-                                <li>Переконайтеся, що ви прикріпили всі необхідні файли перед надсиланням листа, інакше одержувач не зможе обробити замовлення.</li>
                             </ul>
 
                             <p>Тепер ви готові використовувати форму без помилок!</p>
@@ -1393,7 +1409,7 @@
                 instructionWindow.document.close();
             } catch (error) {
                 console.error('Instruction error:', error);
-                alert('Не вдалося відкрити інструкції.');
+                alert('Не вдалося відкрити інструкції: ' + error.message);
             }
         }
     </script>
