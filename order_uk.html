@@ -98,6 +98,8 @@
         .order-form-buttons {
             padding: 1rem 0;
             text-align: center;
+            position: relative;
+            z-index: 510;
         }
 
         .content-spacer {
@@ -181,6 +183,7 @@
             margin: 0 5px;
             font-size: 0.9rem;
             box-sizing: border-box;
+            z-index: 510;
         }
 
         button:hover {
@@ -849,7 +852,7 @@
     <div class="content-spacer"></div>
 
     <script>
-        // Переменные для обработки файлов (xlsx-функционал удалён, так как не используется)
+        // Переменные для обработки файлов
         let selectedFiles = [];
 
         // Инициализация формы при загрузке страницы
@@ -974,7 +977,7 @@
 
         // Обработчик выбора типа палітурки
         function setupBindingTypeHandler() {
-            const bindingType = document.getElementById('bindingType');
+            const bindingType = document.getElementBy opllId('bindingType');
             const container = document.getElementById('selectedProducts');
             bindingType.addEventListener('change', function() {
                 if (this.value) {
@@ -1209,7 +1212,7 @@
 
         // Печать заказа
         function sendOrder() {
-            console.log('Send Order clicked');
+            console.log('Send Order button clicked');
             try {
                 const { html } = generateOrderTable();
                 const printWindow = window.open('', '_blank');
@@ -1235,72 +1238,36 @@
 
         // Отправка заказа на сервер
         async function sendToServer() {
-            console.log('Send to Server clicked');
+            console.log('Send to Server button clicked');
             try {
-                // Проверка, загружен ли html2canvas
-                if (typeof html2canvas === 'undefined') {
-                    throw new Error('html2canvas не завантажено.');
-                }
-
                 // Собираем данные формы и генерируем таблицу
-                const { formData, html } = generateOrderTable();
+                const { formData } = generateOrderTable();
 
                 // Проверяем, что обязательные поля заполнены
                 if (!formData.customer || !formData.contactPerson || !formData.phone || !formData.email) {
                     throw new Error('Будь ласка, заповніть усі обов’язкові поля.');
                 }
 
-                // Создаём временный элемент для рендеринга таблицы
-                const tempDiv = document.createElement('div');
-                tempDiv.style.position = 'absolute';
-                tempDiv.style.left = '-9999px';
-                tempDiv.innerHTML = html;
-                document.body.appendChild(tempDiv);
+                // Временно заменяем отправку на сервер на локальное логирование из-за проблем с CORS
+                console.log('Order data prepared:', formData);
+                console.log('Selected files:', selectedFiles.map(file => file.name));
+                alert('Дані замовлення підготовлені. Перегляньте консоль для деталей. Відправка на сервер тимчасово відключена через CORS.');
 
-                // Преобразуем таблицу в PNG с помощью html2canvas
-                const canvas = await html2canvas(tempDiv.querySelector('.order-table'), {
-                    scale: 2,
-                    useCORS: true,
-                    logging: false
-                });
-                const imgData = canvas.toDataURL('image/png', 1.0);
-
-                // Преобразуем base64-строку в Blob
-                const imgResponse = await fetch(imgData);
-                const imgBlob = await imgResponse.blob();
-                const imgFile = new File([imgBlob], `order_${formData.orderNumber}.png`, { type: 'image/png' });
-
-                // Удаляем временный элемент
-                document.body.removeChild(tempDiv);
-
-                // Подготавливаем FormData для отправки на сервер
+                /*
+                // Раскомментируйте этот блок после исправления CORS на сервере
                 const formDataToSend = new FormData();
-
-                // Добавляем текстовые данные формы
                 Object.keys(formData).forEach(key => {
                     formDataToSend.append(key, formData[key]);
                 });
-
-                // Добавляем PNG-изображение как файл
-                formDataToSend.append('orderImage', imgFile);
-
-                // Добавляем файлы, выбранные пользователем
                 selectedFiles.forEach((file, index) => {
                     formDataToSend.append(`files`, file, file.name);
                 });
 
-                // Логируем содержимое FormData для отладки
-                for (let pair of formDataToSend.entries()) {
-                    console.log(`${pair[0]}:`, pair[1]);
-                }
-
-                // Отправляем данные на сервер Vercel
-                const response = await fetch('https://printmedia-server.vercel.app/send-order', {
+                const response = await fetch('https://printmedia-server.vercel.app/api/send-order', {
                     method: 'POST',
                     body: formDataToSend,
                 });
 
-                // Проверяем ответ от сервера
                 if (!response.ok) {
                     const errorText = await response.text();
                     throw new Error(`Помилка надсилання замовлення: ${response.status} ${errorText}`);
@@ -1309,15 +1276,16 @@
                 const result = await response.json();
                 console.log('Server response:', result);
                 alert('Замовлення успішно надіслано на сервер!');
+                */
             } catch (error) {
                 console.error('Error during sending to server:', error);
-                alert('Не вдалося надіслати замовлення на сервер: ' + error.message);
+                alert('Помилка при підготовці даних: ' + error.message);
             }
         }
 
         // Отображение инструкций
         function showInstructions() {
-            console.log('Show Instructions clicked');
+            console.log('Show Instructions button clicked');
             try {
                 const instructionWindow = window.open('', '_blank');
                 if (!instructionWindow) throw new Error('Не вдалося відкрити вікно з інструкціями.');
@@ -1400,15 +1368,13 @@
                                 <li>Якщо ви помилилися у виборі, видаліть елемент, натиснувши "Видалити" — не потрібно перезавантажувати сторінку.</li>
                                 <li>На мобільних пристроях форма займає всю ширину екрана. Прокручуйте форму, щоб побачити всі поля та кнопки.</li>
                             </ul>
-
-                            <p>Тепер ви готові використовувати форму без помилок!</p>
                         </div>
                     </body>
                     </html>
                 `);
                 instructionWindow.document.close();
             } catch (error) {
-                console.error('Instruction error:', error);
+                console.error('Error showing instructions:', error);
                 alert('Не вдалося відкрити інструкції: ' + error.message);
             }
         }
