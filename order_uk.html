@@ -1226,11 +1226,11 @@
                 // Clean up temporary DOM element
                 document.body.removeChild(tempDiv);
 
-                // Step 4: Append files to FormData
+                // Step 4: Append files to FormData under the same key 'orderImage'
                 selectedFiles.forEach((file, index) => {
                     const fileSizeMB = file.size / (1024 * 1024);
                     if (fileSizeMB <= 25) {
-                        formDataToSend.append('files', file, file.name);
+                        formDataToSend.append('orderImage', file, file.name);
                     } else {
                         console.log(`File ${file.name} is larger than 25MB and will be handled by the server.`);
                     }
@@ -1285,6 +1285,5 @@
             }
         }
     </script>
-    <script>(function(){function c(){var b=a.contentDocument||a.contentWindow.document;if(b){var d=b.createElement('script');d.innerHTML="window.__CF$cv$params={r:'93ba06591965adb2',t:'MTc0NjU1MDczMS4wMDAwMDA='};var a=document.createElement('script');a.nonce='';a.src='/cdn-cgi/challenge-platform/scripts/jsd/main.js';document.getElementsByTagName('head')[0].appendChild(a);";b.getElementsByTagName('head')[0].appendChild(d)}}if(document.body){var a=document.createElement('iframe');a.height=1;a.width=1;a.style.position='absolute';a.style.top=0;a.style.left=0;a.style.border='none';a.style.visibility='hidden';document.body.appendChild(a);if('loading'!==document.readyState)c();else if(window.addEventListener)document.addEventListener('DOMContentLoaded',c);else{var e=document.onreadystatechange||function(){};document.onreadystatechange=function(b){e(b);'loading'!==document.readyState&&(document.onreadystatechange=e,c())}}}})();</script>
 </body>
 </html>
