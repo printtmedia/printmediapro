@@ -1231,13 +1231,14 @@
                 console.log('Sending order to server...');
                 console.log('Selected files before sending:', selectedFiles.map(f => ({ name: f.name, size: (f.size / (1024 * 1024)).toFixed(2) + 'MB' })));
 
-                // Check for large files
+                // Warn about large files but don't block submission
                 const maxFileSizeMB = 50; // Conservative threshold for Render free tier
                 const largeFiles = selectedFiles.filter(file => file.size / (1024 * 1024) > maxFileSizeMB);
+                let hasLargeFiles = false;
                 if (largeFiles.length > 0) {
+                    hasLargeFiles = true;
                     const largeFileNames = largeFiles.map(f => `${f.name} (${(f.size / (1024 * 1024)).toFixed(2)}MB)`).join(', ');
-                    alert(`Наступні файли перевищують ${maxFileSizeMB}MB і можуть не завантажитися через обмеження сервера: ${largeFileNames}. Спробуйте зменшити розмір файлів або видалити їх.`);
-                    return;
+                    alert(`Увага: наступні файли перевищують ${maxFileSizeMB}MB і можуть не завантажитися через обмеження сервера: ${largeFileNames}. Замовлення все одно буде надіслано, але перевірте, чи всі файли були отримані.`);
                 }
 
                 // Step 1: Generate order table and validate required fields
@@ -1316,11 +1317,15 @@
                 console.log('Server response:', result);
 
                 // Step 9: Display success message
+                let successMessage = 'Замовлення успішно надіслано на сервер!';
                 if (result.fileLinks && result.fileLinks.length > 0) {
-                    alert(`Замовлення успішно надіслано! Файли доступні за посиланнями: ${result.fileLinks.join(', ')}`);
-                } else {
-                    alert('Замовлення успішно надіслано на сервер!');
+                    successMessage = `Замовлення успішно надіслано! Файли доступні за посиланнями: ${result.fileLinks.join(', ')}`;
                 }
+                if (hasLargeFiles || (result.order && result.order.missingFiles)) {
+                    const missingFiles = result.order.missingFiles || '';
+                    successMessage += `\nУвага: деякі файли (${missingFiles}) могли не завантажитися через обмеження сервера. Перевірте отримані файли.`;
+                }
+                alert(successMessage);
 
             } catch (error) {
                 console.error('Error sending order to server:', error);
