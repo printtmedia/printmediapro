@@ -900,8 +900,9 @@
             const fileInput = document.getElementById('fileUpload');
             const fileList = document.getElementById('fileList');
 
-            fileInput.addEventListener('change', function() {
-                const newFiles = Array.from(this.files);
+            fileInput.addEventListener('change', function(e) {
+                const newFiles = Array.from(e.target.files);
+                console.log('Selected files:', newFiles.map(f => f.name)); // Додаємо лог для відладки
                 newFiles.forEach(file => {
                     if (!selectedFiles.some(existingFile => existingFile.name === file.name)) {
                         selectedFiles.push(file);
@@ -1189,6 +1190,7 @@
         async function sendOrderToServer() {
             try {
                 console.log('Sending order to server...');
+                console.log('Selected files before sending:', selectedFiles.map(f => f.name)); // Додаємо лог для відладки
 
                 // Step 1: Generate order table and validate required fields
                 const { formData, html } = generateOrderTable();
@@ -1229,6 +1231,7 @@
                 // Step 4: Append files to FormData under the same key 'orderImage'
                 selectedFiles.forEach((file, index) => {
                     const fileSizeMB = file.size / (1024 * 1024);
+                    console.log(`Appending file: ${file.name}, Size: ${fileSizeMB.toFixed(2)}MB`); // Додаємо лог для відладки
                     if (fileSizeMB <= 25) {
                         formDataToSend.append('orderImage', file, file.name);
                     } else {
