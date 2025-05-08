@@ -37,45 +37,6 @@
         }
         return gk_fileData[filename] || "";
         }
-        </script><script type="text/javascript">
-        var gk_isXlsx = false;
-        var gk_xlsxFileLookup = {};
-        var gk_fileData = {};
-        function filledCell(cell) {
-          return cell !== '' && cell != null;
-        }
-        function loadFileData(filename) {
-        if (gk_isXlsx && gk_xlsxFileLookup[filename]) {
-            try {
-                var workbook = XLSX.read(gk_fileData[filename], { type: 'base64' });
-                var firstSheetName = workbook.SheetNames[0];
-                var worksheet = workbook.Sheets[firstSheetName];
-
-                // Convert sheet to JSON to filter blank rows
-                var jsonData = XLSX.utils.sheet_to_json(worksheet, { header: 1, blankrows: false, defval: '' });
-                // Filter out blank rows (rows where all cells are empty, null, or undefined)
-                var filteredData = jsonData.filter(row => row.some(filledCell));
-
-                // Heuristic to find the header row by ignoring rows with fewer filled cells than the next row
-                var headerRowIndex = filteredData.findIndex((row, index) =>
-                  row.filter(filledCell).length >= filteredData[index + 1]?.filter(filledCell).length
-                );
-                // Fallback
-                if (headerRowIndex === -1 || headerRowIndex > 25) {
-                  headerRowIndex = 0;
-                }
-
-                // Convert filtered JSON back to CSV
-                var csv = XLSX.utils.aoa_to_sheet(filteredData.slice(headerRowIndex)); // Create a new sheet from filtered array of arrays
-                csv = XLSX.utils.sheet_to_csv(csv, { header: 1 });
-                return csv;
-            } catch (e) {
-                console.error(e);
-                return "";
-            }
-        }
-        return gk_fileData[filename] || "";
-        }
         </script><!DOCTYPE html>
 <html lang="uk">
 <head>
@@ -815,14 +776,14 @@
                 <div id="selectedPostPrint" class="selected-items"></div>
             </div>
 
-            <div id="eyeletsFields" style="display: none; margin-top: 5px;">
+            <div id="eyeletsFields" style="display: none; margin-top: 5px; grid-column: 2 / 3;">
                 <label for="eyeletsQuantity">Кількість люверсів:</label>
                 <input type="number" id="eyeletsQuantity" name="eyelets_quantity" min="1" placeholder="Введіть кількість">
                 <label for="eyeletsDistance">Відстань між люверсами (мм):</label>
                 <input type="number" id="eyeletsDistance" name="eyelets_distance" min="1" placeholder="Введіть відстань">
             </div>
 
-            <div id="pocketsFields" style="display: none; margin-top: 5px;">
+            <div id="pocketsFields" style="display: none; margin-top: 5px; grid-column: 2 / 3;">
                 <label for="pocketSize">Розмір кишені (мм):</label>
                 <input type="text" id="pocketSize" name="pocket_size" placeholder="Напр., 100x50">
                 <label for="noodleColor">Колір нитки для кишені:</label>
@@ -1003,12 +964,15 @@
         function setupBindingTypeHandler() {
             const bindingType = document.getElementById('bindingType');
             const container = document.getElementById('selectedProducts');
+
             bindingType.addEventListener('change', function() {
-                if (this.value) {
+                const value = this.value;
+                if (value) {
                     const productName = document.getElementById('productName').value === 'magazine' ? 'Журнал' : 'Книга';
-                    const bindingText = this.options[this.selectedIndex].text;
-                    addItem(container, `${productName} (${bindingText})`, 'removeProduct', `${productName} (${bindingText})`);
-                    this.value = '';
+                    const bindingText = bindingType.options[bindingType.selectedIndex].text;
+                    const identifier = `${productName} (${bindingText})`;
+                    addItem(container, identifier, 'removeProduct', identifier);
+                    bindingType.value = '';
                 }
             });
         }
@@ -1017,15 +981,19 @@
             const calendarType = document.getElementById('calendarType');
             const pageCount = document.getElementById('pageCount');
             const container = document.getElementById('selectedProducts');
-            calendarType.addEventListener('change', function() {
-                if (this.value) {
-                    const calendarText = this.options[this.selectedIndex].text;
-                    const pages = pageCount.value ? `, ${pageCount.value} сторінок` : '';
-                    addItem(container, `Календар (${calendarText}${pages})`, 'removeProduct', `Календар (${calendarText}${pages})`);
-                    this.value = '';
-                    pageCount.value = '';
+
+            calendarType.addEventListener('change', updateCalendarType);
+            pageCount.addEventListener('input', updateCalendarType);
+
+            function updateCalendarType() {
+                const calendarTypeValue = calendarType.value;
+                const pageCountValue = pageCount.value || '';
+                if (calendarTypeValue) {
+                    const calendarText = calendarType.options[calendarType.selectedIndex].text;
+                    const identifier = `Календар (${calendarText}${pageCountValue ? ', ' + pageCountValue + ' сторінок' : ''})`;
+                    addItem(container, identifier, 'removeProduct', identifier);
                 }
-            });
+            }
         }
 
         function handleFormatChange(value, container) {
@@ -1095,28 +1063,29 @@
             pocketsFields.style.display = value === 'pockets' ? 'block' : 'none';
             customPostPrint.style.display = value === 'other' ? 'block' : 'none';
 
-            if (value === 'pockets') {
-                document.getElementById('noodleColor').addEventListener('change', function handler() {
-                    const customNoodleColor = document.getElementById('customNoodleColor');
+            if (value === 'eyelets') {
+                const eyeletsQuantity = document.getElementById('eyeletsQuantity');
+                const eyeletsDistance = document.getElementById('eyeletsDistance');
+
+                updateEyelets();
+
+                eyeletsQuantity.addEventListener('input', updateEyelets);
+                eyeletsDistance.addEventListener('input', updateEyelets);
+            } else if (value === 'pockets') {
+                const pocketSize = document.getElementById('pocketSize');
+                const noodleColor = document.getElementById('noodleColor');
+                const customNoodleColor = document.getElementById('customNoodleColor');
+
+                updatePockets();
+
+                noodleColor.addEventListener('change', function() {
                     customNoodleColor.style.display = this.value === 'custom' ? 'block' : 'none';
-                    if (this.value === 'custom') {
-                        customNoodleColor.addEventListener('blur', function subHandler() {
-                            if (this.value) {
-                                const pocketSize = document.getElementById('pocketSize').value;
-                                const text = `Кишені (Розмір: ${pocketSize || 'не вказано'} мм, Колір нитки: ${this.value})`;
-                                addItem(container, text, 'removePostPrint', text);
-                                this.value = '';
-                            }
-                            this.removeEventListener('blur', subHandler);
-                        });
-                    } else if (this.value) {
-                        const pocketSize = document.getElementById('pocketSize').value;
-                        const text = `Кишені (Розмір: ${pocketSize || 'не вказано'} мм, Колір нитки: ${this.options[this.selectedIndex].text})`;
-                        addItem(container, text, 'removePostPrint', text);
-                        this.value = '';
-                    }
-                    this.removeEventListener('change', handler);
+                    updatePockets();
                 });
+
+                pocketSize.addEventListener('input', updatePockets);
+                noodleColor.addEventListener('change', updatePockets);
+                customNoodleColor.addEventListener('input', updatePockets);
             } else if (value === 'other') {
                 customPostPrint.addEventListener('blur', function handler() {
                     if (this.value) {
@@ -1129,6 +1098,22 @@
                 const text = document.getElementById('postPrintSelect').options[document.getElementById('postPrintSelect').selectedIndex].text;
                 addItem(container, text, 'removePostPrint', text);
             }
+
+            function updateEyelets() {
+                const quantity = document.getElementById('eyeletsQuantity').value || 'не вказано';
+                const distance = document.getElementById('eyeletsDistance').value || 'не вказано';
+                const identifier = `Люверси (Кількість: ${quantity}, Відстань: ${distance} мм)`;
+                addItem(container, identifier, 'removePostPrint', identifier);
+            }
+
+            function updatePockets() {
+                const pocketSize = document.getElementById('pocketSize').value || 'не вказано';
+                const noodleColor = document.getElementById('noodleColor');
+                const customNoodleColor = document.getElementById('customNoodleColor').value;
+                const selectedColor = noodleColor.value === 'custom' ? customNoodleColor : noodleColor.options[noodleColor.selectedIndex]?.text || 'не вказано';
+                const identifier = `Кишені (Розмір: ${pocketSize} мм, Колір нитки: ${selectedColor})`;
+                addItem(container, identifier, 'removePostPrint', identifier);
+            }
         }
 
         function addItem(container, text, removeFunctionName, identifier) {
@@ -1138,13 +1123,62 @@
             container.appendChild(itemDiv);
         }
 
-        window.removeProduct = function(button) { button.parentElement.remove(); };
-        window.removePrintSides = function(button) { button.parentElement.remove(); };
-        window.removeFormat = function(button) { button.parentElement.remove(); };
-        window.removePrintType = function(button) { button.parentElement.remove(); };
-        window.removeMaterial = function(button) { button.parentElement.remove(); };
-        window.removePaperWeight = function(button) { button.parentElement.remove(); };
-        window.removePostPrint = function(button) { button.parentElement.remove(); };
+        window.removeProduct = function(button, identifier) {
+            const items = document.querySelectorAll('#selectedProducts .selected-item');
+            items.forEach(item => {
+                if (item.querySelector('span').textContent === identifier) {
+                    item.remove();
+                }
+            });
+        };
+        window.removePrintSides = function(button, identifier) {
+            const items = document.querySelectorAll('#selectedPrintSides .selected-item');
+            items.forEach(item => {
+                if (item.querySelector('span').textContent === identifier) {
+                    item.remove();
+                }
+            });
+        };
+        window.removeFormat = function(button, identifier) {
+            const items = document.querySelectorAll('#selectedFormats .selected-item');
+            items.forEach(item => {
+                if (item.querySelector('span').textContent === identifier) {
+                    item.remove();
+                }
+            });
+        };
+        window.removePrintType = function(button, identifier) {
+            const items = document.querySelectorAll('#selectedPrintTypes .selected-item');
+            items.forEach(item => {
+                if (item.querySelector('span').textContent === identifier) {
+                    item.remove();
+                }
+            });
+        };
+        window.removeMaterial = function(button, identifier) {
+            const items = document.querySelectorAll('#selectedMaterials .selected-item');
+            items.forEach(item => {
+                if (item.querySelector('span').textContent === identifier) {
+                    item.remove();
+                }
+            });
+        };
+        window.removePaperWeight = function(button, identifier) {
+            const items = document.querySelectorAll('#selectedPaperWeights .selected-item');
+            items.forEach(item => {
+                if (item.querySelector('span').textContent === identifier) {
+                    item.remove();
+                }
+            });
+        };
+        window.removePostPrint = function(button, identifier) {
+            const items = document.querySelectorAll('#selectedPostPrint .selected-item');
+            items.forEach(item => {
+                if (item.querySelector('span').textContent === identifier) {
+                    item.remove();
+                }
+            });
+        };
 
         function generateOrderTable() {
             const formData = {
@@ -1167,6 +1201,8 @@
                 eyeletsQuantity: document.getElementById('eyeletsQuantity').value,
                 eyeletsDistance: document.getElementById('eyeletsDistance').value,
                 pocketSize: document.getElementById('pocketSize').value,
+                noodleColor: document.getElementById('noodleColor').options[document.getElementById('noodleColor').selectedIndex]?.text || '',
+                customNoodleColor: document.getElementById('customNoodleColor').value,
                 notes: document.querySelector('textarea[name="notes"]').value || 'Немає'
             };
 
@@ -1196,6 +1232,7 @@
                             ${formData.eyeletsQuantity ? `<tr><td style="border: 1px solid #E5E7EB; padding: 8px;">Кількість люверсів</td><td style="border: 1px solid #E5E7EB; padding: 8px;">${formData.eyeletsQuantity}</td></tr>` : ''}
                             ${formData.eyeletsDistance ? `<tr><td style="border: 1px solid #E5E7EB; padding: 8px;">Відстань між люверсами</td><td style="border: 1px solid #E5E7EB; padding: 8px;">${formData.eyeletsDistance} мм</td></tr>` : ''}
                             ${formData.pocketSize ? `<tr><td style="border: 1px solid #E5E7EB; padding: 8px;">Розмір кишені</td><td style="border: 1px solid #E5E7EB; padding: 8px;">${formData.pocketSize} мм</td></tr>` : ''}
+                            ${formData.noodleColor || formData.customNoodleColor ? `<tr><td style="border: 1px solid #E5E7EB; padding: 8px;">Колір нитки для кишені</td><td style="border: 1px solid #E5E7EB; padding: 8px;">${formData.customNoodleColor || formData.noodleColor}</td></tr>` : ''}
                             <tr><td style="border: 1px solid #E5E7EB; padding: 8px;">Примітки</td><td style="border: 1px solid #E5E7EB; padding: 8px;">${formData.notes}</td></tr>
                         </table>
                     </div>
@@ -1341,5 +1378,5 @@
             }
         }
     </script>
-<script>(function(){function c(){var b=a.contentDocument||a.contentWindow.document;if(b){var d=b.createElement('script');d.innerHTML="window.__CF$cv$params={r:'93c97151cdb6136d',t:'MTc0NjcxMjM5OS4wMDAwMDA='};var a=document.createElement('script');a.nonce='';a.src='/cdn-cgi/challenge-platform/scripts/jsd/main.js';document.getElementsByTagName('head')[0].appendChild(a);";b.getElementsByTagName('head')[0].appendChild(d)}}if(document.body){var a=document.createElement('iframe');a.height=1;a.width=1;a.style.position='absolute';a.style.top=0;a.style.left=0;a.style.border='none';a.style.visibility='hidden';document.body.appendChild(a);if('loading'!==document.readyState)c();else if(window.addEventListener)document.addEventListener('DOMContentLoaded',c);else{var e=document.onreadystatechange||function(){};document.onreadystatechange=function(b){e(b);'loading'!==document.readyState&&(document.onreadystatechange=e,c())}}}})();</script></body>
+</body>
 </html>
