@@ -1152,17 +1152,17 @@
             return {
                 formData: formData,
                 html: `
-                    <div class="order-table" style="font-family: Arial, sans-serif; padding: 20px; background: white; width: 800px; position: relative;">
+                    <div class="order-table" style="font-family: Arial, sans-serif; padding: 20px; background: white; width: 800px; height: 1120px; position: relative; box-sizing: border-box;">
                         <img src="https://printtmedia.github.io/printmediapro/Logo%20printmediapro.png" alt="Логотип PrintMediaPro" style="position: absolute; top: 20px; left: 20px; width: 150px; height: auto;">
-                        <h2 style="text-align: center; color: #4F46E5; margin-top: 80px;">ФОРМА ЗАМОВЛЕННЯ №${formData.orderNumber}</h2>
-                        <table style="width: 100%; border-collapse: collapse; margin-top: 20px;">
-                            <tr><th style="border: 1px solid #E5E7EB; padding: 8px; background-color: #F9FAFB;">Параметр</th><th style="border: 1px solid #E5E7EB; padding: 8px; background-color: #F9FAFB;">Значення</th></tr>
+                        <h2 style="text-align: center; color: #4F46E5; margin-top: 80px; font-size: 24pt;">ФОРМА ЗАМОВЛЕННЯ №${formData.orderNumber}</h2>
+                        <table style="width: 100%; border-collapse: collapse; margin-top: 20px; font-size: 12pt;">
+                            <tr><th style="border: 1px solid #E5E7EB; padding: 8px; background-color: #F9FAFB; font-weight: bold;">Параметр</th><th style="border: 1px solid #E5E7EB; padding: 8px; background-color: #F9FAFB; font-weight: bold;">Значення</th></tr>
                             <tr><td style="border: 1px solid #E5E7EB; padding: 8px;">Дата замовлення</td><td style="border: 1px solid #E5E7EB; padding: 8px;">${formData.orderDate}</td></tr>
                             <tr><td style="border: 1px solid #E5E7EB; padding: 8px;">Замовник</td><td style="border: 1px solid #E5E7EB; padding: 8px;">${formData.customer}</td></tr>
                             <tr><td style="border: 1px solid #E5E7EB; padding: 8px;">Контактна особа</td><td style="border: 1px solid #E5E7EB; padding: 8px;">${formData.contactPerson}</td></tr>
                             <tr><td style="border: 1px solid #E5E7EB; padding: 8px;">Телефон</td><td style="border: 1px solid #E5E7EB; padding: 8px;">${formData.phone}</td></tr>
                             <tr><td style="border: 1px solid #E5E7EB; padding: 8px;">Email</td><td style="border: 1px solid #E5E7EB; padding: 8px;">${formData.email}</td></tr>
-                            <tr><td style="border: 1px solid #E5E7EB; padding: 8px;">Назва файлу</td><td style="border: 1px solid #E5E7EB; padding: 8px;">${formData.filename}</td></tr>
+                            <tr><td style="border: 1px solid #E5E7EB; padding: 8px;">Назва файлу</td><td style="border: 1px solid #E5E7EB; padding: 8px; word-break: break-word;">${formData.filename}</td></tr>
                             <tr><td style="border: 1px solid #E5E7EB; padding: 8px;">Назва продукту</td><td style="border: 1px solid #E5E7EB; padding: 8px;">${formData.product}</td></tr>
                             <tr><td style="border: 1px solid #E5E7EB; padding: 8px;">Сторони друку</td><td style="border: 1px solid #E5E7EB; padding: 8px;">${formData.printSides}</td></tr>
                             <tr><td style="border: 1px solid #E5E7EB; padding: 8px;">Кількість</td><td style="border: 1px solid #E5E7EB; padding: 8px;">${formData.quantity}</td></tr>
@@ -1176,7 +1176,7 @@
                             ${formData.eyeletsDistance ? `<tr><td style="border: 1px solid #E5E7EB; padding: 8px;">Відстань між люверсами</td><td style="border: 1px solid #E5E7EB; padding: 8px;">${formData.eyeletsDistance} мм</td></tr>` : ''}
                             ${formData.pocketSize ? `<tr><td style="border: 1px solid #E5E7EB; padding: 8px;">Розмір кишені</td><td style="border: 1px solid #E5E7EB; padding: 8px;">${formData.pocketSize} мм</td></tr>` : ''}
                             ${formData.noodleColor || formData.customNoodleColor ? `<tr><td style="border: 1px solid #E5E7EB; padding: 8px;">Колір нитки для кишені</td><td style="border: 1px solid #E5E7EB; padding: 8px;">${formData.customNoodleColor || formData.noodleColor}</td></tr>` : ''}
-                            <tr><td style="border: 1px solid #E5E7EB; padding: 8px;">Примітки</td><td style="border: 1px solid #E5E7EB; padding: 8px;">${formData.notes}</td></tr>
+                            <tr><td style="border: 1px solid #E5E7EB; padding: 8px;">Примітки</td><td style="border: 1px solid #E5E7EB; padding: 8px; word-break: break-word;">${formData.notes}</td></tr>
                         </table>
                     </div>
                 `
@@ -1211,8 +1211,7 @@
                 console.log('Sending order to server...');
                 console.log('Selected files before sending:', selectedFiles.map(f => ({ name: f.name, size: (f.size / (1024 * 1024)).toFixed(2) + 'MB' })));
 
-                // Warn about large files but don't block submission
-                const maxFileSizeMB = 50; // Conservative threshold for Render free tier
+                const maxFileSizeMB = 50;
                 const largeFiles = selectedFiles.filter(file => file.size / (1024 * 1024) > maxFileSizeMB);
                 let hasLargeFiles = false;
                 if (largeFiles.length > 0) {
@@ -1221,27 +1220,27 @@
                     alert(`Увага: наступні файли перевищують ${maxFileSizeMB}MB і можуть не завантажитися через обмеження сервера: ${largeFileNames}. Замовлення все одно буде надіслано, але перевірте, чи всі файли були отримані.`);
                 }
 
-                // Step 1: Generate order table and validate required fields
                 const { formData, html } = generateOrderTable();
 
                 if (!formData.customer || !formData.contactPerson || !formData.phone || !formData.email) {
                     throw new Error('Будь ласка, заповніть усі обов’язкові поля.');
                 }
 
-                // Step 2: Prepare FormData with text fields
                 const formDataToSend = new FormData();
                 Object.keys(formData).forEach(key => {
                     formDataToSend.append(key, formData[key]);
                 });
 
-                // Step 3: Generate order image using html2canvas
                 const tempDiv = document.createElement('div');
                 tempDiv.innerHTML = html;
                 document.body.appendChild(tempDiv);
 
-                const canvas = await html2canvas(tempDiv, { scale: 2 });
+                const canvas = await html2canvas(tempDiv, {
+                    scale: 4,
+                    width: 800,
+                    height: 1120
+                });
 
-                // Convert canvas to blob using a Promise
                 const blob = await new Promise((resolve, reject) => {
                     canvas.toBlob(blob => {
                         if (blob) {
@@ -1254,13 +1253,11 @@
 
                 formDataToSend.append('orderImage', blob, `order_${formData.orderNumber}.png`);
 
-                // Clean up temporary DOM element
                 document.body.removeChild(tempDiv);
 
-                // Step 4: Append files to FormData under the same key 'orderImage'
                 selectedFiles.forEach((file, index) => {
                     const fileSizeMB = file.size / (1024 * 1024);
-                    console.log(`Appending file: ${file.name}, Size: ${fileSizeMB.toFixed(2)}MB`); // Додаємо лог для відладки
+                    console.log(`Appending file: ${file.name}, Size: ${fileSizeMB.toFixed(2)}MB`);
                     if (fileSizeMB <= 25) {
                         formDataToSend.append('orderImage', file, file.name);
                     } else {
@@ -1268,16 +1265,13 @@
                     }
                 });
 
-                // Step 5: Append additional email for notification
                 formDataToSend.append('email', 'printtmedia27@gmail.com');
 
-                // Log FormData for debugging
                 console.log('FormData prepared for sending:');
                 for (let [key, value] of formDataToSend.entries()) {
                     console.log(`${key}:`, value);
                 }
 
-                // Step 6: Send the request with fetch
                 const response = await fetch('https://printmediapro-server.onrender.com/api/send-order', {
                     method: 'POST',
                     body: formDataToSend,
@@ -1286,17 +1280,14 @@
                     }
                 });
 
-                // Step 7: Check response status
                 if (!response.ok) {
                     const errorText = await response.text();
                     throw new Error(`Помилка сервера: ${response.status} - ${errorText}`);
                 }
 
-                // Step 8: Parse and handle the response
                 const result = await response.json();
                 console.log('Server response:', result);
 
-                // Step 9: Display success message
                 let successMessage = 'Замовлення успішно надіслано на сервер!';
                 if (result.fileLinks && result.fileLinks.length > 0) {
                     successMessage = `Замовлення успішно надіслано! Файли доступні за посиланнями: ${result.fileLinks.join(', ')}`;
@@ -1310,7 +1301,6 @@
             } catch (error) {
                 console.error('Error sending order to server:', error);
 
-                // Step 10: Enhanced error handling
                 if (error.message.includes('Failed to fetch')) {
                     alert('Помилка при надсиланні замовлення: Не вдалося підключитися до сервера. Перевірте підключення до мережі або спробуйте пізніше.');
                 } else if (error.message.includes('Помилка сервера')) {
