@@ -582,7 +582,7 @@
             <div class="form-group">
                 <label>Назва файлу:</label>
                 <div class="file-group">
-                    <input type="file" id="fileUpload" accept=".pdf,.jpg,.png,.docx" multiple>
+                    <input type="file" id="fileUpload" multiple>
                 </div>
                 <div id="fileList" class="selected-items"></div>
             </div>
@@ -843,7 +843,7 @@
                 }
 
                 // Convert filtered JSON back to CSV
-                var csv = XLSX.utils.aoa_to_sheet(filteredData.slice(headerRowIndex)); // Create a new sheet from filtered array of arrays
+                var csv = XLSX.utils.aoa_to_sheet(filteredData.slice(headerRowIndex));
                 csv = XLSX.utils.sheet_to_csv(csv, { header: 1 });
                 return csv;
             } catch (e) {
@@ -902,7 +902,7 @@
 
             fileInput.addEventListener('change', function(e) {
                 const newFiles = Array.from(e.target.files);
-                console.log('Selected files:', newFiles.map(f => ({ name: f.name, size: (f.size / (1024 * 1024)).toFixed(2) + 'MB' }))); // Log file names and sizes
+                console.log('Selected files:', newFiles.map(f => ({ name: f.name, size: (f.size / (1024 * 1024)).toFixed(2) + 'MB' })));
                 newFiles.forEach(file => {
                     if (!selectedFiles.some(existingFile => existingFile.name === file.name)) {
                         selectedFiles.push(file);
@@ -1124,6 +1124,15 @@
         window.removePostPrint = function(button) { button.parentElement.remove(); };
 
         function generateOrderTable() {
+            // Логирование для отладки
+            console.log('Generating order table, selectedFiles:', selectedFiles.map(f => ({ name: f.name, size: (f.size / (1024 * 1024)).toFixed(2) + 'MB' })));
+
+            // Проверка на наличие файлов
+            if (selectedFiles.length === 0) {
+                alert('Будь ласка, виберіть хоча б один файл перед генерацією замовлення.');
+                throw new Error('No files selected');
+            }
+
             const formData = {
                 orderNumber: document.getElementById('orderNumber').textContent,
                 orderDate: document.getElementById('orderDate').value,
@@ -1189,21 +1198,25 @@
         }
 
         function sendOrder() {
-            const { html } = generateOrderTable();
-            const printWindow = window.open('', '_blank');
-            printWindow.document.write(`
-                <!DOCTYPE html>
-                <html>
-                <head><title>Друкувати замовлення</title></head>
-                <body>${html}</body>
-                </html>
-            `);
-            printWindow.document.close();
-            printWindow.focus();
-            setTimeout(() => {
-                printWindow.print();
-                printWindow.close();
-            }, 500);
+            try {
+                const { html } = generateOrderTable();
+                const printWindow = window.open('', '_blank');
+                printWindow.document.write(`
+                    <!DOCTYPE html>
+                    <html>
+                    <head><title>Друкувати замовлення</title></head>
+                    <body>${html}</body>
+                    </html>
+                `);
+                printWindow.document.close();
+                printWindow.focus();
+                setTimeout(() => {
+                    printWindow.print();
+                    printWindow.close();
+                }, 500);
+            } catch (error) {
+                console.error('Error in sendOrder:', error);
+            }
         }
 
         async function sendOrderToServer() {
@@ -1248,10 +1261,10 @@
                         } else {
                             reject(new Error('Failed to convert canvas to blob'));
                         }
-                    }, 'image/png');
+                    }, 'image/jpeg', 0.8);
                 });
 
-                formDataToSend.append('orderImage', blob, `order_${formData.orderNumber}.png`);
+                formDataToSend.append('orderImage', blob, `order_${formData.orderNumber}.jpg`);
 
                 document.body.removeChild(tempDiv);
 
@@ -1305,6 +1318,8 @@
                     alert('Помилка при надсиланні замовлення: Не вдалося підключитися до сервера. Перевірте підключення до мережі або спробуйте пізніше.');
                 } else if (error.message.includes('Помилка сервера')) {
                     alert(`Помилка при надсиланні замовлення: ${error.message}`);
+                } else if (error.message.includes('No files selected')) {
+                    // Уже обработано в generateOrderTable
                 } else {
                     alert(`Помилка при надсиланні замовлення: ${error.message}`);
                 }
