@@ -964,15 +964,12 @@
         function setupBindingTypeHandler() {
             const bindingType = document.getElementById('bindingType');
             const container = document.getElementById('selectedProducts');
-
             bindingType.addEventListener('change', function() {
-                const value = this.value;
-                if (value) {
+                if (this.value) {
                     const productName = document.getElementById('productName').value === 'magazine' ? 'Журнал' : 'Книга';
-                    const bindingText = bindingType.options[bindingType.selectedIndex].text;
-                    const identifier = `${productName} (${bindingText})`;
-                    addItem(container, identifier, 'removeProduct', identifier);
-                    bindingType.value = '';
+                    const bindingText = this.options[this.selectedIndex].text;
+                    addItem(container, `${productName} (${bindingText})`, 'removeProduct', `${productName} (${bindingText})`);
+                    this.value = '';
                 }
             });
         }
@@ -981,19 +978,15 @@
             const calendarType = document.getElementById('calendarType');
             const pageCount = document.getElementById('pageCount');
             const container = document.getElementById('selectedProducts');
-
-            calendarType.addEventListener('change', updateCalendarType);
-            pageCount.addEventListener('input', updateCalendarType);
-
-            function updateCalendarType() {
-                const calendarTypeValue = calendarType.value;
-                const pageCountValue = pageCount.value || '';
-                if (calendarTypeValue) {
-                    const calendarText = calendarType.options[calendarType.selectedIndex].text;
-                    const identifier = `Календар (${calendarText}${pageCountValue ? ', ' + pageCountValue + ' сторінок' : ''})`;
-                    addItem(container, identifier, 'removeProduct', identifier);
+            calendarType.addEventListener('change', function() {
+                if (this.value) {
+                    const calendarText = this.options[this.selectedIndex].text;
+                    const pages = pageCount.value ? `, ${pageCount.value} сторінок` : '';
+                    addItem(container, `Календар (${calendarText}${pages})`, 'removeProduct', `Календар (${calendarText}${pages})`);
+                    this.value = '';
+                    pageCount.value = '';
                 }
-            }
+            });
         }
 
         function handleFormatChange(value, container) {
@@ -1066,26 +1059,20 @@
             if (value === 'eyelets') {
                 const eyeletsQuantity = document.getElementById('eyeletsQuantity');
                 const eyeletsDistance = document.getElementById('eyeletsDistance');
-
-                updateEyelets();
-
-                eyeletsQuantity.addEventListener('input', updateEyelets);
-                eyeletsDistance.addEventListener('input', updateEyelets);
+                eyeletsQuantity.addEventListener('blur', updateEyelets);
+                eyeletsDistance.addEventListener('blur', updateEyelets);
             } else if (value === 'pockets') {
                 const pocketSize = document.getElementById('pocketSize');
                 const noodleColor = document.getElementById('noodleColor');
                 const customNoodleColor = document.getElementById('customNoodleColor');
-
-                updatePockets();
-
+                
                 noodleColor.addEventListener('change', function() {
                     customNoodleColor.style.display = this.value === 'custom' ? 'block' : 'none';
-                    updatePockets();
                 });
 
-                pocketSize.addEventListener('input', updatePockets);
+                pocketSize.addEventListener('blur', updatePockets);
                 noodleColor.addEventListener('change', updatePockets);
-                customNoodleColor.addEventListener('input', updatePockets);
+                customNoodleColor.addEventListener('blur', updatePockets);
             } else if (value === 'other') {
                 customPostPrint.addEventListener('blur', function handler() {
                     if (this.value) {
@@ -1100,19 +1087,24 @@
             }
 
             function updateEyelets() {
-                const quantity = document.getElementById('eyeletsQuantity').value || 'не вказано';
-                const distance = document.getElementById('eyeletsDistance').value || 'не вказано';
-                const identifier = `Люверси (Кількість: ${quantity}, Відстань: ${distance} мм)`;
-                addItem(container, identifier, 'removePostPrint', identifier);
+                const quantity = document.getElementById('eyeletsQuantity').value;
+                const distance = document.getElementById('eyeletsDistance').value;
+                if (quantity || distance) {
+                    const text = `Люверси (Кількість: ${quantity || 'не вказано'}, Відстань: ${distance || 'не вказано'} мм)`;
+                    addItem(container, text, 'removePostPrint', text);
+                }
             }
 
             function updatePockets() {
-                const pocketSize = document.getElementById('pocketSize').value || 'не вказано';
+                const pocketSize = document.getElementById('pocketSize').value;
                 const noodleColor = document.getElementById('noodleColor');
                 const customNoodleColor = document.getElementById('customNoodleColor').value;
                 const selectedColor = noodleColor.value === 'custom' ? customNoodleColor : noodleColor.options[noodleColor.selectedIndex]?.text || 'не вказано';
-                const identifier = `Кишені (Розмір: ${pocketSize} мм, Колір нитки: ${selectedColor})`;
-                addItem(container, identifier, 'removePostPrint', identifier);
+                
+                if (pocketSize || noodleColor.value) {
+                    const text = `Кишені (Розмір: ${pocketSize || 'не вказано'} мм, Колір нитки: ${selectedColor})`;
+                    addItem(container, text, 'removePostPrint', text);
+                }
             }
         }
 
@@ -1123,62 +1115,13 @@
             container.appendChild(itemDiv);
         }
 
-        window.removeProduct = function(button, identifier) {
-            const items = document.querySelectorAll('#selectedProducts .selected-item');
-            items.forEach(item => {
-                if (item.querySelector('span').textContent === identifier) {
-                    item.remove();
-                }
-            });
-        };
-        window.removePrintSides = function(button, identifier) {
-            const items = document.querySelectorAll('#selectedPrintSides .selected-item');
-            items.forEach(item => {
-                if (item.querySelector('span').textContent === identifier) {
-                    item.remove();
-                }
-            });
-        };
-        window.removeFormat = function(button, identifier) {
-            const items = document.querySelectorAll('#selectedFormats .selected-item');
-            items.forEach(item => {
-                if (item.querySelector('span').textContent === identifier) {
-                    item.remove();
-                }
-            });
-        };
-        window.removePrintType = function(button, identifier) {
-            const items = document.querySelectorAll('#selectedPrintTypes .selected-item');
-            items.forEach(item => {
-                if (item.querySelector('span').textContent === identifier) {
-                    item.remove();
-                }
-            });
-        };
-        window.removeMaterial = function(button, identifier) {
-            const items = document.querySelectorAll('#selectedMaterials .selected-item');
-            items.forEach(item => {
-                if (item.querySelector('span').textContent === identifier) {
-                    item.remove();
-                }
-            });
-        };
-        window.removePaperWeight = function(button, identifier) {
-            const items = document.querySelectorAll('#selectedPaperWeights .selected-item');
-            items.forEach(item => {
-                if (item.querySelector('span').textContent === identifier) {
-                    item.remove();
-                }
-            });
-        };
-        window.removePostPrint = function(button, identifier) {
-            const items = document.querySelectorAll('#selectedPostPrint .selected-item');
-            items.forEach(item => {
-                if (item.querySelector('span').textContent === identifier) {
-                    item.remove();
-                }
-            });
-        };
+        window.removeProduct = function(button) { button.parentElement.remove(); };
+        window.removePrintSides = function(button) { button.parentElement.remove(); };
+        window.removeFormat = function(button) { button.parentElement.remove(); };
+        window.removePrintType = function(button) { button.parentElement.remove(); };
+        window.removeMaterial = function(button) { button.parentElement.remove(); };
+        window.removePaperWeight = function(button) { button.parentElement.remove(); };
+        window.removePostPrint = function(button) { button.parentElement.remove(); };
 
         function generateOrderTable() {
             const formData = {
