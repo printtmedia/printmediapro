@@ -1,72 +1,4 @@
-<script type="text/javascript">
-        var gk_isXlsx = false;
-        var gk_xlsxFileLookup = {};
-        var gk_fileData = {};
-        function filledCell(cell) {
-          return cell !== '' && cell != null;
-        }
-        function loadFileData(filename) {
-        if (gk_isXlsx && gk_xlsxFileLookup[filename]) {
-            try {
-                var workbook = XLSX.read(gk_fileData[filename], { type: 'base64' });
-                var firstSheetName = workbook.SheetNames[0];
-                var worksheet = workbook.Sheets[firstSheetName];
-
-                // Convert sheet to JSON to filter blank rows
-                var jsonData = XLSX.utils.sheet_to_json(worksheet, { header: 1, blankrows: false, defval: '' });
-                // Filter out blank rows (rows where all cells are empty, null, or undefined)
-                var filteredData = jsonData.filter(row => row.some(filledCell));
-
-                // Heuristic to find the header row by ignoring rows with fewer filled cells than the next row
-                var headerRowIndex = filteredData.findIndex((row, index) =>
-                  row.filter(filledCell).length >= filteredData[index + 1]?.filter(filledCell).length
-                );
-                // Fallback
-                if (headerRowIndex === -1 || headerRowIndex > 25) {
-                  headerRowIndex = 0;
-                }
-
-                // Convert filtered JSON back to CSV
-                var csv = XLSX.utils.aoa_to_sheet(filteredData.slice(headerRowIndex)); // Create a new sheet from filtered array of arrays
-                csv = XLSX.utils.sheet_to_csv(csv, { header: 1 });
-                return csv;
-            } catch (e) {
-                console.error(e);
-                return "";
-            }
-        }
-        return gk_fileData[filename] || "";
-        }
-        </script><script type="text/javascript">
-        var gk_isXlsx = false;
-        var gk_xlsxFileLookup = {};
-        var gk_fileData = {};
-        function loadFileData(filename) {
-        if (gk_isXlsx && gk_xlsxFileLookup[filename]) {
-            try {
-                var workbook = XLSX.read(gk_fileData[filename], { type: 'base64' });
-                var firstSheetName = workbook.SheetNames[0];
-                var worksheet = workbook.Sheets[firstSheetName];
-
-                // Convert sheet to JSON to filter blank rows
-                var jsonData = XLSX.utils.sheet_to_json(worksheet, { header: 1, blankrows: false, defval: '' });
-                // Filter out blank rows (rows where all cells are empty, null, or undefined)
-                var filteredData = jsonData.filter(row =>
-                    row.some(cell => cell !== '' && cell !== null && cell !== undefined)
-                );
-
-                // Convert filtered JSON back to CSV
-                var csv = XLSX.utils.aoa_to_sheet(filteredData); // Create a new sheet from filtered array of arrays
-                csv = XLSX.utils.sheet_to_csv(csv, { header: 1 });
-                return csv;
-            } catch (e) {
-                console.error(e);
-                return "";
-            }
-        }
-        return gk_fileData[filename] || "";
-        }
-        </script><!DOCTYPE html>
+<!DOCTYPE html>
 <html lang="uk">
 <head>
     <meta charset="UTF-8">
@@ -505,8 +437,12 @@
             animation: textPop 1s cubic-bezier(0.4, 0, 0.2, 1) forwards;
         }
 
-        /* Медиа-запросы */
+        /* === MOBILE FIXES START === */
         @media (max-width: 768px) {
+            .container {
+                padding: 0 1rem;
+            }
+
             .logo img {
                 height: 40px;
             }
@@ -533,6 +469,8 @@
 
             .menu-toggle {
                 display: block;
+                left: auto;
+                right: 1.5rem;
             }
 
             .dropdown-menu {
@@ -554,10 +492,12 @@
 
             header h1 {
                 font-size: 2.5rem;
+                line-height: 1.2;
             }
 
             header p {
                 font-size: 1.1rem;
+                padding: 0 0.5rem;
             }
 
             .requirements, .examples {
@@ -570,6 +510,11 @@
 
             .requirement-item {
                 padding: 1.5rem;
+            }
+
+            .requirement-item p, .requirement-item ul {
+                font-size: 0.95rem;
+                line-height: 1.7;
             }
 
             .requirement-item h3 {
@@ -587,11 +532,13 @@
             }
 
             .close {
-                top: -20px;
-                right: 0;
-                font-size: 1.5rem;
+                top: 15px;
+                right: 15px;
+                font-size: 2rem;
+                color: var(--white);
             }
         }
+        /* === MOBILE FIXES END === */
     </style>
 </head>
 <body>
@@ -625,12 +572,10 @@
         return gk_fileData[filename] || "";
         }
     </script>
-    <!-- Логотип -->
     <div class="logo">
         <img src="https://raw.githubusercontent.com/printtmedia/printmediapro/main/Logo%20printmediapro%20golovna.png" alt="PrintMediaPro Logo">
     </div>
 
-    <!-- Навигация -->
     <nav>
         <div class="container">
             <div class="menu-toggle">
@@ -654,7 +599,6 @@
         </div>
     </nav>
 
-    <!-- Хедер -->
     <header>
         <div class="container">
             <h1 class="animated-text">Вимоги до підготовки макетів наклейок</h1>
@@ -662,17 +606,15 @@
         </div>
     </header>
 
-    <!-- Волнообразный разделитель -->
     <div class="wave-divider"></div>
 
-    <!-- Секция требований -->
     <section class="requirements">
         <div class="container">
             <h2 class="animated-text">Основні вимоги до макетів наклейок</h2>
             <div class="requirements-list">
                 <div class="requirement-item">
                     <h3>Загальна інформація</h3>
-                    <p>Розмір холста для друку становить 320 мм. Якщо фактичний розмір наклейки перевищує цей розмір, витрата матеріалу буде більшою.</p>
+                    <p>Розмір холста для друку становить 320 мм в шерену. Якщо фактичний розмір наклейки перевищує цей розмір, витрата матеріалу буде більшою.</p>
                 </div>
                 <div class="requirement-item">
                     <h3>Розміри наклейки та допуски</h3>
@@ -686,7 +628,7 @@
                     <p>Текст, логотип, штрих-код та інші елементи повинні розташовуватися на відстані не менше 3-4 мм від краю різання.</p>
                 </div>
                 <div class="requirement-item">
-                    <h3>Плотерне різання та параметри обводки</h3>
+                    <h3>Плотерна порізка та параметри обводки</h3>
                     <ul>
                         <li>Колір контуру різання: PANTONE 212 CVC.</li>
                         <li>Обводка (абрис): накладається на зображення, товщина 0.1 мм.</li>
@@ -704,7 +646,6 @@
         </div>
     </section>
 
-    <!-- Секция с примерами -->
     <section class="examples">
         <div class="container">
             <h2 class="animated-text">Приклад підготовки макета наклейки</h2>
@@ -716,7 +657,6 @@
         </div>
     </section>
 
-    <!-- Модальное окно -->
     <div class="modal" id="imageModal">
         <div class="modal-content">
             <span class="close">&times;</span>
@@ -724,7 +664,6 @@
         </div>
     </div>
 
-    <!-- Футер -->
     <footer>
         <div class="container">
             <p>© 2025 PrintMediaPro. Усі права захищені.</p>
@@ -836,3 +775,4 @@
     <script>(function(){function c(){var b=a.contentDocument||a.contentWindow.document;if(b){var d=b.createElement('script');d.innerHTML="window.__CF$cv$params={r:'931aa040cd2abd12',t:'MTc0NDg3OTMxNC4wMDAwMDA='};var a=document.createElement('script');a.nonce='';a.src='/cdn-cgi/challenge-platform/scripts/jsd/main.js';document.getElementsByTagName('head')[0].appendChild(a);";b.getElementsByTagName('head')[0].appendChild(d)}}if(document.body){var a=document.createElement('iframe');a.height=1;a.width=1;a.style.position='absolute';a.style.top=0;a.style.left=0;a.style.border='none';a.style.visibility='hidden';document.body.appendChild(a);if('loading'!==document.readyState)c();else if(window.addEventListener)document.addEventListener('DOMContentLoaded',c);else{var e=document.onreadystatechange||function(){};document.onreadystatechange=function(b){e(b);'loading'!==document.readyState&&(document.onreadystatechange=e,c())}}}})();</script>
 <script>(function(){function c(){var b=a.contentDocument||a.contentWindow.document;if(b){var d=b.createElement('script');d.innerHTML="window.__CF$cv$params={r:'9344f41d9ceeb078',t:'MTc0NTMyMzE1MS4wMDAwMDA='};var a=document.createElement('script');a.nonce='';a.src='/cdn-cgi/challenge-platform/scripts/jsd/main.js';document.getElementsByTagName('head')[0].appendChild(a);";b.getElementsByTagName('head')[0].appendChild(d)}}if(document.body){var a=document.createElement('iframe');a.height=1;a.width=1;a.style.position='absolute';a.style.top=0;a.style.left=0;a.style.border='none';a.style.visibility='hidden';document.body.appendChild(a);if('loading'!==document.readyState)c();else if(window.addEventListener)document.addEventListener('DOMContentLoaded',c);else{var e=document.onreadystatechange||function(){};document.onreadystatechange=function(b){e(b);'loading'!==document.readyState&&(document.onreadystatechange=e,c())}}}})();</script></body>
 </html>
+```
