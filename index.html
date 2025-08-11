@@ -92,7 +92,7 @@
             top: 0;
             z-index: 1000;
             padding: 0.75rem 0;
-            animation: slideDown 0.8s cubic-bezier(0.4, 0, 0.2, 1) forwards;
+            animation: slideDown 1.56s cubic-bezier(0.4, 0, 0.2, 1) forwards;
         }
 
         nav .container {
@@ -116,7 +116,7 @@
             font-weight: 500;
             font-size: 1rem;
             text-transform: uppercase;
-            transition: color 0.4s cubic-bezier(0.4, 0, 0.2, 1);
+            transition: color 0.78s cubic-bezier(0.4, 0, 0.2, 1);
         }
 
         nav a:hover {
@@ -141,7 +141,7 @@
             font-weight: 500;
             font-size: 1rem;
             text-transform: uppercase;
-            transition: color 0.4s cubic-bezier(0.4, 0, 0.2, 1);
+            transition: color 0.78s cubic-bezier(0.4, 0, 0.2, 1);
             display: inline-block;
         }
 
@@ -160,7 +160,7 @@
             border-radius: 8px;
             box-shadow: 0 4px 15px rgba(0, 0, 0, 0.2);
             z-index: 1001;
-            animation: fadeIn 0.3s ease-in-out;
+            animation: fadeIn 0.585s ease-in-out;
         }
 
         .dropdown-menu li {
@@ -211,23 +211,24 @@
             position: relative;
             display: flex;
             flex-direction: column;
-            align-items: center;
+            align-items: flex-start; /* Змінено на flex-start */
             background: transparent;
             padding: 2rem;
             border-radius: 12px;
         }
 
-        .header-logo {
+        .header-top {
             display: flex;
-            justify-content: center;
+            align-items: center;
+            transform: translateY(-0.6rem); /* Зміщення вгору */
         }
 
         .header-logo video {
-            height: 280px;
-            transition: transform 0.8s cubic-bezier(0.4, 0, 0.2, 1);
-            margin-bottom: 2rem;
+            height: 284.625px; /* Збільшена висота відео на 10% */
+            transition: transform 1.56s cubic-bezier(0.4, 0, 0.2, 1);
+            margin-bottom: 1rem;
             opacity: 0;
-            animation: fadeInUp 1s cubic-bezier(0.4, 0, 0.2, 1) 0.2s forwards;
+            animation: fadeInUp 1.95s cubic-bezier(0.4, 0, 0.2, 1) 0.39s forwards;
             transform: translateZ(0);
             will-change: transform;
             object-fit: contain;
@@ -239,25 +240,27 @@
 
         header h1 {
             font-family: 'Inter', sans-serif;
-            font-size: 4rem;
+            font-size: 3.6rem; /* Зменшений шрифт на 10% */
             font-weight: 700;
             margin-bottom: 1.5rem;
             letter-spacing: -0.02em;
-            text-align: center;
+            text-align: left; /* Змінено на left */
             background: rgba(28, 37, 38, 0.7);
             padding: 0.5rem 1rem;
             border-radius: 8px;
+            margin-left: 1rem; /* Відступ від відео */
         }
 
         header p {
             font-size: 1.5rem;
-            max-width: 600px;
-            margin: 0 auto;
+            max-width: 1000px;
+            margin: 0;
             opacity: 0.9;
-            text-align: center;
+            text-align: center; /* Вирівнювання тексту по центру */
             background: rgba(28, 37, 38, 0.7);
             padding: 0.5rem 1rem;
             border-radius: 8px;
+            align-self: center; /* Додано для центрування параграфа */
         }
 
         .cta-button {
@@ -269,11 +272,12 @@
             text-decoration: none;
             font-weight: 600;
             font-size: 1.1rem;
-            margin-top: 2rem;
+            margin-top: 1.5rem;
             box-shadow: 0 6px 15px rgba(0, 0, 0, 0.2);
-            transition: all 0.4s cubic-bezier(0.4, 0, 0.2, 1);
+            transition: all 0.78s cubic-bezier(0.4, 0, 0.2, 1);
             opacity: 0;
-            animation: fadeInUp 1s cubic-bezier(0.4, 0, 0.2, 1) 0.6s forwards;
+            animation: fadeInUp 1.95s cubic-bezier(0.4, 0, 0.2, 1) 1.17s forwards;
+            align-self: center; /* Вирівнювання кнопки по центру */
         }
 
         .cta-button:hover {
@@ -283,17 +287,16 @@
         }
 
         /* Анимация текста для заголовков */
-        .animated-text {
+        .animated-text span {
             display: inline-block;
             overflow: hidden;
             text-align: center;
-        }
-
-        .animated-text span {
-            display: inline-block;
             opacity: 0;
             transform: translateY(30px);
-            animation: textPop 1s cubic-bezier(0.4, 0, 0.2, 1) forwards;
+        }
+
+        .animated-text.in-view span {
+            animation: textPop 1.95s cubic-bezier(0.4, 0, 0.2, 1) forwards;
         }
 
         @keyframes textPop {
@@ -306,32 +309,7 @@
                 transform: translateY(0);
             }
         }
-
-        /* Анимация текста для карточек (выезд слева направо) */
-        .slide-text {
-            display: inline-block;
-            overflow: hidden;
-            text-align: center;
-        }
-
-        .slide-text span {
-            display: inline-block;
-            opacity: 0;
-            transform: translateX(-100%);
-            animation: slideInLeft 0.8s cubic-bezier(0.4, 0, 0.2, 1) forwards;
-        }
-
-        @keyframes slideInLeft {
-            from {
-                opacity: 0;
-                transform: translateX(-100%);
-            }
-            to {
-                opacity: 1;
-                transform: translateX(0);
-            }
-        }
-
+        
         /* Секция услуг */
         .services {
             padding: 6rem 0;
@@ -339,7 +317,76 @@
             position: relative;
             overflow: hidden;
         }
+        
+        /* Начальное состояние для всех карточек и текста */
+        .service-card {
+            background: var(--card-bg);
+            border-radius: 20px;
+            padding: 2.5rem;
+            text-align: center;
+            box-shadow: 0 8px 25px rgba(0, 0, 0, 0.1);
+            position: relative;
+            overflow: hidden;
+            width: 100%;
+            min-height: 424.4px;
+            display: flex;
+            flex-direction: column;
+            justify-content: space-between;
+            opacity: 0;
+            transform: translateX(-100%);
+            transition: all 1.56s cubic-bezier(0.4, 0, 0.2, 1);
+            will-change: transform, opacity;
+        }
+        
+        .service-card:nth-child(even) {
+            transform: translateX(100%);
+        }
+        
+        .service-card h3, .service-card p {
+            opacity: 0;
+            transform: translateY(20px);
+            transition: all 0.975s cubic-bezier(0.4, 0, 0.2, 1);
+            will-change: transform, opacity;
+        }
 
+        /* Анимации при добавлении класса .in-view */
+        .services.in-view .service-card {
+            opacity: 1;
+            transform: translateX(0);
+        }
+        
+        .services.in-view .service-card:nth-child(1) { transition-delay: 0.195s; }
+        .services.in-view .service-card:nth-child(2) { transition-delay: 0.39s; }
+        .services.in-view .service-card:nth-child(3) { transition-delay: 0.585s; }
+        .services.in-view .service-card:nth-child(4) { transition-delay: 0.78s; }
+        .services.in-view .service-card:nth-child(5) { transition-delay: 0.975s; }
+        .services.in-view .service-card:nth-child(6) { transition-delay: 1.17s; }
+
+        /* Анимация текста, синхронизированная с анимацией карточек */
+        .services.in-view .service-card:nth-child(1) h3,
+        .services.in-view .service-card:nth-child(1) p { transition-delay: calc(0.195s + 1.56s); } /* card delay + card duration */
+        
+        .services.in-view .service-card:nth-child(2) h3,
+        .services.in-view .service-card:nth-child(2) p { transition-delay: calc(0.39s + 1.56s); }
+        
+        .services.in-view .service-card:nth-child(3) h3,
+        .services.in-view .service-card:nth-child(3) p { transition-delay: calc(0.585s + 1.56s); }
+        
+        .services.in-view .service-card:nth-child(4) h3,
+        .services.in-view .service-card:nth-child(4) p { transition-delay: calc(0.78s + 1.56s); }
+        
+        .services.in-view .service-card:nth-child(5) h3,
+        .services.in-view .service-card:nth-child(5) p { transition-delay: calc(0.975s + 1.56s); }
+        
+        .services.in-view .service-card:nth-child(6) h3,
+        .services.in-view .service-card:nth-child(6) p { transition-delay: calc(1.17s + 1.56s); }
+
+        .services.in-view .service-card h3, 
+        .services.in-view .service-card p {
+            opacity: 1;
+            transform: translateY(0);
+        }
+        
         .services .video-container {
             position: absolute;
             top: 0;
@@ -348,7 +395,7 @@
             height: 100%;
             z-index: 1;
             opacity: 0;
-            animation: fadeIn 1s ease-in-out 0.2s forwards;
+            animation: fadeIn 1.95s ease-in-out 0.39s forwards;
         }
 
         .services .video-container video {
@@ -386,29 +433,11 @@
 
         .services-grid {
             display: grid;
-            grid-template-columns: repeat(2, 1fr);
+            grid-template-columns: repeat(3, 1fr);
             gap: 2.5rem;
             justify-items: center;
         }
-
-        .service-card {
-            background: var(--card-bg);
-            border-radius: 20px;
-            padding: 2.5rem;
-            text-align: center;
-            box-shadow: 0 8px 25px rgba(0, 0, 0.1);
-            position: relative;
-            overflow: hidden;
-            transition: all 0.5s cubic-bezier(0.4, 0, 0.2, 1);
-            opacity: 0;
-            animation: fadeInUp 0.8s cubic-bezier(0.4, 0, 0.2, 1) forwards;
-            width: 100%;
-            min-height: 424.4px;
-            display: flex;
-            flex-direction: column;
-            justify-content: space-between;
-        }
-
+        
         .service-card::before {
             content: '';
             position: absolute;
@@ -418,13 +447,6 @@
             height: 6px;
             background: linear-gradient(90deg, var(--primary), var(--secondary));
         }
-
-        .service-card:nth-child(1) { animation-delay: 0.2s; }
-        .service-card:nth-child(2) { animation-delay: 0.4s; }
-        .service-card:nth-child(3) { animation-delay: 0.6s; }
-        .service-card:nth-child(4) { animation-delay: 0.8s; }
-        .service-card:nth-child(5) { animation-delay: 1s; }
-        .service-card:nth-child(6) { animation-delay: 1.2s; }
 
         .service-card:hover {
             transform: translateY(-8px);
@@ -438,7 +460,7 @@
             object-fit: contain;
             border-radius: 12px;
             margin-bottom: 1.5rem;
-            transition: transform 0.6s cubic-bezier(0.4, 0, 0.2, 1);
+            transition: transform 1.17s cubic-bezier(0.4, 0, 0.2, 1);
         }
 
         .service-card:hover img {
@@ -480,7 +502,7 @@
             color: var(--text);
             box-shadow: 0 8px 25px rgba(0, 0, 0.1);
             opacity: 0;
-            animation: fadeInUp 1s cubic-bezier(0.4, 0, 0.2, 1) forwards;
+            animation: fadeInUp 1.95s cubic-bezier(0.4, 0, 0.2, 1) forwards;
         }
 
         .about h2 {
@@ -528,17 +550,17 @@
             padding: 1.5rem;
             border-radius: 12px;
             box-shadow: 0 6px 15px rgba(0, 0, 0, 0.1);
-            transition: all 0.4s cubic-bezier(0.4, 0, 0.2, 1);
+            transition: all 0.78s cubic-bezier(0.4, 0, 0.2, 1);
             opacity: 0;
-            animation: fadeInUp 0.8s cubic-bezier(0.4, 0, 0.2, 1) forwards;
+            animation: fadeInUp 1.56s cubic-bezier(0.4, 0, 0.2, 1) forwards;
             width: 100%;
             max-width: 400px;
         }
 
-        .contact-item:nth-child(1) { animation-delay: 0.2s; }
-        .contact-item:nth-child(2) { animation-delay: 0.4s; }
-        .contact-item:nth-child(3) { animation-delay: 0.6s; }
-        .contact-item:nth-child(4) { animation-delay: 0.8s; }
+        .contact-item:nth-child(1) { animation-delay: 0.39s; }
+        .contact-item:nth-child(2) { animation-delay: 0.78s; }
+        .contact-item:nth-child(3) { animation-delay: 1.17s; }
+        .contact-item:nth-child(4) { animation-delay: 1.56s; }
 
         .contact-item:hover {
             transform: translateY(-4px);
@@ -559,7 +581,7 @@
         .contact-item a {
             color: var(--text);
             text-decoration: none;
-            transition: color 0.4s cubic-bezier(0.4, 0, 0.2, 1);
+            transition: color 0.78s cubic-bezier(0.4, 0, 0.2, 1);
         }
 
         .contact-item a:hover {
@@ -588,7 +610,7 @@
             width: 100vw;
             margin: 0;
             opacity: 0;
-            animation: fadeInUp 0.8s cubic-bezier(0.4, 0, 0.2, 1) 0.2s forwards;
+            animation: fadeInUp 1.56s cubic-bezier(0.4, 0, 0.2, 1) 0.39s forwards;
         }
 
         #map {
@@ -620,7 +642,7 @@
         .social-links a {
             color: var(--white);
             font-size: 1.8rem;
-            transition: all 0.4s cubic-bezier(0.4, 0, 0.2, 1);
+            transition: all 0.78s cubic-bezier(0.4, 0, 0.2, 1);
         }
 
         .social-links a:hover {
@@ -643,7 +665,7 @@
             from { opacity: 0; transform: translateY(40px); }
             to { opacity: 1; transform: translateY(0); }
         }
-
+        
         /* Медиа-запросы */
         @media (max-width: 768px) {
             nav {
@@ -705,17 +727,28 @@
                 padding: 4rem 0;
                 margin-top: 50px;
             }
+            
+            .header-top {
+                flex-direction: column;
+                align-items: flex-start;
+                transform: translateY(-0.6rem); /* Зміщення вгору */
+            }
+
+            .header-logo video {
+                height: 227.7px; /* Збільшена висота відео на 10% */
+                margin-bottom: 1rem;
+            }
 
             header h1 {
-                font-size: 2.5rem;
+                font-size: 2.25rem; /* Зменшений шрифт на 10% */
+                margin-left: 0;
+                text-align: left; /* Змінено на left */
             }
 
             header p {
                 font-size: 1.2rem;
-            }
-
-            .header-logo video {
-                height: 200px;
+                text-align: center;
+                align-self: center; /* Додано для центрування параграфа */
             }
 
             .services, .about, .contact, .map-section {
@@ -806,7 +839,6 @@
             return gk_fileData[filename] || "";
         }
     </script>
-    <!-- Навигация -->
     <nav>
         <div class="container">
             <div class="menu-toggle">
@@ -817,6 +849,7 @@
                 <li><a href="#services">Послуги</a></li>
                 <li><a href="#about">Про нас</a></li>
                 <li><a href="#contact">Контакти</a></li>
+                <li><a href="our_works.html">Наші роботи</a></li>
                 <li><a href="order_uk.html">Замовлення</a></li>
                 <li class="dropdown">
                     <span class="dropdown-toggle">Вимоги до макетів</span>
@@ -830,21 +863,21 @@
         </div>
     </nav>
 
-    <!-- Хедер -->
     <header id="home">
         <div class="container">
             <div class="header-content">
-                <div class="header-logo">
-                    <video src="https://raw.githubusercontent.com/printtmedia/printmediapro/main/logo.mov" autoplay muted playsinline alt="PrintMediaPro Logo"></video>
+                <div class="header-top">
+                    <div class="header-logo">
+                        <video src="https://raw.githubusercontent.com/printtmedia/printmediapro/main/logo.mov" autoplay muted playsinline alt="PrintMediaPro Logo"></video>
+                    </div>
+                    <h1 class="animated-text">PrintMediaPro <br>Якісна поліграфія</h1>
                 </div>
-                <h1 class="animated-text">PrintMediaPro – Якісна поліграфія</h1>
-                <p class="animated-text">Візитки, банери, етикетки, стенди – швидко і професійно</p>
+                <p class="animated-text">Візитки, банери, етикетки для харчової продукції, стенди, нанесення лаку та фольги,<br>виготовлення коробок для харчової продукції – швидко і професійно</p>
                 <a href="order_uk.html" class="cta-button">Замовити зараз</a>
             </div>
         </div>
     </header>
 
-    <!-- Секция услуг -->
     <section class="services" id="services">
         <div class="video-container">
             <video autoplay loop muted playsinline preload="metadata" aria-label="Відео нічного Сеулу з неоновими вивісками">
@@ -858,38 +891,37 @@
                 <div class="service-card">
                     <img src="https://raw.githubusercontent.com/printtmedia/printmediapro/main/drukovana_produkciya.png" alt="Друкована продукція">
                     <h3>Друкована продукція</h3>
-                    <p class="slide-text">Створюємо професійну рекламну продукцію для вашого бренду: візитки, флаєри, буклети, каталоги, журнали, календарі. Використовуємо офсетний і цифровий друк для ідеальної якості, яскравих кольорів і чіткості деталей.</p>
+                    <p>Створюємо професійну рекламну продукцію для вашого бренду: візитки, флаєри, буклети, каталоги, журнали, календарі. Використовуємо офсетний і цифровий друк для ідеальної якості, яскравих кольорів і чіткості деталей.</p>
                 </div>
                 <div class="service-card">
                     <img src="https://raw.githubusercontent.com/printtmedia/printmediapro/main/Shurokoformat_druk.png" alt="Широкоформатний друк">
                     <h3>Широкоформатний друк</h3>
-                    <p class="slide-text">Рішення для зовнішньої реклами: банери, плакати, самоклейки та борди. Друкуємо на банерних тканинах і плівках, гарантуючи стійкість до сонця, дощу та вітру для довговічної реклами.</p>
+                    <p>Рішення для зовнішньої реклами: банери, плакати, самоклейки та борди. Друкуємо на банерних тканинах і плівках, гарантуючи стійкість до сонця, дощу та вітру для довговічної реклами.</p>
                 </div>
                 <div class="service-card">
                     <img src="https://raw.githubusercontent.com/printtmedia/printmediapro/main/dbdbac8996ddf5630e75bb9901485283.png" alt="Післядрукарська обробка">
                     <h3>Післядрукарська обробка</h3>
-                    <p class="slide-text">Додаємо досконалості: ламінація (глянцева, матова, бархатна), фальцювання, висічка, палітурка та плотерна різка. Ваші матеріали виглядатимуть професійно та прослужать довго.</p>
+                    <p>Додаємо досконалості: ламінація (глянцева, матова, бархатна), фальцювання, висічка, палітурка та плотерна різка. Ваші матеріали виглядатимуть професійно та прослужать довго.</p>
                 </div>
                 <div class="service-card">
                     <img src="https://raw.githubusercontent.com/printtmedia/printmediapro/main/vubir_lakuvanya.png" alt="Вибіркове лакування">
                     <h3>Вибіркове лакування</h3>
-                    <p class="slide-text">Підкреслюємо стиль за допомогою вибіркового лакування та фольги. Глянцеві, матові чи металеві акценти додають преміального вигляду вашим візиткам, запрошенням і упаковці.</p>
+                    <p>Підкреслюємо стиль за допомогою вибіркового лакування та фольги. Глянцеві, матові чи металеві акценти додають преміального вигляду вашим візиткам, запрошенням і упаковці.</p>
                 </div>
                 <div class="service-card">
                     <img src="https://raw.githubusercontent.com/printtmedia/printmediapro/main/infostend.png" alt="Виготовлення стендів">
                     <h3>Виготовлення стендів</h3>
-                    <p class="slide-text">Проектуємо та створюємо рекламні стенди для виставок, магазинів і заходів. Від roll-up до складних конструкцій – використовуємо міцні матеріали та яскравий друк для ефективної презентації вашого бренду.</p>
+                    <p>Проектуємо та створюємо рекламні стенди для виставок, магазинів і заходів. Від roll-up до складних конструкцій – використовуємо міцні матеріали та яскравий друк для ефективної презентації вашого бренду.</p>
                 </div>
                 <div class="service-card">
                     <img src="https://raw.githubusercontent.com/printtmedia/printmediapro/main/druk_etuketok.png" alt="Виготовлення етикеток для харчової продукції">
                     <h3>Виготовлення етикеток</h3>
-                    <p class="slide-text">Друкуємо етикетки для харчової продукції на безпечних матеріалах. Яскраві кольори, чіткий текст і відповідність стандартам для упаковки продуктів харчування.</p>
+                    <p>Друкуємо етикетки для харчової продукції на безпечних матеріалах. Яскраві кольори, чіткий текст і відповідність стандартам для упаковки продуктів харчування.</p>
                 </div>
             </div>
         </div>
     </section>
 
-    <!-- Секция "О нас" -->
     <section class="about" id="about">
         <div class="container">
             <div class="about-content">
@@ -901,7 +933,6 @@
         </div>
     </section>
 
-    <!-- Секция контактов -->
     <section class="contact" id="contact">
         <div class="container">
             <h2 class="animated-text">Контакти</h2>
@@ -926,7 +957,6 @@
         </div>
     </section>
 
-    <!-- Секция карты -->
     <section class="map-section" id="map-section">
         <div class="container">
             <h2 class="animated-text">Наше розташування</h2>
@@ -936,7 +966,6 @@
         </div>
     </section>
 
-    <!-- Футер -->
     <footer>
         <div class="container">
             <p>© 2025 PrintMediaPro. Усі права захищені.</p>
@@ -947,8 +976,6 @@
         </div>
     </footer>
 
-    <!-- Leaflet JS -->
-    <script data-cfasync="false" src="/cdn-cgi/scripts/5c5dd728/cloudflare-static/email-decode.min.js"></script>
     <script src="https://unpkg.com/leaflet@1.9.4/dist/leaflet.js" integrity="sha256-20nQCchB9co0qIjJZRGuk2/Z9VM+kNiyxNV1lvTlZBo=" crossorigin=""></script>
     <script>
         // Гамбургер-меню
@@ -989,70 +1016,39 @@
             });
         });
 
-        // Анимация текста для заголовков (.animated-text)
-        function animateText() {
-            document.querySelectorAll('.animated-text').forEach(text => {
-                const words = text.textContent.trim().split(/\s+/);
-                text.innerHTML = '';
-                words.forEach((word, index) => {
-                    const span = document.createElement('span');
-                    span.textContent = word;
-                    span.style.animationDelay = `${index * 0.2}s`;
-                    text.appendChild(span);
-                    if (index < words.length - 1) {
-                        text.appendChild(document.createTextNode(' '));
-                    }
-                });
+        // Анимация текста (для заголовков)
+        function applyTextAnimation(element) {
+            const words = element.textContent.trim().split(/\s+/);
+            element.innerHTML = '';
+            words.forEach((word, index) => {
+                const span = document.createElement('span');
+                span.textContent = word;
+                span.style.animationDelay = `${index * 0.05}s`;
+                element.appendChild(span);
+                if (index < words.length - 1) {
+                    element.appendChild(document.createTextNode(' '));
+                }
             });
         }
 
-        // Анимация текста для карточек (.slide-text)
-        function animateSlideText() {
-            document.querySelectorAll('.slide-text').forEach(text => {
-                const words = text.textContent.trim().split(/\s+/);
-                text.innerHTML = '';
-                words.forEach((word, index) => {
-                    const span = document.createElement('span');
-                    span.textContent = word;
-                    span.style.animationDelay = `${index * 0.2}s`;
-                    text.appendChild(span);
-                    if (index < words.length - 1) {
-                        text.appendChild(document.createTextNode(' '));
+        // IntersectionObserver для анимации элементов при скролле
+        const observer = new IntersectionObserver((entries) => {
+            entries.forEach(entry => {
+                if (entry.isIntersecting) {
+                    const el = entry.target;
+                    el.classList.add('in-view');
+                    if (el.classList.contains('animated-text')) {
+                        applyTextAnimation(el);
                     }
-                });
+                    observer.unobserve(el);
+                }
             });
-        }
+        }, { threshold: 0.2 });
 
-        // Анимация при скролле
-        const observer = window.IntersectionObserver || false;
-
-        if (observer) {
-            const observerInstance = new IntersectionObserver((entries) => {
-                entries.forEach(entry => {
-                    if (entry.isIntersecting) {
-                        entry.target.classList.add('visible');
-                        if (entry.target.classList.contains('animated-text')) {
-                            animateText();
-                        }
-                        if (entry.target.classList.contains('slide-text')) {
-                            animateSlideText();
-                        }
-                    }
-                });
-            }, { threshold: 0.1 });
-
-            document.querySelectorAll('.service-card, .contact-item, .about-content, .map-container, .animated-text, .slide-text').forEach(el => {
-                el.classList.add('animate');
-                observerInstance.observe(el);
-            });
-        } else {
-            document.querySelectorAll('.animated-text').forEach(el => {
-                animateText();
-            });
-            document.querySelectorAll('.slide-text').forEach(el => {
-                animateSlideText();
-            });
-        }
+        // Наблюдаем за всеми элементами, которые нужно анимировать
+        document.querySelectorAll('.animated-text, .services, .about-content, .contact-item').forEach(el => {
+            observer.observe(el);
+        });
 
         // Инициализация карты
         let mapInstance = null;
@@ -1108,8 +1104,6 @@
         // Запуск карты и анимаций после загрузки страницы
         document.addEventListener('DOMContentLoaded', () => {
             initMap();
-            animateText();
-            animateSlideText();
         });
 
         // Обновление размеров карты при изменении размера окна
@@ -1121,7 +1115,5 @@
             }
         });
     </script>
-<script>(function(){function c(){var b=a.contentDocument||a.contentWindow.document;if(b){var d=b.createElement('script');d.innerHTML="window.__CF$cv$params={r:'9343c16aba99adc6',t:'MTc0NTMxMDU4OC4wMDAwMDA='};var a=document.createElement('script');a.nonce='';a.src='/cdn-cgi/challenge-platform/scripts/jsd/main.js';document.getElementsByTagName('head')[0].appendChild(a);";b.getElementsByTagName('head')[0].appendChild(d)}}if(document.body){var a=document.createElement('iframe');a.height=1;a.width=1;a.style.position='absolute';a.style.top=0;a.style.left=0;a.style.border='none';a.style.visibility='hidden';document.body.appendChild(a);if('loading'!==document.readyState)c();else if(window.addEventListener)document.addEventListener('DOMContentLoaded',c);else{var e=document.onreadystatechange||function(){};document.onreadystatechange=function(b){e(b);'loading'!==document.readyState&&(document.onreadystatechange=e,c())}}}})();</script>
-<script>(function(){function c(){var b=a.contentDocument||a.contentWindow.document;if(b){var d=b.createElement('script');d.innerHTML="window.__CF$cv$params={r:'93452df37adbadad',t:'MTc0NTMyNTUxOS4wMDAwMDA='};var a=document.createElement('script');a.nonce='';a.src='/cdn-cgi/challenge-platform/scripts/jsd/main.js';document.getElementsByTagName('head')[0].appendChild(a);";b.getElementsByTagName('head')[0].appendChild(d)}}if(document.body){var a=document.createElement('iframe');a.height=1;a.width=1;a.style.position='absolute';a.style.top=0;a.style.left=0;a.style.border='none';a.style.visibility='hidden';document.body.appendChild(a);if('loading'!==document.readyState)c();else if(window.addEventListener)document.addEventListener('DOMContentLoaded',c);else{var e=document.onreadystatechange||function(){};document.onreadystatechange=function(b){e(b);'loading'!==document.readyState&&(document.onreadystatechange=e,c())}}}})();</script>
 </body>
 </html>
