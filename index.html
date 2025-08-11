@@ -190,11 +190,8 @@
             text-align: center;
             margin-top: 60px;
             position: relative;
-            width: 100vw;
-            left: 50%;
-            right: 50%;
-            margin-left: -50vw;
-            margin-right: -50vw;
+            width: 100%;
+            margin: 0;
         }
 
         header::before {
@@ -211,7 +208,7 @@
             position: relative;
             display: flex;
             flex-direction: column;
-            align-items: flex-start; /* Змінено на flex-start */
+            align-items: flex-start;
             background: transparent;
             padding: 2rem;
             border-radius: 12px;
@@ -220,11 +217,11 @@
         .header-top {
             display: flex;
             align-items: center;
-            transform: translateY(-0.6rem); /* Зміщення вгору */
+            transform: translateY(-0.6rem);
         }
 
         .header-logo video {
-            height: 284.625px; /* Збільшена висота відео на 10% */
+            height: 284.625px;
             transition: transform 1.56s cubic-bezier(0.4, 0, 0.2, 1);
             margin-bottom: 1rem;
             opacity: 0;
@@ -240,15 +237,15 @@
 
         header h1 {
             font-family: 'Inter', sans-serif;
-            font-size: 3.6rem; /* Зменшений шрифт на 10% */
+            font-size: 3.6rem;
             font-weight: 700;
             margin-bottom: 1.5rem;
             letter-spacing: -0.02em;
-            text-align: left; /* Змінено на left */
+            text-align: left;
             background: rgba(28, 37, 38, 0.7);
             padding: 0.5rem 1rem;
             border-radius: 8px;
-            margin-left: 1rem; /* Відступ від відео */
+            margin-left: 1rem;
         }
 
         header p {
@@ -256,11 +253,11 @@
             max-width: 1000px;
             margin: 0;
             opacity: 0.9;
-            text-align: center; /* Вирівнювання тексту по центру */
+            text-align: center;
             background: rgba(28, 37, 38, 0.7);
             padding: 0.5rem 1rem;
             border-radius: 8px;
-            align-self: center; /* Додано для центрування параграфа */
+            align-self: center;
         }
 
         .cta-button {
@@ -277,7 +274,7 @@
             transition: all 0.78s cubic-bezier(0.4, 0, 0.2, 1);
             opacity: 0;
             animation: fadeInUp 1.95s cubic-bezier(0.4, 0, 0.2, 1) 1.17s forwards;
-            align-self: center; /* Вирівнювання кнопки по центру */
+            align-self: center;
         }
 
         .cta-button:hover {
@@ -607,7 +604,7 @@
             padding: 0;
             border-radius: 20px;
             box-shadow: 0 8px 25px rgba(0, 0, 0, 0.1);
-            width: 100vw;
+            width: 100%;
             margin: 0;
             opacity: 0;
             animation: fadeInUp 1.56s cubic-bezier(0.4, 0, 0.2, 1) 0.39s forwards;
@@ -729,30 +726,30 @@
             }
             
             .header-content {
-                align-items: center; /* Змінено на center */
+                align-items: center;
             }
 
             .header-top {
                 flex-direction: column;
-                align-items: center; /* Змінено на center */
-                transform: translateY(-0.6rem); /* Зміщення вгору */
+                align-items: center;
+                transform: translateY(-0.6rem);
             }
 
             .header-logo video {
-                height: 227.7px; /* Збільшена висота відео на 10% */
+                height: 227.7px;
                 margin-bottom: 1rem;
             }
 
             header h1 {
-                font-size: 2.25rem; /* Зменшений шрифт на 10% */
+                font-size: 2.25rem;
                 margin-left: 0;
-                text-align: center; /* Змінено на center */
+                text-align: center;
             }
 
             header p {
                 font-size: 1.2rem;
                 text-align: center;
-                align-self: center; /* Додано для центрування параграфа */
+                align-self: center;
             }
 
             .services, .about, .contact, .map-section {
@@ -800,7 +797,7 @@
             }
 
             .map-container {
-                width: 100vw;
+                width: 100%;
                 margin: 0;
             }
 
@@ -1072,7 +1069,12 @@
             }).addTo(mapInstance);
 
             const address = 'Районна вулиця, 7, Кропивницький';
-            fetch(`https://nominatim.openstreetmap.org/search?format=json&q=${encodeURIComponent(address)}`)
+            fetch(`https://nominatim.openstreetmap.org/search?format=json&q=${encodeURIComponent(address)}`, {
+                // Додано обов'язковий заголовок User-Agent для коректної роботи з API Nominatim
+                headers: {
+                    'User-Agent': 'PrintMediaPro Website'
+                }
+            })
                 .then(response => response.json())
                 .then(data => {
                     if (data && data.length > 0) {
