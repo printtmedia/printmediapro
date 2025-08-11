@@ -683,6 +683,8 @@
                 <label>Сторони друку:</label>
                 <select name="print_sides" id="printSides">
                     <option value="">Виберіть тип друку</option>
+                    <option value="4+0">Односторонній (1+0)</option>
+                    <option value="4+0">Односторонній (1+1)</option>
                     <option value="4+0">Односторонній (4+0)</option>
                     <option value="4+4">Двосторонній (4+4)</option>
                 </select>
@@ -717,12 +719,13 @@
                 <label>Тип друку:</label>
                 <select name="print_type" id="printType">
                     <option value="">Виберіть тип друку</option>
-                    <option value="konica">Konica</option>
+                    <option value="konica">Konica Цифровий друк</option>
                     <option value="konica_label">Етикетка Konica</option>
+                    <option value="varnish_foil_requirements">Нанесеня лаку та фольги Konica</option>
                     <option value="wide_format">Широкоформатний друк</option>
                     <option value="plotter_cutting">Плотерна різка</option>
                     <option value="newspaper_printing">Друк газет</option>
-                    <option value="heidelberg_printing">Друк Heidelberg</option>
+                    <option value="heidelberg_printing">Heidelberg Офсетний друк</option>
                 </select>
                 <div id="selectedPrintTypes" class="selected-items"></div>
             </div>
@@ -734,14 +737,14 @@
                     <option value="offset">Офсет</option>
                     <option value="glossy_chalk">Глянцева крейда</option>
                     <option value="matte_chalk">Матова крейда</option>
-                    <option value="self_adhesive">Самоклеючий</option>
+                    <option value="self_adhesive">Самоклеючий папір</option>
                     <option value="blueback">Blueback</option>
                     <option value="citylight">Citylight</option>
                     <option value="banner">Банер</option>
                     <option value="film_white">Плівка: Біла</option>
                     <option value="film_matte">Плівка: Матова</option>
                     <option value="perforated_film">Перфорована плівка</option>
-                    <option value="orafol_soundproof">Плівка: Orafol звукоізоляційна</option>
+                    <option value="orafol_soundproof">Плівка: Orafol Orakal</option>
                     <option value="film_label_white_propylene">Плівка: Білий пропілен</option>
                     <option value="film_linen">Плівка: Льон</option>
                     <option value="film_kraft">Плівка: Крафт</option>
